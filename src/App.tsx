@@ -1,47 +1,35 @@
+import Backdrop from './components/Backdrop'
+import CountdownDisplay from './components/CountdownDisplay'
+import PhaseMessage from './components/PhaseMessage'
 import { useNow } from './hooks/useNow'
 import { getCountdownState } from './lib/countdown'
-
-const pad = (value: number) => String(value).padStart(2, '0')
 
 function App() {
   const state = getCountdownState(useNow())
 
-  if (state.phase === 'celebrating') {
-    return (
-      <main className="min-h-svh p-6">
-        <h1>Happy New Year {state.year}</h1>
-      </main>
-    )
-  }
-
-  if (state.phase === 'afterglow') {
-    return (
-      <main className="min-h-svh p-6">
-        <h1>{state.year} has begun</h1>
-      </main>
-    )
-  }
-
-  const { days, hours, minutes, seconds } = state.remaining
-  const units = [
-    ['Days', days],
-    ['Hours', hours],
-    ['Minutes', minutes],
-    ['Seconds', seconds],
-  ] as const
-
   return (
-    <main className="min-h-svh p-6">
-      <h1>New Year Countdown</h1>
-      <dl className="flex gap-6 tabular-nums">
-        {units.map(([label, value]) => (
-          <div key={label}>
-            <dt>{label}</dt>
-            <dd>{pad(value)}</dd>
+    <>
+      <Backdrop />
+      <main className="relative z-10 flex min-h-svh flex-col items-center justify-center pt-[max(3rem,env(safe-area-inset-top))] pr-[max(1.5rem,env(safe-area-inset-right))] pb-[max(3rem,env(safe-area-inset-bottom))] pl-[max(1.5rem,env(safe-area-inset-left))]">
+        {state.phase === 'counting' && (
+          <div className="flex flex-col items-center gap-10 text-center">
+            <h1 className="text-[clamp(0.75rem,2vmin,1.5rem)] font-normal tracking-[0.3em] text-gold-400 uppercase">
+              New Year Countdown
+            </h1>
+            <CountdownDisplay remaining={state.remaining} />
           </div>
-        ))}
-      </dl>
-    </main>
+        )}
+        {state.phase === 'celebrating' && (
+          <PhaseMessage
+            eyebrow="New Year"
+            title={`Happy New Year ${state.year}`}
+          />
+        )}
+        {state.phase === 'afterglow' && (
+          <PhaseMessage eyebrow="New Year" title={`${state.year} has begun`} />
+        )}
+      </main>
+    </>
   )
 }
 

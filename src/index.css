@@ -1,1 +1,68 @@
 @import "tailwindcss";
+
+@theme {
+  --color-midnight-950: #060918;
+  --color-midnight-900: #0a1128;
+  --color-midnight-800: #111a3a;
+  --color-gold-300: #ecd48e;
+  --color-gold-400: #d9b45f;
+  --color-ink: #eef0f8;
+  --color-ink-muted: #aeb6d0;
+
+  --font-display: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia,
+    serif;
+  --font-numeric: ui-sans-serif, system-ui, "Segoe UI", Roboto, sans-serif;
+
+  --animate-twinkle: twinkle var(--twinkle-duration, 6s) ease-in-out infinite;
+  --animate-drift: drift 38s ease-in-out infinite alternate;
+  --animate-float: float 52s ease-in-out infinite alternate-reverse;
+
+  @keyframes twinkle {
+    0%,
+    100% {
+      opacity: var(--star-min, 0.25);
+    }
+    50% {
+      opacity: var(--star-max, 0.9);
+    }
+  }
+
+  @keyframes float {
+    from {
+      transform: translate3d(0, 0, 0);
+    }
+    to {
+      transform: translate3d(2vmin, -3vmin, 0);
+    }
+  }
+
+  @keyframes drift {
+    from {
+      transform: translate3d(0, 0, 0) rotate(-2deg);
+    }
+    to {
+      transform: translate3d(2vmin, -3vmin, 0) rotate(3deg);
+    }
+  }
+}
+
+html {
+  background-color: var(--color-midnight-950);
+}
+
+body {
+  margin: 0;
+  color: var(--color-ink);
+  font-family: system-ui, "Segoe UI", Roboto, sans-serif;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+}
