@@ -1,14 +1,17 @@
+import { memo } from 'react'
 import { motion, useReducedMotion } from 'motion/react'
-import type { TimeRemaining } from '../lib/countdown'
 
 const pad = (value: number) => String(value).padStart(2, '0')
 
 type CountdownDisplayProps = {
-  remaining: TimeRemaining
+  days: number
+  hours: number
+  minutes: number
+  seconds: number
 }
 
 // Each digit sits in its own fixed-width cell so the layout cannot shift as
-// values change, whatever font the system provides.
+// values change, whatever the font's own digit widths are.
 function Digits({ value }: { value: number }) {
   return (
     <>
@@ -17,7 +20,7 @@ function Digits({ value }: { value: number }) {
         {pad(value)
           .split('')
           .map((digit, index) => (
-            <span key={index} className="inline-block w-[0.62em] text-center">
+            <span key={index} className="inline-block w-[0.64em] text-center">
               {digit}
             </span>
           ))}
@@ -26,17 +29,26 @@ function Digits({ value }: { value: number }) {
   )
 }
 
-function CountdownDisplay({ remaining }: CountdownDisplayProps) {
+// Sizes use container query units, so the numbers scale with the surrounding
+// orbit dial rather than the viewport. Takes plain numbers and is memoised, so
+// it only re-renders when a displayed value changes (once a second), not on
+// every clock tick.
+function CountdownDisplay({
+  days,
+  hours,
+  minutes,
+  seconds,
+}: CountdownDisplayProps) {
   const reduceMotion = useReducedMotion()
   const units = [
-    ['Days', remaining.days],
-    ['Hours', remaining.hours],
-    ['Minutes', remaining.minutes],
-    ['Seconds', remaining.seconds],
+    ['Days', days],
+    ['Hours', hours],
+    ['Minutes', minutes],
+    ['Seconds', seconds],
   ] as const
 
   return (
-    <dl className="grid grid-cols-2 gap-x-[6vmin] gap-y-8 sm:grid-cols-4 sm:gap-x-[3vmin]">
+    <dl className="grid grid-cols-2 gap-x-[8cqw] gap-y-[4cqw] sm:grid-cols-4 sm:gap-x-[3.5cqw]">
       {units.map(([label, value], index) => (
         <motion.div
           key={label}
@@ -45,10 +57,10 @@ function CountdownDisplay({ remaining }: CountdownDisplayProps) {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: index * 0.08, ease: 'easeOut' }}
         >
-          <dt className="mt-2 text-[clamp(0.75rem,2vmin,1.5rem)] tracking-[0.25em] text-ink-muted uppercase">
+          <dt className="mt-[0.8cqw] text-[clamp(0.75rem,2.4cqw,1.5rem)] tracking-[0.25em] text-ink-muted uppercase">
             {label}
           </dt>
-          <dd className="font-numeric text-[clamp(3.5rem,16vmin,11rem)] leading-none font-light text-gold-300 sm:text-[clamp(3rem,11vmin,11rem)]">
+          <dd className="font-display text-[15cqw] leading-none font-light tabular-nums lining-nums text-accent sm:text-[11.3cqw]">
             <Digits value={value} />
           </dd>
         </motion.div>
@@ -57,4 +69,4 @@ function CountdownDisplay({ remaining }: CountdownDisplayProps) {
   )
 }
 
-export default CountdownDisplay
+export default memo(CountdownDisplay)

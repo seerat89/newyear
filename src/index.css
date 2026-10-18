@@ -1,21 +1,67 @@
 @import "tailwindcss";
 
-@theme {
-  --color-midnight-950: #060918;
-  --color-midnight-900: #0a1128;
-  --color-midnight-800: #111a3a;
-  --color-gold-300: #ecd48e;
-  --color-gold-400: #d9b45f;
-  --color-ink: #eef0f8;
-  --color-ink-muted: #aeb6d0;
+@font-face {
+  font-family: "Fraunces";
+  font-style: normal;
+  font-weight: 300 600;
+  font-display: swap;
+  src: url("/fonts/fraunces-latin-wght.woff2") format("woff2");
+}
 
-  --font-display: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia,
-    serif;
-  --font-numeric: ui-sans-serif, system-ui, "Segoe UI", Roboto, sans-serif;
+/*
+ * Theme tokens. Components only use the semantic names below (accent, night-*,
+ * ink, glow). Other modes can later override these values; only the midnight
+ * values exist today and there is no runtime theme switching.
+ */
+:root,
+:root[data-theme="midnight"] {
+  --theme-night-1: #111a3a;
+  --theme-night-2: #0a1128;
+  --theme-night-3: #060918;
+  --theme-accent: #ecd48e;
+  --theme-accent-strong: #d9b45f;
+  --theme-ink: #eef0f8;
+  --theme-ink-muted: #aeb6d0;
+  /* Space-separated RGB so it can take an alpha: rgb(var(--theme-glow) / 0.14) */
+  --theme-glow: 217 180 95;
+  --theme-glow-cool: 84 104 200;
+  /* Omid: dim (far away) and bright (midnight) fills, stacked by glow level */
+  --theme-spirit-dim-core: #b08a4c;
+  --theme-spirit-dim-mid: #946f3a;
+  --theme-spirit-dim-edge: #6a4a22;
+  --theme-spirit-dim-crest: #c29a58;
+  --theme-spirit-dim-limb: #7a5a2e;
+  --theme-spirit-core: #fff4cc;
+  --theme-spirit-mid: #ffe09a;
+  --theme-spirit-edge: #e59a2e;
+  --theme-spirit-crest-low: #ffd477;
+  --theme-spirit-crest-high: #fff7d8;
+  --theme-spirit-limb: #f3b350;
+  --theme-spirit-face: #3b2210;
+  --theme-blush: #ff8e6e;
+}
+
+@theme inline {
+  --color-night-1: var(--theme-night-1);
+  --color-night-2: var(--theme-night-2);
+  --color-night-3: var(--theme-night-3);
+  --color-accent: var(--theme-accent);
+  --color-accent-strong: var(--theme-accent-strong);
+  --color-ink: var(--theme-ink);
+  --color-ink-muted: var(--theme-ink-muted);
+}
+
+@theme {
+  --font-display: "Fraunces", "Iowan Old Style", "Palatino Linotype", Palatino,
+    Georgia, serif;
 
   --animate-twinkle: twinkle var(--twinkle-duration, 6s) ease-in-out infinite;
-  --animate-drift: drift 38s ease-in-out infinite alternate;
+  --animate-parallax: parallax var(--parallax-duration, 180s) ease-in-out
+    infinite alternate;
   --animate-float: float 52s ease-in-out infinite alternate-reverse;
+  --animate-float-alt: float 68s ease-in-out infinite alternate;
+  --animate-orbit: orbit 60s linear infinite;
+  --animate-rise: rise var(--mote-duration, 50s) linear infinite;
 
   @keyframes twinkle {
     0%,
@@ -27,42 +73,205 @@
     }
   }
 
+  @keyframes parallax {
+    from {
+      transform: translate3d(0, 0, 0);
+    }
+    to {
+      transform: translate3d(var(--px, -3vmin), var(--py, 1.5vmin), 0);
+    }
+  }
+
   @keyframes float {
     from {
       transform: translate3d(0, 0, 0);
     }
     to {
-      transform: translate3d(2vmin, -3vmin, 0);
+      transform: translate3d(4vmin, -5vmin, 0);
     }
   }
 
-  @keyframes drift {
+  @keyframes orbit {
     from {
-      transform: translate3d(0, 0, 0) rotate(-2deg);
+      transform: rotate(0deg);
     }
     to {
-      transform: translate3d(2vmin, -3vmin, 0) rotate(3deg);
+      transform: rotate(360deg);
+    }
+  }
+
+  @keyframes rise {
+    0% {
+      transform: translate3d(0, 0, 0);
+      opacity: 0;
+    }
+    12%,
+    85% {
+      opacity: var(--mote-opacity, 0.5);
+    }
+    100% {
+      transform: translate3d(var(--mote-dx, 0), -105vh, 0);
+      opacity: 0;
     }
   }
 }
 
 html {
-  background-color: var(--color-midnight-950);
+  background-color: var(--theme-night-3);
 }
 
 body {
   margin: 0;
-  color: var(--color-ink);
+  color: var(--theme-ink);
   font-family: system-ui, "Segoe UI", Roboto, sans-serif;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
 }
 
+/*
+ * Reduced motion: every CSS animation and transition is switched off. Stars
+ * keep a static opacity, motes start at opacity 0 (so they are simply hidden),
+ * and the orbit beads stay at their true position without easing.
+ */
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
   *::after {
     animation: none !important;
     transition: none !important;
+  }
+}
+
+/*
+ * Omid idle animation. Everything is a CSS keyframe on transform or opacity,
+ * with no timers and no React updates. --omid-energy (0.45 calm .. 1 lively) only
+ * stretches the periods and trims the amplitudes. The reduced-motion rule above
+ * removes every animation, leaving a composed resting pose.
+ */
+.omid {
+  --omid-period: calc(4s + (1 - var(--omid-energy)) * 4s);
+}
+.omid-root {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: auto;
+  overflow: visible;
+  transform-origin: 50% 96%;
+  will-change: transform;
+  animation: omid-breathe var(--omid-period) ease-in-out infinite alternate;
+}
+.omid-halo {
+  position: absolute;
+  left: 50%;
+  top: 58%;
+  width: 230%;
+  aspect-ratio: 1;
+  transform: translate(-50%, -50%);
+  background: radial-gradient(
+    circle,
+    rgb(var(--theme-glow) / calc(0.55 * var(--omid-glow))),
+    transparent 62%
+  );
+  will-change: transform, opacity;
+  animation: omid-halo calc(var(--omid-period) * 1.3) ease-in-out infinite alternate;
+}
+.omid-ground {
+  position: absolute;
+  left: 50%;
+  bottom: -7%;
+  width: 170%;
+  height: 18%;
+  transform: translateX(-50%);
+  background: radial-gradient(
+    ellipse at center,
+    rgb(var(--theme-glow) / calc(0.6 * var(--omid-glow))),
+    transparent 70%
+  );
+}
+.omid-crest {
+  transform-origin: 100px 82px;
+  animation: omid-crest calc(var(--omid-period) * 0.75) ease-in-out infinite alternate;
+}
+.omid-arm-l {
+  transform-origin: 40px 146px;
+  animation: omid-arm calc(var(--omid-period) * 0.95) ease-in-out infinite alternate;
+}
+.omid-arm-r {
+  transform-origin: 160px 146px;
+  animation: omid-arm calc(var(--omid-period) * 1.1) ease-in-out infinite alternate-reverse;
+}
+.omid-gaze {
+  transform: translateX(calc(var(--omid-gaze) * 2.6px));
+  transition: transform 1.4s ease-in-out;
+}
+/* Reduced motion: the gaze stays pinned at neutral, so the eyes never move. */
+@media (prefers-reduced-motion: reduce) {
+  .omid-gaze {
+    transform: none;
+  }
+}
+/* One long cycle with five blinks at uneven moments (2.2 s, 2.6 s, 8.1 s, 11 s, 15.4 s of 17 s). */
+.omid-blink {
+  transform-origin: 100px 140px;
+  animation: omid-blink 17s linear infinite;
+}
+
+@keyframes omid-breathe {
+  from {
+    transform: scale(1, 1) rotate(-0.6deg);
+  }
+  to {
+    transform: scale(calc(1 - 0.02 * var(--omid-energy)), calc(1 + 0.035 * var(--omid-energy)))
+      rotate(0.6deg);
+  }
+}
+@keyframes omid-halo {
+  from {
+    transform: translate(-50%, -50%) scale(0.95);
+    opacity: 0.78;
+  }
+  to {
+    transform: translate(-50%, -50%) scale(1.05);
+    opacity: 1;
+  }
+}
+@keyframes omid-crest {
+  from {
+    transform: rotate(calc(-3deg * var(--omid-energy)));
+  }
+  to {
+    transform: rotate(calc(3.5deg * var(--omid-energy)));
+  }
+}
+@keyframes omid-arm {
+  from {
+    transform: rotate(calc(-4deg * var(--omid-energy)));
+  }
+  to {
+    transform: rotate(calc(4deg * var(--omid-energy)));
+  }
+}
+@keyframes omid-blink {
+  0%,
+  12.4%,
+  13.5%,
+  14.8%,
+  15.9%,
+  47.1%,
+  48.2%,
+  64.2%,
+  65.3%,
+  90.1%,
+  91.2%,
+  100% {
+    transform: scaleY(1);
+  }
+  12.9%,
+  15.3%,
+  47.6%,
+  64.7%,
+  90.6% {
+    transform: scaleY(0.08);
   }
 }
