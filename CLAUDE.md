@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Status
 
-New Year countdown app, freshly scaffolded from the Vite React + TypeScript template. [src/App.tsx](src/App.tsx) is still the unmodified template demo (counter, Vite/React links); the countdown itself has not been built yet.
+New Year countdown app scaffolded from the Vite React + TypeScript template. The template demo has been removed; [src/App.tsx](src/App.tsx) is a minimal neutral shell and the countdown itself has not been built yet.
 
 ## Commands
 
@@ -18,9 +18,8 @@ No test runner is configured.
 ## Stack notes
 
 - React 19, TypeScript 6, Vite 8 with `@vitejs/plugin-react`. Linting is Oxlint, not ESLint.
-- `tailwindcss` v4 and `@tailwindcss/vite` and `motion` are listed as dependencies, but [vite.config.ts](vite.config.ts) only registers the React plugin and nothing imports Tailwind or motion yet. To use Tailwind, add `tailwindcss()` to the Vite plugins and `@import "tailwindcss";` in [src/index.css](src/index.css).
+- Tailwind v4 is enabled via the `@tailwindcss/vite` plugin in [vite.config.ts](vite.config.ts), and [src/index.css](src/index.css) only contains `@import "tailwindcss";`. `motion` is installed but not yet used.
 - TypeScript config is split into project references ([tsconfig.app.json](tsconfig.app.json) for `src`, [tsconfig.node.json](tsconfig.node.json) for Vite config), hence `tsc -b` in the build.
-- Static assets referenced by absolute URL (e.g. `/icons.svg#...`) live in [public/](public/).
 
 ## Product direction
 
