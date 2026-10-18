@@ -15,6 +15,7 @@ function App() {
           <div className="flex flex-col items-center gap-10 text-center">
             <h1 className="text-[clamp(0.75rem,2vmin,1.5rem)] font-normal tracking-[0.3em] text-gold-400 uppercase">
               New Year Countdown
+              <span className="mt-2 block">Until {state.year}</span>
             </h1>
             <CountdownDisplay remaining={state.remaining} />
           </div>

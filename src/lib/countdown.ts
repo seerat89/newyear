@@ -14,6 +14,8 @@ export type TimeRemaining = {
 export type CountdownState =
   | {
       phase: 'counting'
+      /** The year being counted down to (the year of `target`), not the current year. */
+      year: number
       /** Epoch ms of the upcoming local January 1 00:00. */
       target: number
       remaining: TimeRemaining
@@ -119,5 +121,10 @@ export function getCountdownState(now: number): CountdownState {
     }
   }
 
-  return { phase: 'counting', target, remaining: getTimeRemaining(target, now) }
+  return {
+    phase: 'counting',
+    year: year + 1,
+    target,
+    remaining: getTimeRemaining(target, now),
+  }
 }
