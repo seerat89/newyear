@@ -4,7 +4,9 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Status
 
-New Year countdown app scaffolded from the Vite React + TypeScript template. The template demo has been removed; [src/App.tsx](src/App.tsx) is a minimal neutral shell and the countdown itself has not been built yet.
+New Year countdown app scaffolded from the Vite React + TypeScript template. The template demo has been removed. A plain functional countdown exists; there is no styling, animation, TV mode, or celebration experience yet.
+
+Countdown logic is pure and lives in [src/lib/countdown.ts](src/lib/countdown.ts): `getCountdownState(now)` returns one of three phases by local date: `celebrating` (January 1), `afterglow` (January 2–7, also exposes a secondary countdown to the next New Year), or `counting` (January 8 onward, with remaining time to the next January 1). All functions take `now` as a parameter, so they are unit-testable later. [src/hooks/useNow.ts](src/hooks/useNow.ts) is the only place that reads the clock for the UI.
 
 ## Commands
 
