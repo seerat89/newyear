@@ -4,7 +4,13 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Status
 
-New Year countdown app scaffolded from the Vite React + TypeScript template. The template demo has been removed. The visual identity is the "orbit dial": a layered backdrop (sky gradient, aurora washes, three-depth parallax stars, rising gold motes in [src/components/backdrop/](src/components/backdrop/)) behind concentric tick rings whose beads track the real hours/minutes/seconds left ([src/components/OrbitDial.tsx](src/components/OrbitDial.tsx)). Colours are semantic CSS tokens in [src/index.css](src/index.css) (`--theme-*`, midnight values only; no runtime theme switching yet), and the display font Fraunces is self-hosted in [public/fonts/](public/fonts/) (OFL, see its README). Omid, the mascot (a round glowing spirit), lives in [src/components/omid/](src/components/omid/): layered SVG with a dim and a bright fill stacked by glow level, idle motion (breathing, one long irregular-blink keyframe, halo, crest and arm sway) as CSS keyframes tuned by `--omid-energy`, and pure mood helpers in `omidState.ts`. He sits inside the dial (portrait phones: straddling its lower edge). Animation is CSS transform+opacity only, kept off the main thread (orbit beads are CSS-animated HTML layers phase-aligned to the countdown and re-aligned on drift; twinkling stars are HTML spans, never SVG children) and reduced-motion aware; one fluid layout serves phone and TV (sizes use container-query units relative to the dial). There is no fireworks, midnight sequence, or curated message content yet.
+New Year countdown app scaffolded from the Vite React + TypeScript template. The template demo has been removed. The visual identity is **Midnight City** (static art, ambient CSS motion): a rich midnight-blue and plum sky with a restrained dark-red band and a warm gold glow of distant celebration light, silver-blue moonlight haze, stars, a pale hazy far city, a lit nearer city with a landmark tower, and a bay with the city's golden reflections, out-of-focus lights and a garland of festoon lights across the foreground. The countdown is set in the sky in cream Fraunces. The scene lives in [src/components/scene/](src/components/scene/): `scenes.ts` holds **four separately composed pieces of art** (phone, tablet, desktop, TV; coordinates are data: glow, shore, skyline envelope, Omid's lookout, the spot where a distant firework flashes, motes and Omid's stops), `SceneArt.tsx` draws one as static SVG in four layers (far, mid, ground, near; near sits in front of Omid), `Stars.tsx` is a star field that thins towards the horizon, `Fireworks.tsx` adds a few faint far-away bursts at the sides (CSS, one at a time, hidden under reduced motion), and `Scene.tsx` stacks sky, stars, fireworks, art, Omid and a vignette. [src/index.css](src/index.css) switches compositions by media query (phone < 480 px portrait, tablet portrait, landscape desktop, landscape >= 1600 px TV) using `--stage-*`, `--horizon-y`, `--hero-*` and `--num` variables; the stage is capped by screen height so short screens get a smaller centred stage (the city and water run on past it). Colours are semantic CSS tokens (`--theme-*`, midnight values only; no runtime theme switching). The display font Fraunces is self-hosted in [public/fonts/](public/fonts/) (OFL, see its README; roman plus an italic used only if the italic unit labels are chosen). The old Dawn Ridge hills, road and lantern, the orbit dial, backdrop layers and eyebrow heading were retired.
+
+Omid, the mascot (a round glowing spirit), lives in [src/components/omid/](src/components/omid/): layered SVG with a dim and a bright fill stacked by glow level, micro-idle (breathing, one long irregular-blink keyframe, halo, faint crest and arm sway) as CSS keyframes tuned by `--omid-energy`, and pure mood helpers in `omidState.ts`. He rests on the shore in front of the city in each composition, large and part of the scene.
+
+**All of his major movement goes through one motion system** (follow the `omid-motion` project skill for any change): the pure modules in [motion/](src/components/omid/motion/) plus the one frame loop in [useOmidMotion.ts](src/components/omid/useOmidMotion.ts). The director (`director.ts`) picks a behaviour from a shuffled bag every ~10-25 s (visit the drifting motes, watch a distant firework, fly, glide, cross, jump, float, return to his resting place) and turns it into steps (travel, hold, jump) with a destination, gaze and scene effect; routes are curved Beziers or rounded corners that avoid the countdown (`path.ts`). A travel step moves a carrot along the route on a smooth speed profile (`profile.ts`); his body is a damped spring chasing the carrot, so starts, turns and stops have inertia, lag and a small overshoot. The rig (`rig.ts`) turns the body's velocity and acceleration into lean (capped), squash and stretch, crest and arm lag, halo lag and gaze; the jump (`jump.ts`) follows the reference phases (crouch, kick, rise, star-pose hang, fast drop, landing, settle). The scene answers him: the warm motes gather or scatter (`fireflies.ts`), a warm light pool follows him over the water, a faint trail follows big moves, the distant firework flashes when he stops to watch it (the `.lantern-flare` element), and the far and ground/near layers drift a little (parallax). The loop writes only transforms and opacity, never re-renders React, sleeps when nothing is moving, stops while the tab is hidden and does not run under reduced motion (he rests in his place). `window.dispatchEvent(new CustomEvent('omid-behave', { detail: 'jump' }))` starts a named behaviour (used by tests) and `data-behaviour` on `.scene` shows which one is playing. Motes, out-of-focus lights, stars and the far-away fireworks drift or pulse as ambient CSS.
+
+Animation is CSS or transform+opacity only and reduced-motion aware. There is no fireworks, midnight sequence, or curated message content yet.
 
 Countdown logic is pure and lives in [src/lib/countdown.ts](src/lib/countdown.ts): `getCountdownState(now)` returns one of three phases by local date: `celebrating` (January 1), `afterglow` (January 2–7, also exposes a secondary countdown to the next New Year), or `counting` (January 8 onward, with the upcoming `year` and remaining time to the next January 1). All functions take `now` as a parameter, so they are unit-testable later. [src/hooks/useNow.ts](src/hooks/useNow.ts) is the only place that reads the clock for the UI.
 
@@ -150,6 +156,35 @@ Content must be:
 - free from jokes targeting protected or vulnerable groups
 
 Regional content, if added later, must be opt-in rather than automatically assumed from a user's location.
+
+## Efficiency
+
+Use the minimum work needed to complete the requested task.
+
+- Do not re-analyse reference files unless the task specifically requires it.
+- Do not repeat previously established design or motion analysis.
+- Do not run exhaustive Playwright checks for small changes.
+- For normal UI changes, check only the most relevant phone and TV sizes unless broader responsive verification is requested.
+- Do not generate contact sheets, traces, recordings, or performance profiles unless they are needed to answer a specific question.
+- Do not inspect unrelated files.
+- Do not refactor unrelated code.
+- Keep implementation reports concise: what changed, tests run, important caveats.
+- Use installed skills as guidance, not as a requirement to perform every workflow step on every task.
+- If a task is visually small, prefer a targeted implementation and targeted verification.
+
+## Token and Context Budget
+
+Be economical with context and tool usage.
+
+- Prefer targeted reads over broad repository exploration.
+- Do not reread files that were already inspected unless they may have changed.
+- Do not repeatedly re-open screenshots, reference videos, or design documents unless needed for the current decision.
+- Do not run multiple visual-verification methods for the same change.
+- Do not use subagents unless the task genuinely benefits from parallel independent work.
+- Do not invoke skills that are irrelevant to the current task.
+- Avoid long internal exploration when a reasonable implementation path is already clear.
+- Make one focused attempt, verify it, and report.
+- If a task can be completed with one or two targeted checks, do not perform a full audit.
 
 ## Development workflow
 

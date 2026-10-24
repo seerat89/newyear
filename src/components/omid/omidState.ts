@@ -1,5 +1,5 @@
-// Pure helpers for Omid's mood. They take plain numbers (days left, seconds
-// left) so they stay independent of the countdown engine and easy to test.
+// Pure helpers for Omid's mood. They take plain numbers (days left) so they stay
+// independent of the countdown engine and easy to test.
 
 const clamp = (value: number, min: number, max: number) =>
   Math.min(max, Math.max(min, value))
@@ -17,14 +17,4 @@ export function glowForDaysLeft(days: number): number {
 /** How lively the idle motion is, 0.45 (calm) to 1. Kept simple on purpose. */
 export function energyForGlow(glow: number): number {
   return 0.45 + 0.55 * clamp(glow, 0, 1)
-}
-
-/**
- * Where the seconds bead is, horizontally, as Omid sees it: -1 (far left)
- * to 1 (far right) in steps of 0.5. The bead is at the top when 0 seconds are
- * left and travels clockwise, so its x position is sin(angle).
- */
-export function gazeForSeconds(seconds: number): number {
-  const angle = ((60 - seconds) / 60) * 2 * Math.PI
-  return Math.round(Math.sin(angle) * 2) / 2 + 0
 }

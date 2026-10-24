@@ -7,24 +7,41 @@
   font-display: swap;
   src: url("/fonts/fraunces-latin-wght.woff2") format("woff2");
 }
+@font-face {
+  font-family: "Fraunces";
+  font-style: italic;
+  font-weight: 300 600;
+  font-display: swap;
+  src: url("/fonts/fraunces-latin-wght-italic.woff2") format("woff2");
+}
 
 /*
- * Theme tokens. Components only use the semantic names below (accent, night-*,
- * ink, glow). Other modes can later override these values; only the midnight
- * values exist today and there is no runtime theme switching.
+ * Theme tokens: Midnight City. Components use these semantic names only. The sky
+ * runs from deep midnight blue through plum and restrained dark red to a dim gold
+ * glow of distant city light; a dark skyline stands over dark water; cream and
+ * warm gold carry the hope. Only these values exist today and there is no
+ * runtime theme switching.
  */
 :root,
-:root[data-theme="midnight"] {
-  --theme-night-1: #111a3a;
-  --theme-night-2: #0a1128;
-  --theme-night-3: #060918;
-  --theme-accent: #ecd48e;
-  --theme-accent-strong: #d9b45f;
-  --theme-ink: #eef0f8;
-  --theme-ink-muted: #aeb6d0;
+:root[data-theme="dusk"] {
+  --theme-sky-top: #0a1241;
+  --theme-sky-mid: #18236b;
+  --theme-sky-plum: #35237a;
+  --theme-sky-rose: #6e2c63;
+  --theme-sky-cool: #3a5aa0;
+  --theme-sky-amber: #e0924c;
+  --theme-sky-low: #1c1650;
+  --theme-city-top: #15113a;
+  --theme-city-base: #2c1a48;
+  --theme-water-top: #262a72;
+  --theme-water-mid: #161650;
+  --theme-water-deep: #0a0724;
+  --theme-cream: #fff0d2;
+  --theme-gold: #f6c96b;
+    --theme-ink: #fff0d2;
+  --theme-ink-muted: #ecd2b0;
   /* Space-separated RGB so it can take an alpha: rgb(var(--theme-glow) / 0.14) */
-  --theme-glow: 217 180 95;
-  --theme-glow-cool: 84 104 200;
+  --theme-glow: 247 184 92;
   /* Omid: dim (far away) and bright (midnight) fills, stacked by glow level */
   --theme-spirit-dim-core: #b08a4c;
   --theme-spirit-dim-mid: #946f3a;
@@ -41,83 +58,13 @@
   --theme-blush: #ff8e6e;
 }
 
-@theme inline {
-  --color-night-1: var(--theme-night-1);
-  --color-night-2: var(--theme-night-2);
-  --color-night-3: var(--theme-night-3);
-  --color-accent: var(--theme-accent);
-  --color-accent-strong: var(--theme-accent-strong);
-  --color-ink: var(--theme-ink);
-  --color-ink-muted: var(--theme-ink-muted);
-}
-
 @theme {
   --font-display: "Fraunces", "Iowan Old Style", "Palatino Linotype", Palatino,
     Georgia, serif;
-
-  --animate-twinkle: twinkle var(--twinkle-duration, 6s) ease-in-out infinite;
-  --animate-parallax: parallax var(--parallax-duration, 180s) ease-in-out
-    infinite alternate;
-  --animate-float: float 52s ease-in-out infinite alternate-reverse;
-  --animate-float-alt: float 68s ease-in-out infinite alternate;
-  --animate-orbit: orbit 60s linear infinite;
-  --animate-rise: rise var(--mote-duration, 50s) linear infinite;
-
-  @keyframes twinkle {
-    0%,
-    100% {
-      opacity: var(--star-min, 0.25);
-    }
-    50% {
-      opacity: var(--star-max, 0.9);
-    }
-  }
-
-  @keyframes parallax {
-    from {
-      transform: translate3d(0, 0, 0);
-    }
-    to {
-      transform: translate3d(var(--px, -3vmin), var(--py, 1.5vmin), 0);
-    }
-  }
-
-  @keyframes float {
-    from {
-      transform: translate3d(0, 0, 0);
-    }
-    to {
-      transform: translate3d(4vmin, -5vmin, 0);
-    }
-  }
-
-  @keyframes orbit {
-    from {
-      transform: rotate(0deg);
-    }
-    to {
-      transform: rotate(360deg);
-    }
-  }
-
-  @keyframes rise {
-    0% {
-      transform: translate3d(0, 0, 0);
-      opacity: 0;
-    }
-    12%,
-    85% {
-      opacity: var(--mote-opacity, 0.5);
-    }
-    100% {
-      transform: translate3d(var(--mote-dx, 0), -105vh, 0);
-      opacity: 0;
-    }
-  }
 }
 
 html {
-  background-color: var(--theme-night-3);
+  background-color: var(--theme-sky-top);
 }
 
 body {
@@ -129,9 +76,493 @@ body {
 }
 
 /*
- * Reduced motion: every CSS animation and transition is switched off. Stars
- * keep a static opacity, motes start at opacity 0 (so they are simply hidden),
- * and the orbit beads stay at their true position without easing.
+ * Compositions. The screen is not scaled from one design: phone, tablet,
+ * desktop and TV each have their own art (scene/scenes.ts) and their own
+ * arrangement. These variables are the whole switch:
+ *   --stage-aspect, --stage-hmax   the art's width/height and the most screen height it may take;
+ *                 the stage is as wide as the screen allows without taking more height than
+ *                 that (short screens get a smaller, centred stage and the ridges run on past it)
+ *   --far-crest   where the horizon (the city's glow) sits in the stage (0..1 from its top)
+ *   --horizon-y   distance from the top of the screen to the glowing horizon
+ *   --hero-top, --title-*, --num, --cols, --col-gap, --row-gap   the countdown
+ * Phone is the default; the rules below override it.
+ */
+:root {
+  /* Phone, portrait (390 x 844) */
+  --stage-aspect: 1;
+  --stage-hmax: 46svh;
+  --far-crest: 0.29;
+  --star-scale: 1;
+  --hero-top: max(calc(env(safe-area-inset-top) + 12px), min(56px, 7svh));
+  --title-size: clamp(22px, min(8vw, 4.2svh), 36px);
+  --title-gap: min(22px, 2.6svh);
+  --num: min(18.6vw, 8.8svh);
+  --cols: 2;
+  --col-gap: 12vw;
+  --row-gap: min(20px, 2.4svh);
+  --stage-h: min(calc(100vw / var(--stage-aspect)), var(--stage-hmax));
+  --stage-w: calc(var(--stage-h) * var(--stage-aspect));
+  --horizon-y: calc(100svh - var(--stage-h) * (1 - var(--far-crest)));
+}
+@media (min-width: 480px) and (orientation: portrait) {
+  :root {
+    /* Tablet, portrait (820 x 1180) */
+    --stage-aspect: 1.7447;
+    --stage-hmax: 40svh;
+    --far-crest: 0.328;
+    --star-scale: 1.2;
+    --hero-top: 16svh;
+    --title-size: clamp(40px, 6.4vw, 60px);
+    --title-gap: 34px;
+    --num: 12vw;
+    --cols: 4;
+    --col-gap: 4vw;
+    --row-gap: 0px;
+    }
+}
+@media (orientation: landscape) {
+  :root {
+    /* Desktop, landscape (1280 x 720) */
+    --stage-aspect: 4.4444;
+    --stage-hmax: 40svh;
+    --far-crest: 0.394;
+    --star-scale: 1.2;
+    --hero-top: 7svh;
+    --title-size: clamp(30px, 3.3vw, 52px);
+    --title-gap: 20px;
+    --num: min(8.7vw, 15.5svh);
+    --cols: 4;
+    --col-gap: 3.4vw;
+    --row-gap: 0px;
+    }
+}
+@media (orientation: landscape) and (min-width: 1600px) {
+  :root {
+    /* TV, landscape (1920 x 1080) */
+    --stage-aspect: 4.4444;
+    --stage-hmax: 40svh;
+    --far-crest: 0.389;
+    --star-scale: 1.5;
+    --hero-top: 7.5svh;
+    --title-size: clamp(54px, 3.3vw, 72px);
+    --title-gap: 26px;
+    --num: min(8.8vw, 16svh);
+    --col-gap: 3.6vw;
+    }
+}
+
+/* The scene: sky, stars, hills stage with Omid, vignette. Fixed behind the content. */
+.scene {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+  background: var(--theme-sky-top);
+}
+.scene-sky {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 55% 40% at 12% 8%, rgb(150 185 255 / 0.2), transparent 70%),
+    radial-gradient(ellipse 50% 30% at 88% 32%, rgb(150 70 130 / 0.22), transparent 70%),
+    linear-gradient(
+    180deg,
+    var(--theme-sky-top) 0%,
+    var(--theme-sky-mid) calc(var(--horizon-y) * 0.42),
+    var(--theme-sky-plum) calc(var(--horizon-y) * 0.68),
+    var(--theme-sky-rose) calc(var(--horizon-y) * 0.84),
+    var(--theme-sky-cool) calc(var(--horizon-y) * 0.93),
+    var(--theme-sky-amber) var(--horizon-y),
+    var(--theme-sky-low) 100%
+  );
+}
+/* A fine static grain breaks up the banding a smooth dark gradient shows on big screens. */
+/* Distant celebration light: a wide, flat warm glow on the horizon, not a sun. */
+.scene-sky::before {
+  content: "";
+  position: absolute;
+  left: -10%;
+  right: -10%;
+  top: calc(var(--horizon-y) - 14svh);
+  height: 18svh;
+  background: radial-gradient(ellipse at 50% 100%, rgb(255 184 104 / 0.28), transparent 70%);
+}
+.scene-sky::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  opacity: 0.07;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+.scene-stars span {
+  position: absolute;
+  border-radius: 50%;
+  background: var(--theme-cream);
+  box-shadow: 0 0 6px rgb(255 240 210 / 0.35);
+  animation: star-twinkle 6s ease-in-out infinite alternate;
+}
+.scene-stars span:nth-child(4n) {
+  animation-delay: -2.5s;
+  animation-duration: 8s;
+}
+.scene-stars span:nth-child(7n) {
+  animation: none;
+  box-shadow: 0 0 10px rgb(255 240 210 / 0.55), 0 0 22px rgb(200 220 255 / 0.25);
+}
+@keyframes star-twinkle {
+  from {
+    filter: brightness(0.75);
+  }
+  to {
+    filter: brightness(1.25);
+  }
+}
+.scene-stars span:nth-child(3n) {
+  background: #cfe0ff;
+  box-shadow: 0 0 7px rgb(170 200 255 / 0.5);
+}
+.scene-stars span[data-tier="b"] {
+  display: none;
+}
+@media (min-width: 480px) {
+  .scene-stars span[data-tier="b"] {
+    display: block;
+  }
+}
+.scene-vignette {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at 50% 38%, transparent 52%, rgb(4 5 26 / 0.4) 100%);
+}
+.scene-stage {
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  width: var(--stage-w);
+  height: var(--stage-h);
+  transform: translateX(-50%);
+  --omid-x: var(--phone-omid-x);
+  --omid-b: var(--phone-omid-b);
+  --omid-w: var(--phone-omid-w);
+}
+.scene-art {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: none;
+  overflow: visible;
+}
+.scene-art[data-art="phone"] {
+  display: block;
+}
+.scene-omid {
+  position: absolute;
+  left: var(--omid-x);
+  bottom: var(--omid-b);
+  width: var(--omid-w);
+  transform: translateX(-50%);
+}
+.scene-omid-body {
+  position: relative;
+}
+.scene-layer {
+  position: absolute;
+  inset: 0;
+}
+/* The warm light under Omid. It rests under his lookout and follows him over
+   the ground (the motion system moves and fades it). */
+.scene-pool {
+  position: absolute;
+  left: var(--omid-x);
+  bottom: var(--omid-b);
+  width: calc(var(--omid-w) * 2.2);
+  aspect-ratio: 6 / 1;
+  margin-left: calc(var(--omid-w) * -1.1);
+  margin-bottom: calc(var(--omid-w) * -0.18);
+  border-radius: 50%;
+  background: radial-gradient(
+    ellipse at center,
+    rgb(var(--theme-glow) / 0.75),
+    rgb(var(--theme-glow) / 0.24) 45%,
+    transparent 72%
+  );
+  opacity: 0.9;
+  pointer-events: none;
+}
+/* Soft dots left along a big move; the motion system recycles a few of them. */
+.scene-trail span {
+  position: absolute;
+  left: var(--omid-x);
+  bottom: var(--omid-b);
+  width: calc(var(--omid-w) * 0.5);
+  aspect-ratio: 1;
+  margin-left: calc(var(--omid-w) * -0.25);
+  margin-bottom: calc(var(--omid-w) * 0.4);
+  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    rgb(255 232 170 / 0.8),
+    rgb(var(--theme-glow) / 0.28) 45%,
+    transparent 70%
+  );
+  opacity: 0;
+  pointer-events: none;
+}
+/* Fireflies: ambient drift and pulse are plain CSS on the inner element; the
+   outer element is moved by the motion system when Omid is near. */
+.ff {
+  position: absolute;
+}
+.ff-glow {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    rgb(255 244 207 / 0.95) 0 11%,
+    rgb(255 210 122 / 0.45) 22%,
+    rgb(255 192 96 / 0) 62%
+  );
+  animation:
+    ff-drift var(--ff-dur) ease-in-out var(--ff-delay) infinite alternate,
+    ff-pulse calc(var(--ff-dur) * 0.6) ease-in-out var(--ff-delay) infinite alternate;
+}
+@keyframes ff-drift {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+  to {
+    transform: translate3d(var(--ff-dx), var(--ff-dy), 0);
+  }
+}
+@keyframes ff-pulse {
+  from {
+    opacity: 0.55;
+  }
+  to {
+    opacity: 1;
+  }
+}
+/* The distant firework Omid stops to watch: a flash and a faint ring of rays.
+   The motion system raises its opacity when he arrives (the class name is the
+   hook it looks for). */
+.lantern-flare {
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+  opacity: 0;
+  background: radial-gradient(
+    circle,
+    rgb(255 240 200 / 0.9) 0 3%,
+    rgb(255 206 130 / 0.3) 12%,
+    rgb(255 180 100 / 0) 38%
+  );
+}
+.lantern-flare::after {
+  content: "";
+  position: absolute;
+  inset: 8%;
+  background: repeating-conic-gradient(from 7deg, rgb(255 214 140 / 0.85) 0 1.4deg, transparent 1.4deg 14deg);
+  -webkit-mask-image: radial-gradient(circle, transparent 30%, #000 33%, #000 60%, transparent 68%);
+  mask-image: radial-gradient(circle, transparent 30%, #000 33%, #000 60%, transparent 68%);
+}
+/* Ambient far-away fireworks (Fireworks.tsx): a spark rises, opens into a faint
+   ring of rays and fades, once every 12-20 s. */
+.scene-fireworks {
+  --fw-size: clamp(56px, 8vw, 150px);
+  position: absolute;
+  inset: 0;
+}
+.fw {
+  --fw-rgb: 255 214 140;
+  position: absolute;
+  width: 0;
+  height: 0;
+}
+.fw[data-hue="blue"] {
+  --fw-rgb: 170 200 255;
+}
+.fw[data-hue="rose"] {
+  --fw-rgb: 255 150 150;
+}
+.fw[data-wide] {
+  display: none;
+}
+.fw-rise,
+.fw-burst {
+  position: absolute;
+  opacity: 0;
+}
+.fw-rise {
+  left: -1px;
+  top: 0;
+  width: 2px;
+  height: calc(var(--fw-size) * var(--fw-scale) * 0.3);
+  border-radius: 1px;
+  background: linear-gradient(0deg, transparent, rgb(var(--fw-rgb) / 0.9));
+  animation: fw-rise var(--fw-cycle) ease-out var(--fw-delay) infinite;
+}
+.fw-burst {
+  left: 0;
+  top: 0;
+  width: calc(var(--fw-size) * var(--fw-scale));
+  aspect-ratio: 1;
+  background:
+    radial-gradient(circle, rgb(var(--fw-rgb) / 0.55) 0 4%, transparent 22%),
+    repeating-conic-gradient(from 7deg, rgb(var(--fw-rgb) / 0.8) 0 1.4deg, transparent 1.4deg 13deg);
+  -webkit-mask-image: radial-gradient(circle, #000 0 8%, transparent 9% 34%, #000 38%, #000 60%, transparent 68%);
+  mask-image: radial-gradient(circle, #000 0 8%, transparent 9% 34%, #000 38%, #000 60%, transparent 68%);
+  animation: fw-burst var(--fw-cycle) cubic-bezier(0.15, 0.7, 0.3, 1) var(--fw-delay) infinite;
+}
+@keyframes fw-rise {
+  0% {
+    opacity: 0;
+    transform: translate(0, 90px);
+  }
+  1.5% {
+    opacity: 0.8;
+  }
+  6% {
+    opacity: 0.8;
+    transform: translate(0, 0);
+  }
+  7%,
+  100% {
+    opacity: 0;
+    transform: translate(0, 0);
+  }
+}
+@keyframes fw-burst {
+  0%,
+  6% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.15);
+  }
+  8% {
+    opacity: 0.75;
+  }
+  24%,
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(1);
+  }
+}
+@media (min-width: 480px) {
+  .fw[data-wide] {
+    display: block;
+  }
+}
+@media (min-width: 480px) and (orientation: portrait) {
+  .scene-stage {
+    --omid-x: var(--tablet-omid-x);
+    --omid-b: var(--tablet-omid-b);
+    --omid-w: var(--tablet-omid-w);
+  }
+  .scene-art[data-art="phone"] {
+    display: none;
+  }
+  .scene-art[data-art="tablet"] {
+    display: block;
+  }
+}
+@media (orientation: landscape) {
+  .scene-stage {
+    --omid-x: var(--desktop-omid-x);
+    --omid-b: var(--desktop-omid-b);
+    --omid-w: var(--desktop-omid-w);
+  }
+  .scene-art[data-art="phone"],
+  .scene-art[data-art="tablet"] {
+    display: none;
+  }
+  .scene-art[data-art="desktop"] {
+    display: block;
+  }
+}
+@media (orientation: landscape) and (min-width: 1600px) {
+  .scene-stage {
+    --omid-x: var(--tv-omid-x);
+    --omid-b: var(--tv-omid-b);
+    --omid-w: var(--tv-omid-w);
+  }
+  .scene-art[data-art="desktop"] {
+    display: none;
+  }
+  .scene-art[data-art="tv"] {
+    display: block;
+  }
+}
+
+/* The countdown, above the scene. Labels: regular lowercase by default; set
+   --label-style: italic to try the italic alternative. */
+.hero {
+  position: relative;
+  z-index: 10;
+  box-sizing: border-box;
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: var(--hero-top) max(24px, env(safe-area-inset-right)) 0
+    max(24px, env(safe-area-inset-left));
+  text-align: center;
+}
+.hero-title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: 300;
+  font-size: var(--title-size);
+  line-height: 1.05;
+  letter-spacing: 0.01em;
+  color: var(--theme-cream);
+  text-shadow: 0 0 0.9em rgb(42 20 60 / 0.6);
+}
+.hero-title--big {
+  margin-top: calc(var(--title-size) * 1.2);
+  font-size: calc(var(--num) * 1.05);
+  line-height: 1.1;
+  max-width: 12em;
+}
+.countdown {
+  display: grid;
+  grid-template-columns: repeat(var(--cols), auto);
+  justify-content: center;
+  column-gap: var(--col-gap);
+  row-gap: var(--row-gap);
+  margin: var(--title-gap) 0 0;
+}
+.unit {
+  display: flex;
+  flex-direction: column-reverse;
+  align-items: center;
+}
+.unit-value {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: 380;
+  font-size: var(--num);
+  line-height: 1;
+  font-variant-numeric: tabular-nums lining-nums;
+  color: var(--theme-cream);
+  text-shadow:
+    0 0 0.5em rgb(247 184 92 / 0.3),
+    0 0.02em 0.06em rgb(30 12 44 / 0.5);
+}
+.unit-label {
+  margin: 0.35em 0 0;
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-style: var(--label-style, normal);
+  font-size: calc(var(--num) * 0.24);
+  letter-spacing: 0.03em;
+  color: var(--theme-ink-muted);
+}
+
+/*
+ * Reduced motion: every CSS animation and transition is switched off, leaving a
+ * composed static scene.
  */
 @media (prefers-reduced-motion: reduce) {
   *,
@@ -143,8 +574,11 @@ body {
 }
 
 /*
- * Omid idle animation. Everything is a CSS keyframe on transform or opacity,
- * with no timers and no React updates. --omid-energy (0.45 calm .. 1 lively) only
+ * Omid's micro-idle: breathing, blinking, a slow halo and a faint sway, as CSS
+ * keyframes on transform or opacity. All the major movement (travel, jump, lean,
+ * squash, crest and arm lag, halo lag, gaze) is the motion system's job
+ * (motion/, useOmidMotion.ts), which writes the parts below through inline
+ * styles, so the idle keyframes keep running underneath it. --omid-energy (0.45 calm .. 1 lively) only
  * stretches the periods and trims the amplitudes. The reduced-motion rule above
  * removes every animation, leaving a composed resting pose.
  */
@@ -176,19 +610,6 @@ body {
   will-change: transform, opacity;
   animation: omid-halo calc(var(--omid-period) * 1.3) ease-in-out infinite alternate;
 }
-.omid-ground {
-  position: absolute;
-  left: 50%;
-  bottom: -7%;
-  width: 170%;
-  height: 18%;
-  transform: translateX(-50%);
-  background: radial-gradient(
-    ellipse at center,
-    rgb(var(--theme-glow) / calc(0.6 * var(--omid-glow))),
-    transparent 70%
-  );
-}
 .omid-crest {
   transform-origin: 100px 82px;
   animation: omid-crest calc(var(--omid-period) * 0.75) ease-in-out infinite alternate;
@@ -200,16 +621,6 @@ body {
 .omid-arm-r {
   transform-origin: 160px 146px;
   animation: omid-arm calc(var(--omid-period) * 1.1) ease-in-out infinite alternate-reverse;
-}
-.omid-gaze {
-  transform: translateX(calc(var(--omid-gaze) * 2.6px));
-  transition: transform 1.4s ease-in-out;
-}
-/* Reduced motion: the gaze stays pinned at neutral, so the eyes never move. */
-@media (prefers-reduced-motion: reduce) {
-  .omid-gaze {
-    transform: none;
-  }
 }
 /* One long cycle with five blinks at uneven moments (2.2 s, 2.6 s, 8.1 s, 11 s, 15.4 s of 17 s). */
 .omid-blink {
@@ -273,5 +684,36 @@ body {
   64.7%,
   90.6% {
     transform: scaleY(0.08);
+  }
+}
+
+/* The parts the rig writes each frame (see useOmidMotion.ts). */
+.omid-action {
+  position: relative;
+  transform-origin: 50% 96%;
+}
+.omid-crest-pose {
+  transform-origin: 100px 82px;
+}
+.omid-feet {
+  transform-origin: 100px 216px;
+}
+.omid-arm-pose-l {
+  transform-origin: 40px 146px;
+}
+.omid-arm-pose-r {
+  transform-origin: 160px 146px;
+}
+
+/* Out-of-focus lights breathe very slowly (opacity only). */
+.bokeh {
+  animation: bokeh-breathe var(--bokeh-dur, 9s) ease-in-out infinite alternate;
+}
+@keyframes bokeh-breathe {
+  from {
+    opacity: 0.65;
+  }
+  to {
+    opacity: 1;
   }
 }

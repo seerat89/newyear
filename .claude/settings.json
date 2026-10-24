@@ -9,5 +9,9 @@
       "Bash(git diff)",
       "Bash(git diff -- *)"
     ]
+  },
+  "attribution": {
+    "commit": "",
+    "pr": ""
   }
 }

@@ -13,8 +13,6 @@ const CREST =
 type OmidProps = {
   /** Warm inner light, 0..1. */
   glow: number
-  /** Horizontal look direction, -1..1. */
-  gaze: number
   className?: string
 }
 
@@ -42,17 +40,16 @@ const arm = (cx: number, cy: number, rotate: number) => (
   />
 )
 
-function Omid({ glow, gaze, className = '' }: OmidProps) {
+function Omid({ glow, className = '' }: OmidProps) {
   const style = {
     '--omid-glow': glow,
     '--omid-energy': energyForGlow(glow),
-    '--omid-gaze': gaze,
   } as CSSProperties
   const cheek = 0.5 * (0.38 + 0.42 * glow)
 
   return (
     <div aria-hidden="true" className={`omid ${className}`} style={style}>
-      <div className="omid-ground" />
+      <div className="omid-action">
       <div className="omid-halo" />
       <svg className="omid-root" viewBox="16 14 168 218" focusable="false">
         <defs>
@@ -83,7 +80,7 @@ function Omid({ glow, gaze, className = '' }: OmidProps) {
           </clipPath>
         </defs>
 
-        <g id="omid-feet">
+        <g id="omid-feet" className="omid-feet">
           <Limb glow={glow}>
             {() => (
               <>
@@ -95,14 +92,19 @@ function Omid({ glow, gaze, className = '' }: OmidProps) {
         </g>
 
         <g id="omid-arms">
-          <g className="omid-arm omid-arm-l">
-            <Limb glow={glow}>{() => arm(30, 160, 26)}</Limb>
+          <g className="omid-arm-pose omid-arm-pose-l">
+            <g className="omid-arm omid-arm-l">
+              <Limb glow={glow}>{() => arm(30, 160, 26)}</Limb>
+            </g>
           </g>
-          <g className="omid-arm omid-arm-r">
-            <Limb glow={glow}>{() => arm(170, 160, -26)}</Limb>
+          <g className="omid-arm-pose omid-arm-pose-r">
+            <g className="omid-arm omid-arm-r">
+              <Limb glow={glow}>{() => arm(170, 160, -26)}</Limb>
+            </g>
           </g>
         </g>
 
+        <g className="omid-crest-pose">
         <g id="omid-crest" className="omid-crest">
           <path d={CREST} fill="url(#omid-crest-dim)" />
           <path d={CREST} fill="url(#omid-crest-bright)" opacity={glow} />
@@ -114,6 +116,7 @@ function Omid({ glow, gaze, className = '' }: OmidProps) {
             strokeLinecap="round"
             opacity={0.18 + 0.3 * glow}
           />
+        </g>
         </g>
 
         <g id="omid-body">
@@ -174,6 +177,7 @@ function Omid({ glow, gaze, className = '' }: OmidProps) {
           />
         </g>
       </svg>
+      </div>
     </div>
   )
 }
