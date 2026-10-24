@@ -25,9 +25,9 @@ function Defs({ prefix }: { prefix: string }) {
   return (
     <defs>
       <radialGradient id={`${prefix}-glow`}>
-        <Stop at={0} color="#ffd89a" alpha={0.85} />
-        <Stop at={0.28} color="#f2a252" alpha={0.5} />
-        <Stop at={0.6} color="#9a3f5a" alpha={0.2} />
+        <Stop at={0} color="#ffd89a" alpha={0.7} />
+        <Stop at={0.28} color="#f2a85e" alpha={0.4} />
+        <Stop at={0.6} color="#6a4a90" alpha={0.16} />
         <Stop at={1} color="#3a2a7a" alpha={0} />
       </radialGradient>
       <radialGradient id={`${prefix}-cool`}>
@@ -120,6 +120,7 @@ function city(art: Art, o: CityOptions) {
   const base = art.shore + 1
   let body = ''
   let gold = ''
+  let gold2 = ''
   let pale = ''
   let spires = ''
   let beacons = ''
@@ -157,7 +158,8 @@ function city(art: Art, o: CityOptions) {
         const wy = base - h + (1.6 + r * 4) * u
         const d = rect(wx, wy, 1.4 * u, 1.9 * u)
         if (random() < 0.14) pale += d
-        else gold += d
+        else if (random() < 0.5) gold += d
+        else gold2 += d
       }
     }
     x += w + random() * 1.6 * u
@@ -173,7 +175,7 @@ function city(art: Art, o: CityOptions) {
     beacons += `M${(cx - 1 * u).toFixed(1)},${(base - h - 15 * u).toFixed(1)} h${(2 * u).toFixed(1)} v${(2 * u).toFixed(1)} h${(-2 * u).toFixed(1)} Z `
     gold += rect(cx - 6 * u, base - h * 0.78 + 2 * u, 12 * u, 1.6 * u)
   }
-  return { body, gold, pale, spires, beacons }
+  return { body, gold, gold2, pale, spires, beacons }
 }
 
 // A cluster of out-of-focus lights: soft discs of varied size, drifting in
@@ -215,9 +217,10 @@ function Far({ art }: { art: Art }) {
     <Layer art={art} prefix={prefix}>
       <ellipse cx={cool.x} cy={cool.y} rx={art.glow.rx * 0.55} ry={art.glow.ry * 1.1} fill={`url(#${prefix}-cool)`} />
       <ellipse cx={cool2.x} cy={cool2.y} rx={art.glow.rx * 0.4} ry={art.glow.ry * 0.9} fill={`url(#${prefix}-cool)`} opacity={0.6} />
-      <ellipse cx={art.glow.x} cy={art.glow.y} rx={art.glow.rx} ry={art.glow.ry} fill={`url(#${prefix}-glow)`} />
+      <ellipse className="glow-breathe" cx={art.glow.x} cy={art.glow.y} rx={art.glow.rx} ry={art.glow.ry} fill={`url(#${prefix}-glow)`} />
       <path d={far.body} fill={`url(#${prefix}-haze)`} />
-      <path d={far.gold} fill="#ffe0a0" opacity={0.5} />
+      <path className="win-a" d={far.gold} fill="#ffe0a0" opacity={0.5} />
+      <path className="win-b" d={far.gold2} fill="#ffe0a0" opacity={0.5} />
       <g className="bokeh" style={{ '--bokeh-dur': '9s' } as CSSProperties}>
         {bokeh(prefix, art.width * 13, { x: art.glow.x - art.glow.rx * 0.5, y: art.shore - 46 * u, w: art.glow.rx, h: 40 * u }, 22, [2.5 * u, 7 * u], 0.25)}
       </g>
@@ -255,22 +258,28 @@ function Mid({ art }: { art: Art }) {
     <Layer art={art} prefix={prefix}>
       <path d={near.body} fill={`url(#${prefix}-city)`} />
       <path d={near.spires} fill="none" stroke="var(--theme-city-top)" strokeWidth={0.9 * u} />
-      <path d={near.gold} fill="#ffd488" opacity={0.9} />
+      <path className="win-a" d={near.gold} fill="#ffd488" opacity={0.9} />
+      <path className="win-b" d={near.gold2} fill="#ffd488" opacity={0.9} />
       <path d={near.pale} fill="#dfeaff" opacity={0.85} />
       <path d={near.beacons} fill="#ff5a4e" opacity={0.85} />
       <rect x={-WIDE} y={shore} width={width + WIDE * 2} height={height - shore + 60} fill={`url(#${prefix}-water)`} />
       <ellipse cx={art.glow.x} cy={shore + 18 * u} rx={art.glow.rx * 0.6} ry={46 * u} fill={`url(#${prefix}-shine)`} />
-      {columns.map((c, i) => (
-        <rect
-          key={i}
-          x={c.x}
-          y={shore}
-          width={c.w}
-          height={c.h}
-          fill={`url(#${prefix}-mirror${c.cool ? '-cool' : ''})`}
-          opacity={c.a}
-        />
-      ))}
+      {/* The reflections shimmer by themselves and brighten a little when Omid moves about. */}
+      <g className="reflect">
+        <g className="shimmer">
+          {columns.map((c, i) => (
+            <rect
+              key={i}
+              x={c.x}
+              y={shore}
+              width={c.w}
+              height={c.h}
+              fill={`url(#${prefix}-mirror${c.cool ? '-cool' : ''})`}
+              opacity={c.a}
+            />
+          ))}
+        </g>
+      </g>
       {/* Breaks in the reflection: dark ripples across the columns. */}
       {ripples.map((r, i) => (
         <rect key={i} x={r.x - r.w / 2} y={r.y} width={r.w} height={1.4 * u} fill="var(--theme-water-mid)" opacity={0.7} />

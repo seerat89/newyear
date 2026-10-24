@@ -27,9 +27,9 @@
   --theme-sky-top: #0a1241;
   --theme-sky-mid: #18236b;
   --theme-sky-plum: #35237a;
-  --theme-sky-rose: #6e2c63;
+  --theme-sky-rose: #4e3580;
   --theme-sky-cool: #3a5aa0;
-  --theme-sky-amber: #e0924c;
+  --theme-sky-amber: #c28a52;
   --theme-sky-low: #1c1650;
   --theme-city-top: #15113a;
   --theme-city-base: #2c1a48;
@@ -165,7 +165,7 @@ body {
   inset: 0;
   background:
     radial-gradient(ellipse 55% 40% at 12% 8%, rgb(150 185 255 / 0.2), transparent 70%),
-    radial-gradient(ellipse 50% 30% at 88% 32%, rgb(150 70 130 / 0.22), transparent 70%),
+    radial-gradient(ellipse 50% 30% at 88% 32%, rgb(110 90 190 / 0.2), transparent 70%),
     linear-gradient(
     180deg,
     var(--theme-sky-top) 0%,
@@ -186,7 +186,7 @@ body {
   right: -10%;
   top: calc(var(--horizon-y) - 14svh);
   height: 18svh;
-  background: radial-gradient(ellipse at 50% 100%, rgb(255 184 104 / 0.28), transparent 70%);
+  background: radial-gradient(ellipse at 50% 100%, rgb(255 190 120 / 0.18), transparent 70%);
 }
 .scene-sky::after {
   content: "";
@@ -206,9 +206,33 @@ body {
   animation-delay: -2.5s;
   animation-duration: 8s;
 }
-.scene-stars span:nth-child(7n) {
+.scene-stars span:nth-child(5n) {
+  animation-delay: -4s;
+  animation-duration: 11s;
+}
+.scene-stars span:nth-child(2n) {
   animation: none;
+}
+/* The brightest few have a halo, and now and then one glints. */
+.scene-stars span:nth-child(7n) {
+  animation: star-glint 13s ease-in-out infinite;
   box-shadow: 0 0 10px rgb(255 240 210 / 0.55), 0 0 22px rgb(200 220 255 / 0.25);
+}
+.scene-stars span:nth-child(14n) {
+  animation-duration: 19s;
+  animation-delay: -7s;
+}
+@keyframes star-glint {
+  0%,
+  88%,
+  100% {
+    scale: 1;
+    filter: brightness(1);
+  }
+  93% {
+    scale: 1.9;
+    filter: brightness(1.7);
+  }
 }
 @keyframes star-twinkle {
   from {
@@ -384,13 +408,17 @@ body {
 .fw[data-hue="blue"] {
   --fw-rgb: 170 200 255;
 }
-.fw[data-hue="rose"] {
-  --fw-rgb: 255 150 150;
+.fw[data-hue="silver"] {
+  --fw-rgb: 215 225 255;
+}
+.fw[data-hue="violet"] {
+  --fw-rgb: 205 175 255;
 }
 .fw[data-wide] {
   display: none;
 }
 .fw-rise,
+.fw-flash,
 .fw-burst {
   position: absolute;
   opacity: 0;
@@ -404,6 +432,14 @@ body {
   background: linear-gradient(0deg, transparent, rgb(var(--fw-rgb) / 0.9));
   animation: fw-rise var(--fw-cycle) ease-out var(--fw-delay) infinite;
 }
+.fw-flash {
+  left: 0;
+  top: 0;
+  width: calc(var(--fw-size) * var(--fw-scale) * 2.2);
+  aspect-ratio: 1;
+  background: radial-gradient(circle, rgb(var(--fw-rgb) / 0.2), transparent 62%);
+  animation: fw-flash var(--fw-cycle) ease-out var(--fw-delay) infinite;
+}
 .fw-burst {
   left: 0;
   top: 0;
@@ -415,6 +451,83 @@ body {
   -webkit-mask-image: radial-gradient(circle, #000 0 8%, transparent 9% 34%, #000 38%, #000 60%, transparent 68%);
   mask-image: radial-gradient(circle, #000 0 8%, transparent 9% 34%, #000 38%, #000 60%, transparent 68%);
   animation: fw-burst var(--fw-cycle) cubic-bezier(0.15, 0.7, 0.3, 1) var(--fw-delay) infinite;
+}
+/* Styles: a ring of rays (default), a full peony, a willow whose sparks droop,
+   a double ring, a scatter of glitter, and a comet that streaks across. */
+.fw[data-style="peony"] .fw-burst {
+  background:
+    radial-gradient(circle, rgb(var(--fw-rgb) / 0.5) 0 6%, transparent 30%),
+    repeating-conic-gradient(from 3deg, rgb(var(--fw-rgb) / 0.75) 0 2deg, transparent 2deg 9deg);
+  -webkit-mask-image: radial-gradient(circle, #000 0 52%, transparent 66%);
+  mask-image: radial-gradient(circle, #000 0 52%, transparent 66%);
+}
+.fw[data-style="willow"] .fw-burst {
+  background: repeating-conic-gradient(from 5deg, rgb(var(--fw-rgb) / 0.8) 0 1deg, transparent 1deg 10deg);
+  -webkit-mask-image: radial-gradient(circle, transparent 0 20%, #000 34%, #000 58%, transparent 68%);
+  mask-image: radial-gradient(circle, transparent 0 20%, #000 34%, #000 58%, transparent 68%);
+  animation-name: fw-willow;
+}
+.fw[data-style="double"] .fw-burst {
+  background: repeating-conic-gradient(from 7deg, rgb(var(--fw-rgb) / 0.8) 0 1.6deg, transparent 1.6deg 16deg);
+  -webkit-mask-image: radial-gradient(circle, transparent 0 16%, #000 19% 28%, transparent 32% 50%, #000 54% 66%, transparent 70%);
+  mask-image: radial-gradient(circle, transparent 0 16%, #000 19% 28%, transparent 32% 50%, #000 54% 66%, transparent 70%);
+}
+.fw[data-style="glitter"] .fw-burst {
+  background:
+    radial-gradient(circle at 22% 30%, rgb(var(--fw-rgb) / 0.95) 0 1.5px, transparent 2.5px),
+    radial-gradient(circle at 70% 22%, rgb(var(--fw-rgb) / 0.9) 0 1.5px, transparent 2.5px),
+    radial-gradient(circle at 84% 58%, rgb(var(--fw-rgb) / 0.95) 0 1.5px, transparent 2.5px),
+    radial-gradient(circle at 56% 82%, rgb(var(--fw-rgb) / 0.9) 0 1.5px, transparent 2.5px),
+    radial-gradient(circle at 16% 68%, rgb(var(--fw-rgb) / 0.95) 0 1.5px, transparent 2.5px),
+    radial-gradient(circle at 46% 14%, rgb(var(--fw-rgb) / 0.8) 0 1px, transparent 2px),
+    radial-gradient(circle at 92% 30%, rgb(var(--fw-rgb) / 0.8) 0 1px, transparent 2px),
+    radial-gradient(circle at 32% 52%, rgb(var(--fw-rgb) / 0.8) 0 1px, transparent 2px),
+    radial-gradient(circle at 66% 50%, rgb(var(--fw-rgb) / 0.8) 0 1px, transparent 2px),
+    radial-gradient(circle at 8% 40%, rgb(var(--fw-rgb) / 0.8) 0 1px, transparent 2px);
+  -webkit-mask-image: none;
+  mask-image: none;
+}
+.fw[data-style="comet"] .fw-burst,
+.fw[data-style="comet"] .fw-flash {
+  display: none;
+}
+.fw[data-style="comet"] .fw-rise {
+  height: calc(var(--fw-size) * var(--fw-scale) * 0.7);
+  transform-origin: 50% 100%;
+  animation-name: fw-comet;
+}
+@keyframes fw-willow {
+  0%,
+  6% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.15);
+  }
+  9% {
+    opacity: 0.8;
+  }
+  32%,
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -22%) scale(1.05);
+  }
+}
+@keyframes fw-comet {
+  0% {
+    opacity: 0;
+    transform: translate(-60px, 80px) rotate(28deg);
+  }
+  3% {
+    opacity: 0.85;
+  }
+  14% {
+    opacity: 0.85;
+    transform: translate(60px, -50px) rotate(28deg);
+  }
+  18%,
+  100% {
+    opacity: 0;
+    transform: translate(70px, -60px) rotate(28deg);
+  }
 }
 @keyframes fw-rise {
   0% {
@@ -432,6 +545,21 @@ body {
   100% {
     opacity: 0;
     transform: translate(0, 0);
+  }
+}
+@keyframes fw-flash {
+  0%,
+  6% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.4);
+  }
+  8% {
+    opacity: 1;
+  }
+  30%,
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(1);
   }
 }
 @keyframes fw-burst {
@@ -716,4 +844,92 @@ body {
   to {
     opacity: 1;
   }
+}
+
+/* Gentle city-light variation: two groups of windows slowly change brightness
+   out of step, the reflections shimmer, and the horizon glow breathes. */
+.win-a {
+  animation: lights-a 9s ease-in-out infinite alternate;
+}
+.win-b {
+  animation: lights-b 13s ease-in-out -4s infinite alternate;
+}
+@keyframes lights-a {
+  from {
+    opacity: 0.5;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@keyframes lights-b {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0.45;
+  }
+}
+.shimmer {
+  animation: shimmer 7s ease-in-out infinite alternate;
+}
+@keyframes shimmer {
+  from {
+    opacity: 0.7;
+  }
+  to {
+    opacity: 1;
+  }
+}
+.glow-breathe {
+  animation: glow-breathe 14s ease-in-out infinite alternate;
+}
+@keyframes glow-breathe {
+  from {
+    opacity: 0.8;
+  }
+  to {
+    opacity: 1;
+  }
+}
+/* A slow, faint cool haze drifting across the sky. */
+.scene-vignette::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse 45% 18% at 30% 58%, rgb(140 170 255 / 0.1), transparent 70%);
+  animation: haze-drift 70s ease-in-out infinite alternate;
+}
+@keyframes haze-drift {
+  from {
+    transform: translateX(-12%);
+  }
+  to {
+    transform: translateX(32%);
+  }
+}
+.scene-sky::before {
+  opacity: 0.6;
+  transition: opacity 1.6s ease;
+}
+.reflect {
+  opacity: 0.85;
+  transition: opacity 1.6s ease;
+}
+/* The scene answers him: while Omid travels or jumps, the city's glow and its
+   reflections lift a little, and settle again when he rests. (data-behaviour is
+   set by the motion system; this is CSS only.) */
+.scene[data-behaviour="fly"] .scene-sky::before,
+.scene[data-behaviour="glide"] .scene-sky::before,
+.scene[data-behaviour="cross"] .scene-sky::before,
+.scene[data-behaviour="jump"] .scene-sky::before,
+.scene[data-behaviour="lantern"] .scene-sky::before {
+  opacity: 0.85;
+}
+.scene[data-behaviour="fly"] .reflect,
+.scene[data-behaviour="glide"] .reflect,
+.scene[data-behaviour="cross"] .reflect,
+.scene[data-behaviour="jump"] .reflect,
+.scene[data-behaviour="lantern"] .reflect {
+  opacity: 1;
 }
