@@ -1,32 +1,62 @@
-# React + TypeScript + Vite
+# New Year Countdown
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+A public New Year countdown for phones, desktops, and large TV/fullscreen displays, featuring Omid, a small glowing spirit who represents hope for the year ahead.
 
-Currently, two official plugins are available:
+## Purpose
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+A local-time countdown to the next Gregorian New Year, presented as a calm, lively experience rather than a plain timer.
 
-## React Compiler
+## Features
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- Countdown to the next January 1 using absolute timestamps.
+- Three phases:
+  - countdown
+  - celebration on January 1
+  - afterglow from January 2–7
+- Responsive compositions for phone, tablet, desktop, and TV.
+- Reduced-motion support.
+- Animated Omid mascot with character-driven movement and scene interaction.
 
-## Expanding the Oxlint configuration
+## Visual direction
 
-If you are developing a production application, we recommend enabling type-aware lint rules by installing `oxlint-tsgolint` and editing `.oxlintrc.json`:
+A cinematic New Year's Eve night with deep midnight blue and plum tones, restrained warm gold celebration light, distant city lights, reflections, stars, atmospheric glow, and subtle fireworks.
 
-```json
-{
-  "$schema": "./node_modules/oxlint/configuration_schema.json",
-  "plugins": ["react", "typescript", "oxc"],
-  "options": {
-    "typeAware": true
-  },
-  "rules": {
-    "react/rules-of-hooks": "error",
-    "react/only-export-components": ["warn", { "allowConstantExport": true }]
-  }
-}
+## Omid
+
+Omid (امید) means “hope” in Persian.
+
+He is a small glowing spirit who carries warmth through the night and represents the sense of hope people bring into a new year.
+
+Omid can travel, float, glide, fly, and jump through the scene using a spring-based motion system with squash and stretch, secondary motion, and environmental reactions.
+
+## Tech stack
+
+- React
+- TypeScript
+- Vite
+- Tailwind CSS
+- Motion
+- Oxlint
+
+## Development
+
+```sh
+npm install
+npm run dev
 ```
 
-See the [Oxlint rules documentation](https://oxc.rs/docs/guide/usage/linter/rules) for the full list of rules and categories.
+## Build and lint
+
+```sh
+npm run lint
+npm run build
+npm run preview
+```
+
+## Planned
+
+- Midnight celebration sequence
+- Christmas and other seasonal modes
+- Curated messages and resolutions
+- Shareable images
+- PWA support
