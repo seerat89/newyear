@@ -26,3 +26,20 @@ dist-ssr
 .playwright-cli/
 .references/
 .claude/skills/playwright-cli/
+
+# Temporary and local-only files
+.playwright/
+.claude/settings.local.json
+nohup.out
+*.tmp
+*.tmp.*
+shot*.png
+screenshots/
+
+# Environment files (keep secrets out of git; the example is committed)
+.env
+.env.*
+!.env.example
+
+# Local-only dev helpers (e.g. the fake clock); never committed or built
+src/dev/

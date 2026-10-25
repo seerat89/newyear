@@ -1,17 +1,27 @@
 import CountdownDisplay from './components/CountdownDisplay'
 import { glowForDaysLeft } from './components/omid/omidState'
+import NewYearMessage from './components/celebration/NewYearMessage'
+import { useOmidCelebration } from './components/celebration/useOmidCelebration'
 import PhaseMessage from './components/PhaseMessage'
 import Scene from './components/scene/Scene'
 import { useNow } from './hooks/useNow'
+import { getCelebration } from './lib/celebration'
 import { getCountdownState } from './lib/countdown'
 
 function App() {
-  const state = getCountdownState(useNow())
+  const now = useNow()
+  const state = getCountdownState(now)
+  const celebration = getCelebration(state, now)
+  useOmidCelebration(state.phase === 'celebrating' ? state.startedAt : null)
   const glow = state.phase === 'counting' ? glowForDaysLeft(state.remaining.days) : 1
 
   return (
     <>
-      <Scene glow={glow} />
+      <Scene
+        glow={glow}
+        celebration={celebration?.stage ?? null}
+        celebrationStart={celebration?.startedAt ?? null}
+      />
       <main className="hero">
         {state.phase === 'counting' && (
           <>
@@ -25,7 +35,7 @@ function App() {
           </>
         )}
         {state.phase === 'celebrating' && (
-          <PhaseMessage title={`Happy New Year ${state.year}`} />
+          <NewYearMessage year={state.year} stage={celebration?.stage ?? null} />
         )}
         {state.phase === 'afterglow' && (
           <PhaseMessage title={`${state.year} has begun`} />

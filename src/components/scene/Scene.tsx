@@ -2,6 +2,11 @@ import { memo, useRef } from 'react'
 import type { CSSProperties } from 'react'
 import Omid from '../omid/Omid'
 import { TRAIL_DOTS, useOmidMotion } from '../omid/useOmidMotion'
+import type { CelebrationStage } from '../../lib/celebration'
+import MidnightPulse from '../celebration/MidnightPulse'
+import MidnightShow from '../celebration/MidnightShow'
+import { SustainedGlow, SustainedSky } from '../celebration/Sustained'
+import { useSustainedBursts } from '../celebration/useSustainedBursts'
 import Fireworks from './Fireworks'
 import SceneArt from './SceneArt'
 import SceneSet from './SceneSet'
@@ -25,15 +30,25 @@ const stageStyle = Object.fromEntries(
   ]),
 ) as CSSProperties
 
-function Scene({ glow }: { glow: number }) {
+type SceneProps = {
+  glow: number
+  /** The midnight sequence stage (null outside it), and when midnight was. */
+  celebration: CelebrationStage | null
+  celebrationStart: number | null
+}
+
+function Scene({ glow, celebration, celebrationStart }: SceneProps) {
   const sceneRef = useRef<HTMLDivElement>(null)
   useOmidMotion(sceneRef)
+  const live = useSustainedBursts(celebrationStart)
 
   return (
-    <div ref={sceneRef} aria-hidden="true" className="scene">
+    <div ref={sceneRef} aria-hidden="true" className="scene" data-celebrate={celebration ?? undefined}>
       <div className="scene-sky" />
       <Stars />
       <Fireworks />
+      {celebrationStart !== null && <MidnightShow startedAt={celebrationStart} />}
+      <SustainedSky live={live} />
       <div className="scene-stage" style={stageStyle}>
         <div className="scene-layer" data-layer="far">
           {SCENES.map((art) => (
@@ -70,6 +85,8 @@ function Scene({ glow }: { glow: number }) {
           ))}
         </div>
       </div>
+      {celebrationStart !== null && <MidnightPulse startedAt={celebrationStart} />}
+      <SustainedGlow live={live} />
       <div className="scene-vignette" />
     </div>
   )
