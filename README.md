@@ -13,6 +13,7 @@ A local-time countdown to the next Gregorian New Year, presented as a calm, live
   - countdown
   - celebration on January 1
   - afterglow from January 2–7
+- World Map view: New Year moving around the world by time zone, with each place's local time and status.
 - Responsive compositions for phone, tablet, desktop, and TV.
 - Reduced-motion support.
 - Animated Omid mascot with character-driven movement and scene interaction.

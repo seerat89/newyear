@@ -24,18 +24,18 @@
  */
 :root,
 :root[data-theme="dusk"] {
-  --theme-sky-top: #0a1241;
-  --theme-sky-mid: #18236b;
-  --theme-sky-plum: #35237a;
-  --theme-sky-rose: #4e3580;
-  --theme-sky-cool: #3a5aa0;
-  --theme-sky-amber: #c28a52;
-  --theme-sky-low: #1c1650;
-  --theme-city-top: #15113a;
-  --theme-city-base: #2c1a48;
-  --theme-water-top: #262a72;
-  --theme-water-mid: #161650;
-  --theme-water-deep: #0a0724;
+  --theme-sky-top: #060a22;
+  --theme-sky-mid: #0f1a52;
+  --theme-sky-plum: #1b2f7c;
+  --theme-sky-rose: #2d4c9c;
+  --theme-sky-cool: #4d7cc4;
+  --theme-sky-amber: #d9a05c;
+  --theme-sky-low: #0e1546;
+  --theme-city-top: #0c1236;
+  --theme-city-base: #171d4a;
+  --theme-water-top: #1a2b73;
+  --theme-water-mid: #0f1b56;
+  --theme-water-deep: #050823;
   --theme-cream: #fff0d2;
   --theme-gold: #f6c96b;
     --theme-ink: #fff0d2;
@@ -136,6 +136,17 @@ body {
     --row-gap: 0px;
     }
 }
+@media (orientation: landscape) and (max-aspect-ratio: 3 / 2) and (min-width: 700px) {
+  :root {
+    /* Near-square windows (tablets, small desktop windows): the sky is tall, so the
+       countdown is larger and sits in the middle of it instead of at the very top. */
+    --hero-top: 19svh;
+    --title-size: clamp(34px, 4.6vw, 64px);
+    --title-gap: 28px;
+    --num: min(11.5vw, 17svh);
+    --col-gap: 3.6vw;
+  }
+}
 @media (orientation: landscape) and (min-width: 1600px) {
   :root {
     /* TV, landscape (1920 x 1080) */
@@ -153,9 +164,10 @@ body {
 
 /* The scene: sky, stars, hills stage with Omid, vignette. Fixed behind the content. */
 .scene {
-  position: fixed;
+  /* Not fixed and no z-index, so it is not its own stacking context: with the map
+     showing, Omid (z-index below) can sit in front of the map while the sky stays behind. */
+  position: absolute;
   inset: 0;
-  z-index: 0;
   overflow: hidden;
   pointer-events: none;
   background: var(--theme-sky-top);
@@ -165,7 +177,7 @@ body {
   inset: 0;
   background:
     radial-gradient(ellipse 55% 40% at 12% 8%, rgb(150 185 255 / 0.2), transparent 70%),
-    radial-gradient(ellipse 50% 30% at 88% 32%, rgb(110 90 190 / 0.2), transparent 70%),
+    radial-gradient(ellipse 50% 30% at 88% 32%, rgb(80 140 230 / 0.18), transparent 70%),
     linear-gradient(
     180deg,
     var(--theme-sky-top) 0%,
@@ -261,11 +273,10 @@ body {
 }
 .scene-stage {
   position: absolute;
-  left: 50%;
+  left: calc(50% - var(--stage-w) / 2);
   bottom: 0;
   width: var(--stage-w);
   height: var(--stage-h);
-  transform: translateX(-50%);
   --omid-x: var(--phone-omid-x);
   --omid-b: var(--phone-omid-b);
   --omid-w: var(--phone-omid-w);
@@ -638,10 +649,8 @@ body {
 /* The countdown, above the scene. Labels: regular lowercase by default; set
    --label-style: italic to try the italic alternative. */
 .hero {
-  position: relative;
   z-index: 10;
   box-sizing: border-box;
-  min-height: 100svh;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -1495,5 +1504,793 @@ body {
   }
   .ny-year {
     font-size: calc(var(--num) * 1.75);
+  }
+}
+
+/*
+ * Two fullscreen scenes, no scrolling: the countdown (with the city scene) and the
+ * World Map, cross-fading (App.tsx swaps data-scene). The sky, stars and Omid are
+ * one fixed layer under both; in the map scene the city art fades and Omid stays,
+ * roaming over the map. Dots: gold = already in the new year, white and glowing =
+ * celebrating now, dim blue = still waiting, silver = next.
+ */
+html,
+body {
+  height: 100%;
+  overflow: hidden;
+}
+.app {
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+}
+.scene-layer,
+.scene-pool,
+.scene-afterglow,
+.scene-show {
+  transition: opacity 1.2s ease;
+}
+.app[data-scene="map"] .scene-layer,
+.app[data-scene="map"] .scene-afterglow,
+.app[data-scene="map"] .scene-show {
+  opacity: 0;
+}
+/* On the map Omid is smaller, so the glow under him is scaled to match (the pool is
+   a sibling of him, so it takes the same factor and drop as he does). */
+.app[data-scene="map"] .scene-pool {
+  opacity: 0 !important;
+  width: calc(var(--omid-w) * 2.2 * var(--map-k, 0.5));
+  margin-left: calc(var(--omid-w) * -1.1 * var(--map-k, 0.5));
+  margin-bottom: calc(var(--omid-w) * -0.18 * var(--map-k, 0.5) - var(--map-drop, 0px));
+}
+.app[data-scene="map"] {
+  --map-k: 0.5;
+  --map-drop: 13svh;
+}
+@media (min-width: 900px) {
+  .app[data-scene="map"] {
+    --map-k: 0.6;
+    --map-drop: 5svh;
+  }
+}
+@media (min-width: 1600px) {
+  .app[data-scene="map"] {
+    --map-k: 0.7;
+    --map-drop: 0px;
+  }
+}
+.scene-sky {
+  transition: opacity 1.2s ease;
+}
+.scene::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse 75% 55% at 50% 42%, rgb(52 84 190 / 0.34), transparent 72%),
+    linear-gradient(180deg, #050818 0%, #080d2a 55%, #04061a 100%);
+  transition: opacity 1.2s ease;
+}
+.app[data-scene="map"] .scene::before {
+  opacity: 1;
+}
+.app[data-scene="map"] .scene-sky {
+  opacity: 0;
+}
+/* With the map showing, Omid's stage sits above the map and the dock (which is pinned
+   to the bottom, below his usual range), so he moves freely and is never hidden. */
+.app[data-scene="map"] .scene-stage {
+  z-index: 25;
+}
+/* On the map he is smaller, so he is a companion over the map and never covers it
+   (scaled about his feet, so he still stands where he does in the countdown scene). */
+.scene-omid {
+  transition:
+    scale 0.9s ease,
+    translate 0.9s ease;
+  transform-origin: 50% 100%;
+}
+.app[data-scene="map"] .scene-omid {
+  scale: 0.5;
+  /* A little lower on small screens, clear of the map's middle. */
+  translate: 0 13svh;
+}
+@media (min-width: 900px) {
+  .app[data-scene="map"] .scene-omid {
+    scale: 0.6;
+    translate: 0 5svh;
+  }
+}
+@media (min-width: 1600px) {
+  .app[data-scene="map"] .scene-omid {
+    scale: 0.7;
+    translate: 0 0;
+  }
+}
+.hero,
+.map-section {
+  position: absolute;
+  inset: 0;
+  height: 100svh;
+  min-height: 0;
+  overflow: hidden;
+  transition:
+    opacity 1.1s ease,
+    transform 1.1s ease,
+    visibility 0s;
+}
+.app[data-scene="map"] .hero,
+.app[data-scene="countdown"] .map-section {
+  opacity: 0;
+  visibility: hidden;
+  transition:
+    opacity 1.1s ease,
+    transform 1.1s ease,
+    visibility 0s 1.1s;
+}
+.app[data-scene="map"] .hero {
+  transform: translateY(-2%);
+}
+.app[data-scene="countdown"] .map-section {
+  transform: translateY(2%);
+}
+.scene-switch {
+  position: fixed;
+  z-index: 30;
+  /* At the bottom centre, within easy reach of a thumb. */
+  bottom: max(16px, calc(env(safe-area-inset-bottom) + 8px));
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 2px;
+  padding: 3px;
+  border-radius: 999px;
+  background: rgb(14 20 58 / 0.5);
+  border: 1px solid rgb(255 255 255 / 0.1);
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+}
+.scene-switch button {
+  white-space: nowrap;
+  min-height: 40px;
+  padding: 8px 16px;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--theme-ink-muted);
+  font: 500 13px/1 system-ui, sans-serif;
+  letter-spacing: 0.02em;
+  cursor: pointer;
+  transition:
+    background 0.3s ease,
+    color 0.3s ease;
+}
+.scene-switch button[aria-pressed="true"] {
+  background: rgb(255 255 255 / 0.14);
+  color: var(--theme-cream);
+}
+.scene-switch button:focus-visible {
+  outline: 2px solid var(--theme-gold);
+  outline-offset: 1px;
+}
+@media (min-width: 1600px) {
+  .scene-switch {
+    bottom: 30px;
+  }
+  .app .map-section {
+    padding-bottom: 130px;
+  }
+  .scene-switch button {
+    min-height: 52px;
+    padding: 12px 26px;
+    font-size: 18px;
+  }
+}
+
+/*
+ * The World Map view: the map is the focus and fits the screen without scrolling.
+ * Above it a short title; below it two quiet lines of status (who just rang in the
+ * year, who is next), a small legend, and two small buttons: the time-lapse and a
+ * collapsible place picker. Dots: gold = already in the new year, white and
+ * glowing = celebrating now, dim blue = still waiting, silver = next to midnight.
+ * A line of light marks the frontier where midnight is arriving, with a warm wake
+ * behind it, and Omid rides it as the guide. Everything that moves is transform or
+ * opacity, slow and soft; the time-lapse drops the easing so the frontier and Omid
+ * follow the fast clock closely.
+ */
+.map-section {
+  /* No z-index: its children (the dock) then stack in the page, above Omid. */
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 36px max(24px, env(safe-area-inset-right)) max(84px, calc(env(safe-area-inset-bottom) + 64px)) max(24px, env(safe-area-inset-left));
+}
+/* The map is centred in the space under the headline; the key sits at the foot of the page, with a margin. */
+.wm {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  min-height: 0;
+}
+.wm-view {
+  margin-block: auto;
+}
+.wm-dock {
+  margin-top: auto;
+}
+.wm-title {
+  margin: 0;
+  text-align: center;
+  font-size: calc(var(--title-size) * 0.85);
+}
+
+/* The map's window. On a wide screen it shows the whole world; on a portrait
+   screen the world is wider than the window and slides to keep the frontier (and
+   Omid) in view, so the map is big enough to read. */
+.wm-stage {
+  position: relative;
+  width: 100%;
+}
+@media (orientation: portrait) and (max-width: 700px) {
+  .wm-stage {
+    /* As wide as the free height allows (the map grows to fill the screen). */
+    --sw: clamp(220vw, calc((100svh - 345px) * 2.6087), 280vw);
+    width: var(--sw);
+    transform: translateX(clamp(calc(96vw - var(--sw)), calc(48vw - var(--x)), 0px));
+    transition: transform 1.2s ease-in-out;
+  }
+  .wm-stage[data-lapse] {
+    transition: transform 0.1s linear;
+  }
+}
+.wm-view {
+  position: relative;
+  width: min(96vw, calc((100svh - 365px) * 2.6087), 1560px);
+  overflow: hidden;
+  /* The map dissolves into the night at its edges instead of ending in a box. */
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 5%, #000 95%, transparent),
+    linear-gradient(180deg, transparent, #000 8%, #000 92%, transparent);
+  mask-image: linear-gradient(90deg, transparent, #000 5%, #000 95%, transparent),
+    linear-gradient(180deg, transparent, #000 8%, #000 92%, transparent);
+  -webkit-mask-composite: source-in;
+  mask-composite: intersect;
+}
+.wm-haze {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  border-radius: inherit;
+  pointer-events: none;
+}
+.wm-haze::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse 36% 30% at 24% 42%, rgb(150 180 255 / 0.13), transparent 70%);
+  animation: wm-haze 26s ease-in-out infinite alternate;
+}
+@keyframes wm-haze {
+  to {
+    transform: translateX(46%);
+  }
+}
+.wm-map {
+  display: block;
+  width: 100%;
+  height: auto;
+  overflow: hidden;
+  border-radius: inherit;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+.wm-grid {
+  fill: none;
+  stroke: rgb(150 170 255 / 0.07);
+  stroke-width: 0.25;
+}
+.wm-dots {
+  fill: none;
+  stroke-width: 1.2;
+  stroke-linecap: round;
+}
+.wm-dots--waiting {
+  stroke: #3d52a6;
+  opacity: 0.8;
+}
+.wm-dots--arrived {
+  stroke: #f6c56e;
+  opacity: 0.95;
+}
+.wm-dots--celebrating {
+  stroke: #fff3d2;
+  filter: drop-shadow(0 0 2px rgb(255 224 160 / 0.9));
+  animation: wm-pulse 2.6s ease-in-out infinite alternate;
+}
+.wm-dots--next {
+  stroke: #8fe0ff;
+  filter: drop-shadow(0 0 2px rgb(120 215 255 / 0.9));
+}
+@keyframes wm-pulse {
+  from {
+    opacity: 0.7;
+  }
+  to {
+    opacity: 1;
+  }
+}
+.wm-pin--waiting {
+  fill: #7f93e6;
+  opacity: 0;
+}
+.wm-pin--arrived {
+  fill: #ffd98f;
+  opacity: 0.95;
+}
+.wm-pin--celebrating,
+.wm-pin--next {
+  fill: #fff;
+}
+.wm-next-ring {
+  fill: none;
+  stroke: #8fe0ff;
+  stroke-width: 0.5;
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: wm-ring 2.2s ease-out infinite;
+}
+@keyframes wm-ring {
+  from {
+    transform: scale(0.5);
+    opacity: 1;
+  }
+  to {
+    transform: scale(2.2);
+    opacity: 0;
+  }
+}
+.wm-selected-ring {
+  fill: none;
+  stroke: var(--theme-cream);
+  stroke-width: 0.45;
+}
+
+/* The frontier: a line of light where midnight is arriving, and a wake of warm
+   light across the places that have already rung in the year. */
+.wm-frontier {
+  transition: transform 1.2s ease-in-out;
+}
+.wm-frontier[data-lapse] {
+  transition: transform 0.1s linear;
+}
+.wm-wake {
+  animation: wm-wake 5s ease-in-out infinite alternate;
+}
+/* A hairline of light with a faint halo, fading out at the top and bottom. */
+.wm-frontier {
+  -webkit-mask-image: linear-gradient(180deg, transparent, #000 18%, #000 82%, transparent);
+  mask-image: linear-gradient(180deg, transparent, #000 18%, #000 82%, transparent);
+}
+.wm-frontier-core {
+  fill: #fff3d2;
+  opacity: 0.75;
+}
+.wm-frontier-line {
+  filter: blur(0.35px);
+  animation: wm-line 2.6s ease-in-out infinite alternate;
+}
+.wm-stage[data-phase="before"] .wm-wake {
+  opacity: 0;
+}
+.wm-stage[data-phase="after"] .wm-frontier-line {
+  opacity: 0.35;
+}
+@keyframes wm-wake {
+  from {
+    opacity: 0.7;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@keyframes wm-line {
+  from {
+    opacity: 0.6;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* A beacon star rides the frontier: a bright four-point star with a soft halo. */
+.wm-beacon {
+  position: absolute;
+  z-index: 2;
+  width: clamp(26px, 3.4%, 64px);
+  aspect-ratio: 1;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  transition:
+    left 1.2s ease-in-out,
+    top 1.2s ease-in-out;
+}
+.wm-beacon[data-lapse] {
+  transition:
+    left 0.1s linear,
+    top 0.1s linear;
+}
+.wm-beacon::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 320%;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  background: radial-gradient(circle, rgb(255 226 160 / 0.5), rgb(255 190 110 / 0.14) 40%, transparent 68%);
+  animation: wm-aura 3.6s ease-in-out infinite alternate;
+}
+.wm-beacon svg {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: 100%;
+  fill: #fff6dc;
+  filter: drop-shadow(0 0 6px rgb(255 214 140 / 0.95));
+  animation: wm-twinkle 4.2s ease-in-out infinite alternate;
+}
+@keyframes wm-aura {
+  from {
+    scale: 0.9;
+    opacity: 0.75;
+  }
+  to {
+    scale: 1.08;
+    opacity: 1;
+  }
+}
+@keyframes wm-twinkle {
+  from {
+    transform: rotate(0deg) scale(0.9);
+  }
+  to {
+    transform: rotate(14deg) scale(1.08);
+  }
+}
+
+/* The answer comes first: the next place to reach midnight is the page's headline,
+   with the place that just rang in as one quiet line under it. Both lines are always
+   laid out, so nothing moves when one is empty. */
+.wm-status {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  margin: 0;
+  text-align: center;
+}
+.wm-status p {
+  max-width: 100%;
+  margin: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: rgb(214 224 255 / 0.72);
+  font: 400 15px/1.3 system-ui, sans-serif;
+  font-variant-numeric: tabular-nums;
+}
+.wm-ghost {
+  visibility: hidden;
+}
+.wm-status b {
+  display: block;
+  margin-bottom: 4px;
+  color: #8fe0ff;
+  font: 600 11px/1.2 system-ui, sans-serif;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+.wm-status strong {
+  margin-right: 0.45em;
+  color: #f4f6ff;
+  font-family: var(--font-display);
+  font-size: clamp(30px, 4.4vw, 60px);
+  font-weight: 400;
+  line-height: 1.1;
+}
+.wm-status .wm-just {
+  font-size: 13px;
+}
+.wm-status .wm-just b {
+  display: inline;
+  margin: 0 0.7em 0 0;
+  color: #f6c56e;
+  font-size: 10px;
+}
+.wm-status .wm-just strong {
+  margin-right: 0.5em;
+  font: 400 14px/1.3 system-ui, sans-serif;
+  color: #f4f6ff;
+}
+/* The key and the two buttons: no card, just quiet controls at the foot of the page. */
+.wm-dock {
+  position: relative;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  z-index: 20;
+  width: min(96vw, 780px);
+}
+.wm-controls {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  align-items: center;
+  justify-content: center;
+  gap: 8px 16px;
+  width: 100%;
+}
+.wm-legend {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 4px 14px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  color: rgb(214 224 255 / 0.7);
+  font: 400 11px/1.2 system-ui, sans-serif;
+}
+.lg-short {
+  display: none;
+}
+@media (max-width: 600px) {
+  /* Phones: one short row for the key, and a little air above the status. */
+  .wm-legend {
+    flex-wrap: nowrap;
+    gap: 4px 14px;
+    font-size: 11.5px;
+  }
+  .lg-long {
+    display: none;
+  }
+  .lg-short {
+    display: inline;
+  }
+  .scene-switch button {
+    min-height: 44px;
+    padding: 8px 18px;
+  }
+}
+.wm-legend li {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: rgb(214 224 255 / 0.7);
+}
+.wm-legend svg {
+  width: 1.15em;
+  height: 1.15em;
+  color: var(--dot);
+}
+.wm-legend [data-state="arrived"] {
+  --dot: #f6c56e;
+}
+.wm-legend [data-state="celebrating"] {
+  --dot: #fff3d2;
+}
+.wm-legend [data-state="celebrating"] svg {
+  filter: drop-shadow(0 0 2px rgb(255 224 160 / 0.9));
+}
+.wm-legend [data-state="next"] {
+  --dot: #8fe0ff;
+}
+.wm-legend [data-state="waiting"] {
+  --dot: #6f84dc;
+}
+.wm-btn {
+  padding: 8px 16px;
+  border: 1px solid rgb(255 255 255 / 0.16);
+  border-radius: 999px;
+  background: rgb(255 255 255 / 0.04);
+  color: rgb(236 242 255 / 0.9);
+  font: 500 13px/1.2 system-ui, sans-serif;
+  letter-spacing: 0.02em;
+  cursor: pointer;
+  transition:
+    color 0.3s ease,
+    border-color 0.3s ease,
+    background 0.3s ease;
+}
+.wm-btn:hover,
+.wm-btn[aria-expanded="true"] {
+  border-color: rgb(255 255 255 / 0.32);
+  background: rgb(255 255 255 / 0.1);
+  color: #fff;
+}
+.wm-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 8px 12px;
+}
+.wm-actions .wm-btn {
+  white-space: nowrap;
+}
+.wm-dev {
+  position: absolute;
+  z-index: 30;
+  top: 10px;
+  left: 10px;
+  padding: 5px 10px;
+  font-size: 11px;
+  opacity: 0.7;
+}
+.wm-btn--primary {
+  border-color: rgb(246 197 110 / 0.5);
+  background: rgb(246 197 110 / 0.16);
+  color: #ffeec8;
+}
+.wm-btn--primary:hover {
+  border-color: rgb(246 197 110 / 0.8);
+  background: rgb(246 197 110 / 0.26);
+  color: #fff6dc;
+}
+.wm-btn:focus-visible {
+  outline: 2px solid var(--theme-gold);
+  outline-offset: 2px;
+}
+
+/* The place picker: a small button that opens a panel above it. */
+/* The panel centres on the whole controls row, so it never overhangs the screen. */
+.wm-find {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  width: 100%;
+  margin-top: 4px;
+}
+.wm-search {
+  position: relative;
+  z-index: 40;
+  width: min(88vw, 340px);
+}
+.wm-search-icon {
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  width: 16px;
+  height: 16px;
+  color: rgb(214 224 255 / 0.6);
+  transform: translateY(-50%);
+  pointer-events: none;
+}
+.wm-search-input {
+  box-sizing: border-box;
+  width: 100%;
+  padding: 10px 16px 10px 40px;
+  border: 1px solid rgb(255 255 255 / 0.16);
+  border-radius: 999px;
+  background: rgb(255 255 255 / 0.05);
+  color: #f4f6ff;
+  font: 400 16px/1.2 system-ui, sans-serif;
+}
+.wm-search-input::placeholder {
+  color: rgb(214 224 255 / 0.55);
+}
+.wm-search-input:focus-visible {
+  border-color: rgb(143 224 255 / 0.7);
+  outline: 0;
+  background: rgb(255 255 255 / 0.09);
+}
+.wm-search-list {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  right: 0;
+  max-height: 220px;
+  margin: 0;
+  padding: 4px;
+  overflow-y: auto;
+  border: 1px solid rgb(255 255 255 / 0.12);
+  border-radius: 16px;
+  background: rgb(10 15 48 / 0.96);
+  list-style: none;
+}
+.wm-result {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  min-height: 4.5em;
+  white-space: normal;
+  width: 100%;
+  text-align: center;
+  margin: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: rgb(214 224 255 / 0.7);
+  font: 400 13px/1.3 system-ui, sans-serif;
+  font-variant-numeric: tabular-nums;
+}
+.wm-result strong {
+  font-size: 1.15em;
+  color: #f4f6ff;
+  font-weight: 600;
+}
+.wm-result[data-empty] {
+  color: rgb(214 224 255 / 0.4);
+}
+.wm-search-option,
+.wm-search-empty {
+  padding: 7px 10px;
+  border-radius: 7px;
+  color: var(--theme-cream);
+  font: 400 14px/1.2 system-ui, sans-serif;
+}
+.wm-search-option {
+  cursor: pointer;
+}
+.wm-search-option span {
+  margin-left: 0.4em;
+  color: var(--theme-ink-muted);
+  font-size: 12px;
+}
+.wm-search-option[aria-selected="true"] {
+  background: rgb(255 214 140 / 0.16);
+}
+.wm-search-empty {
+  color: var(--theme-ink-muted);
+}
+@media (min-width: 1600px) {
+  .wm-status p {
+    font-size: 20px;
+  }
+  .wm-status b {
+    font-size: 14px;
+  }
+  .wm-status .wm-just {
+    font-size: 16px;
+  }
+  .wm-status .wm-just strong {
+    font-size: 18px;
+  }
+  .wm-legend {
+    font-size: 15px;
+  }
+  .wm-btn {
+    padding: 10px 22px;
+    font-size: 17px;
+  }
+  .wm-dock {
+    width: 1100px;
+    gap: 16px;
+  }
+  .wm-search {
+    width: 460px;
+  }
+  .wm-result {
+    font-size: 17px;
+  }
+  .wm-search-input,
+  .wm-search-option {
+    font-size: 18px;
+  }
+  .wm-search-list {
+    max-height: 220px;
   }
 }
