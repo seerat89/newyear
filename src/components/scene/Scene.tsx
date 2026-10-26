@@ -7,9 +7,13 @@ import MidnightPulse from '../celebration/MidnightPulse'
 import MidnightShow from '../celebration/MidnightShow'
 import { SustainedGlow, SustainedSky } from '../celebration/Sustained'
 import { useSustainedBursts } from '../celebration/useSustainedBursts'
+import Atmosphere from './Atmosphere'
+import Cassette from './Cassette'
 import Fireworks from './Fireworks'
 import SceneArt from './SceneArt'
 import SceneSet from './SceneSet'
+import Snow from './Snow'
+import SnowScape from './SnowScape'
 import Stars from './Stars'
 import { SCENES } from './scenes'
 
@@ -35,9 +39,11 @@ type SceneProps = {
   /** The midnight sequence stage (null outside it), and when midnight was. */
   celebration: CelebrationStage | null
   celebrationStart: number | null
+  /** Christmas mode: snow and a cassette prop. */
+  christmas?: boolean
 }
 
-function Scene({ glow, celebration, celebrationStart }: SceneProps) {
+function Scene({ glow, celebration, celebrationStart, christmas = false }: SceneProps) {
   const sceneRef = useRef<HTMLDivElement>(null)
   useOmidMotion(sceneRef)
   const live = useSustainedBursts(celebrationStart)
@@ -74,6 +80,7 @@ function Scene({ glow, celebration, celebrationStart }: SceneProps) {
             <span key={i} />
           ))}
         </div>
+        {christmas && <Cassette />}
         <div className="scene-omid">
           <div className="scene-omid-body">
             <Omid glow={glow} className="relative w-full" />
@@ -85,6 +92,13 @@ function Scene({ glow, celebration, celebrationStart }: SceneProps) {
           ))}
         </div>
       </div>
+      {!christmas && <Atmosphere />}
+      {christmas && (
+        <>
+          <Snow />
+          <SnowScape />
+        </>
+      )}
       {celebrationStart !== null && <MidnightPulse startedAt={celebrationStart} />}
       <SustainedGlow live={live} />
       <div className="scene-vignette" />

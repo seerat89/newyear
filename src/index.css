@@ -691,7 +691,7 @@ body {
   margin: 0;
   font-family: var(--font-display);
   font-weight: 380;
-  font-size: var(--num);
+  font-size: calc(var(--num) * var(--num-scale, 1));
   line-height: 1;
   font-variant-numeric: tabular-nums lining-nums;
   color: var(--theme-cream);
@@ -704,7 +704,7 @@ body {
   font-family: var(--font-display);
   font-weight: 400;
   font-style: var(--label-style, normal);
-  font-size: calc(var(--num) * 0.24);
+  font-size: calc(var(--num) * var(--num-scale, 1) * 0.24);
   letter-spacing: 0.03em;
   color: var(--theme-ink-muted);
 }
@@ -2625,5 +2625,398 @@ body {
   }
   .wm-find {
     position: relative;
+  }
+}
+
+/*
+ * Christmas mode (December 24 to 26, lib/season.ts; data-season on .app). The same
+ * midnight world with warmer light: a plum-and-ember sky, warmer glow and window
+ * light, a light fall of snow, Omid in a scarf, a cassette on the shore and a short
+ * greeting, with the New Year countdown kept smaller beneath it.
+ */
+.app[data-season="christmas"] {
+  --theme-sky-plum: #3a2072;
+  --theme-sky-rose: #6b2f62;
+  --theme-sky-cool: #5a5fa6;
+  --theme-sky-amber: #e8944c;
+  --theme-glow: 255 168 84;
+  --theme-city-base: #2e1c48;
+}
+.app[data-season="christmas"] .scene-layer[data-layer="mid"],
+.app[data-season="christmas"] .scene-layer[data-layer="far"] {
+  filter: saturate(1.12) brightness(1.1) sepia(0.12);
+}
+.omid-scarf {
+  display: none;
+}
+.app[data-season="christmas"] .omid-scarf {
+  display: inline;
+}
+.xmas-title {
+  font-size: calc(var(--title-size) * 1.15);
+}
+.xmas-sub {
+  margin: calc(var(--title-gap) * 0.5) 0 0;
+  color: var(--theme-ink-muted);
+  font: 500 clamp(12px, 1.5vw, 20px) / 1.2 system-ui, sans-serif;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+}
+.app[data-season="christmas"] .countdown {
+  --num-scale: 0.5;
+  --cols: 4;
+  --col-gap: 5vw;
+  --row-gap: 0px;
+  margin-top: 8px;
+}
+.app[data-season="christmas"] .unit-value {
+  color: #ffe9c4;
+}
+.snow {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+.fl {
+  position: absolute;
+  top: 0;
+  left: var(--x);
+  width: var(--s);
+  height: var(--s);
+  opacity: var(--o);
+  will-change: transform;
+  animation: snow-fall var(--d) linear var(--dl) infinite;
+}
+.fl i {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: #fff;
+  animation: snow-sway var(--sd) ease-in-out var(--dl) infinite alternate;
+}
+.fl-far i {
+  box-shadow: 0 0 3px rgb(255 255 255 / 0.6);
+}
+.fl-near {
+  filter: blur(3px);
+}
+.fl-near i {
+  background: radial-gradient(circle, #fff, rgb(255 255 255 / 0.4) 55%, transparent 72%);
+}
+.fl-crystal {
+  color: #eef2ff;
+  filter: drop-shadow(0 0 3px rgb(200 215 255 / 0.8));
+}
+.fl-crystal svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  animation:
+    snow-sway var(--sd) ease-in-out var(--dl) infinite alternate,
+    snow-spin calc(var(--sd) * 4) linear var(--dl) infinite;
+}
+@keyframes snow-fall {
+  from {
+    transform: translate3d(0, -8vh, 0);
+  }
+  to {
+    transform: translate3d(var(--dx), 108vh, 0);
+  }
+}
+@keyframes snow-sway {
+  from {
+    transform: translateX(calc(var(--sw) * -1));
+  }
+  to {
+    transform: translateX(var(--sw));
+  }
+}
+@keyframes snow-spin {
+  from {
+    rotate: var(--tilt);
+  }
+  to {
+    rotate: calc(var(--tilt) + 360deg);
+  }
+}
+/* Slow golden bokeh, like out-of-focus fairy lights. */
+.snow-glow {
+  position: absolute;
+  left: var(--x);
+  top: var(--y);
+  width: var(--s);
+  height: var(--s);
+  border-radius: 50%;
+  background: radial-gradient(circle, rgb(255 214 140 / 0.42), rgb(255 190 110 / 0.12) 45%, transparent 70%);
+  animation: snow-glow var(--d) ease-in-out var(--dl) infinite alternate;
+}
+@keyframes snow-glow {
+  from {
+    opacity: 0.35;
+    transform: translateY(0) scale(0.9);
+  }
+  to {
+    opacity: 0.9;
+    transform: translateY(-14px) scale(1.1);
+  }
+}
+@media (max-width: 600px) {
+  .fl-far:nth-child(3n),
+  .fl-mid:nth-child(3n) {
+    display: none;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .snow {
+    display: none;
+  }
+}
+
+/* Snow-laden pines with warm lights at either side, and drifts along the bottom. */
+.snowscape {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+.snowscape-trees {
+  position: absolute;
+  bottom: 2svh;
+  height: min(46svh, 440px);
+  width: auto;
+  aspect-ratio: 240 / 380;
+  filter: drop-shadow(0 0 14px rgb(255 190 110 / 0.18));
+}
+.snowscape-trees--left {
+  left: 0;
+}
+.snowscape-trees--right {
+  right: 0;
+  transform: scaleX(-1);
+}
+.snowscape-drift {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100%;
+  height: min(13svh, 130px);
+}
+.snowscape-light {
+  filter: drop-shadow(0 0 3px rgb(255 214 140 / 0.9));
+  animation: snowscape-twinkle 4.2s ease-in-out infinite alternate;
+}
+@keyframes snowscape-twinkle {
+  from {
+    opacity: 0.55;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@media (max-width: 600px) {
+  .snowscape-trees {
+    height: min(30svh, 280px);
+    bottom: 3svh;
+  }
+}
+/* The map page keeps only a low drift and smaller trees, so the controls stay legible. */
+.snowscape {
+  transition: opacity 1.2s ease;
+}
+.app[data-scene="map"] .snowscape-trees {
+  height: min(38svh, 360px);
+  bottom: 4svh;
+  opacity: 0.9;
+}
+@media (max-width: 600px) {
+  /* On a phone's map page the trees would crowd the key, so only the drift stays. */
+  .app[data-scene="map"] .snowscape-trees {
+    display: none;
+  }
+}
+.app[data-season="christmas"] .legal a,
+.app[data-season="christmas"] .legal-menu-button {
+  color: #f4f6ff;
+  text-shadow: 0 1px 6px rgb(10 14 50 / 0.9);
+}
+/* A hazy bank of cloud along the horizon and a cold bloom up high. */
+.app[data-season="christmas"] .scene-sky::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse 55% 9% at 18% calc(var(--horizon-y) - 4%), rgb(170 160 230 / 0.35), transparent 70%),
+    radial-gradient(ellipse 60% 10% at 82% calc(var(--horizon-y) - 7%), rgb(190 170 235 / 0.3), transparent 70%),
+    radial-gradient(ellipse 80% 14% at 50% calc(var(--horizon-y) - 2%), rgb(150 150 225 / 0.28), transparent 70%),
+    radial-gradient(ellipse 60% 30% at 50% 0%, rgb(120 150 255 / 0.18), transparent 70%);
+}
+.hero {
+  pointer-events: none;
+}
+.cassette {
+  position: absolute;
+  left: calc(var(--omid-x) + var(--omid-w) * 0.58);
+  bottom: calc(var(--omid-b) - var(--omid-w) * 0.03);
+  width: calc(var(--omid-w) * 0.5);
+  transform: rotate(-6deg);
+  transform-origin: 50% 100%;
+  cursor: pointer;
+  pointer-events: auto;
+  filter: drop-shadow(0 4px 6px rgb(0 0 0 / 0.45));
+  transition: opacity 1.2s ease;
+}
+.cassette svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+.cassette:active {
+  transform: rotate(-6deg) scale(0.94);
+}
+.scene[data-behaviour="jump"] .cassette {
+  animation: cassette-hop 0.9s ease-in-out 1;
+}
+@keyframes cassette-hop {
+  30% {
+    transform: rotate(-14deg) translateY(-12%);
+  }
+  60% {
+    transform: rotate(4deg) translateY(-4%);
+  }
+}
+.app[data-scene="map"] .cassette {
+  opacity: 0;
+  pointer-events: none;
+}
+
+/*
+ * New Year atmosphere (scene/Atmosphere.tsx; not in Christmas mode). Warm and cool
+ * light layered through the night: a violet-and-gold haze along the horizon, slow
+ * bokeh in gold and blue, soft lights in the foreground, rising gold dust, glints on
+ * the water, a darker lower third, and a gentle glow round Omid.
+ */
+.atmo {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+.atmo-haze {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 70% 7% at 22% calc(var(--horizon-y) - 3%), rgb(150 130 230 / 0.28), transparent 70%),
+    radial-gradient(ellipse 60% 8% at 80% calc(var(--horizon-y) - 5%), rgb(255 190 120 / 0.2), transparent 70%),
+    radial-gradient(ellipse 90% 12% at 50% calc(var(--horizon-y) + 1%), rgb(255 200 130 / 0.2), transparent 72%),
+    radial-gradient(ellipse 60% 26% at 50% 0%, rgb(110 150 255 / 0.16), transparent 70%);
+  transition: opacity 1.2s ease;
+}
+.atmo-glints {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: calc(var(--horizon-y) + 5svh);
+  bottom: 7svh;
+  transition: opacity 1.2s ease;
+}
+.atmo-glints span {
+  position: absolute;
+  left: var(--x);
+  top: var(--y);
+  width: var(--w);
+  height: 1.5px;
+  border-radius: 2px;
+  background: linear-gradient(90deg, transparent, rgb(255 224 170 / 0.9), transparent);
+  opacity: 0;
+  animation: atmo-glint var(--d) ease-in-out var(--dl) infinite;
+}
+@keyframes atmo-glint {
+  45%,
+  55% {
+    opacity: 0.8;
+  }
+  0%,
+  100% {
+    opacity: 0;
+  }
+}
+.atmo-bokeh {
+  position: absolute;
+  left: var(--x);
+  top: var(--y);
+  width: var(--s);
+  height: var(--s);
+  border-radius: 50%;
+  background: radial-gradient(circle, rgb(var(--t) / 0.34), rgb(var(--t) / 0.1) 46%, transparent 70%);
+  animation: snow-glow var(--d) ease-in-out var(--dl) infinite alternate;
+}
+.atmo-bokeh--fore {
+  top: auto;
+  bottom: var(--b);
+  filter: blur(5px);
+  background: radial-gradient(circle, rgb(var(--t) / 0.3), rgb(var(--t) / 0.08) 50%, transparent 72%);
+}
+.atmo-dust {
+  position: absolute;
+  left: var(--x);
+  bottom: -2svh;
+  width: var(--s);
+  height: var(--s);
+  border-radius: 50%;
+  background: rgb(255 226 170);
+  box-shadow: 0 0 6px rgb(255 214 140 / 0.9);
+  opacity: var(--o);
+  animation: atmo-rise var(--d) linear var(--dl) infinite;
+}
+@keyframes atmo-rise {
+  from {
+    transform: translate3d(0, 0, 0);
+    opacity: 0;
+  }
+  15%,
+  85% {
+    opacity: var(--o);
+  }
+  to {
+    transform: translate3d(var(--dx), -70svh, 0);
+    opacity: 0;
+  }
+}
+.atmo-fore {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 26svh;
+  background:
+    linear-gradient(to top, rgb(3 5 24 / 0.6), transparent),
+    repeating-linear-gradient(to bottom, transparent 0 5px, rgb(120 150 255 / 0.05) 5px 6px);
+  -webkit-mask-image: linear-gradient(to top, #000 30%, transparent);
+  mask-image: linear-gradient(to top, #000 30%, transparent);
+  transition: opacity 1.2s ease;
+}
+.app[data-scene="map"] .atmo-haze,
+.app[data-scene="map"] .atmo-glints,
+.app[data-scene="map"] .atmo-fore {
+  opacity: 0;
+}
+/* A soft warm glow around Omid on the countdown page. */
+.app:not([data-season]) .scene:not([data-celebrate]) .scene-omid-body::before {
+  opacity: 0.4;
+}
+@media (max-width: 600px) {
+  .atmo-dust:nth-child(3n),
+  .atmo-glints span:nth-child(2n) {
+    display: none;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .atmo-bokeh,
+  .atmo-dust,
+  .atmo-glints {
+    display: none;
   }
 }

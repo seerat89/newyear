@@ -15,6 +15,7 @@ import { useNow } from './hooks/useNow'
 import { getNewYearWindow } from './lib/autoView'
 import { getCelebration } from './lib/celebration'
 import { getCountdownState } from './lib/countdown'
+import { getSeason } from './lib/season'
 import { CITIES } from './components/worldmap/places'
 
 function App() {
@@ -23,6 +24,7 @@ function App() {
   const [city, setCity] = useCity()
   const tz = city === null ? undefined : CITIES[city].tz
   const state = getCountdownState(now, tz)
+  const season = getSeason(now, tz)
   const celebration = getCelebration(state, now)
   useOmidCelebration(state.phase === 'celebrating' ? state.startedAt : null)
   const glow = state.phase === 'counting' ? glowForDaysLeft(state.remaining.days) : 1
@@ -41,18 +43,26 @@ function App() {
 
   return (
     <>
-    <div className="app" data-scene={scene} inert={page !== null}>
+    <div className="app" data-scene={scene} data-season={season ?? undefined} inert={page !== null}>
       <Scene
         glow={glow}
         celebration={celebration?.stage ?? null}
         celebrationStart={celebration?.startedAt ?? null}
+        christmas={season === 'christmas'}
       />
       <SceneSwitch scene={scene} onChange={setScene} />
       <LegalLinks />
       <main className="hero" inert={scene !== 'countdown'}>
         {state.phase === 'counting' && (
           <>
-            <h1 data-omid-keepout className="hero-title">Until {state.year}</h1>
+            {season === 'christmas' ? (
+              <>
+                <h1 data-omid-keepout className="hero-title xmas-title">Merry Christmas</h1>
+                <p data-omid-keepout className="xmas-sub">New Year in</p>
+              </>
+            ) : (
+              <h1 data-omid-keepout className="hero-title">Until {state.year}</h1>
+            )}
             <CountdownDisplay
               days={state.remaining.days}
               hours={state.remaining.hours}

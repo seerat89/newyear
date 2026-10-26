@@ -154,6 +154,14 @@ function Omid({ glow, className = '' }: OmidProps) {
           <circle cx={52} cy={128} r={3} fill="#fff" opacity={0.14 + 0.2 * glow} />
         </g>
 
+        <g className="omid-scarf" transform="translate(0 60)">
+          <path d="M140 122 C147 130 150 142 147 154 L162 151 C164 140 160 128 152 116Z" fill="#b8393f" />
+          <path d="M147 144 L161 141 M146 150 L160 147" stroke="#f6c56e" strokeWidth="2.6" strokeLinecap="round" />
+          <path d="M40 104 C70 124 130 124 160 104 L164 118 C132 140 68 140 36 118Z" fill="#c8443f" />
+          <path d="M39 111 C70 131 130 131 161 111" fill="none" stroke="#f6c56e" strokeWidth="3" strokeLinecap="round" />
+          <path d="M43 120 C72 138 128 138 157 120" fill="none" stroke="#8f2a3f" strokeWidth="2.2" strokeLinecap="round" opacity="0.7" />
+        </g>
+
         <g id="omid-face">
           <ellipse cx={60} cy={164} rx={12} ry={7} fill="var(--theme-blush)" opacity={cheek} />
           <ellipse cx={140} cy={164} rx={12} ry={7} fill="var(--theme-blush)" opacity={cheek} />

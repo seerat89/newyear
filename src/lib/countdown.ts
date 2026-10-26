@@ -64,7 +64,7 @@ function januaryDay(year: number, day: number, tz?: string): number {
 const calendars = new Map<string, Intl.DateTimeFormat>()
 
 /** The local calendar date (year, month 0-11, day) at `now`. */
-function calendarDate(now: number, tz?: string): { year: number; month: number; day: number } {
+export function calendarDate(now: number, tz?: string): { year: number; month: number; day: number } {
   if (!tz) {
     const d = new Date(now)
     return { year: d.getFullYear(), month: d.getMonth(), day: d.getDate() }
