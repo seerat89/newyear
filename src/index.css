@@ -2815,6 +2815,25 @@ body {
     opacity: 1;
   }
 }
+/* Coloured bulbs: each glows in its own colour and twinkles at its own pace. */
+.snowscape-bulb {
+  filter: drop-shadow(0 0 3px currentColor) drop-shadow(0 0 6px currentColor);
+  animation: snowscape-bulb 2.4s ease-in-out infinite alternate;
+}
+@keyframes snowscape-bulb {
+  from {
+    opacity: 0.45;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .snowscape-bulb,
+  .snowscape-light {
+    animation: none;
+  }
+}
 @media (max-width: 600px) {
   .snowscape-trees {
     height: min(30svh, 280px);

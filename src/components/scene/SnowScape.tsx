@@ -4,7 +4,10 @@ import { memo } from 'react'
 // soft drifts of snow along the bottom. Static art (no animation, so it also serves
 // reduced motion); only the lights twinkle, in CSS.
 
-type Tier = { y: number; w: number; h: number }
+// Small coloured bulbs strung along each tier, like a string of Christmas lights.
+const BULBS = ['#ff5a5f', '#ffd166', '#5be08a', '#5ab4ff', '#ff8fd0', '#b48cff']
+
+type Tier ={ y: number; w: number; h: number }
 
 /** One pine: stacked tiers, each with a cap of snow and a few warm lights. */
 function Pine({ x, base, w, h, seed }: { x: number; base: number; w: number; h: number; seed: number }) {
@@ -38,6 +41,24 @@ function Pine({ x, base, w, h, seed }: { x: number; base: number; w: number; h: 
               fill="#ffd27a"
             />
           ))}
+          {(i === 0 ? [-0.3, 0, 0.3] : [-0.4, -0.2, 0, 0.2, 0.4]).map((f, j) => {
+            const colour = BULBS[(seed + i * 2 + j) % BULBS.length]
+            return (
+              <circle
+                key={`b${j}`}
+                className="snowscape-bulb"
+                style={{
+                  color: colour,
+                  animationDelay: `${-((seed * 3 + i * 5 + j * 7) % 11) * 0.37}s`,
+                  animationDuration: `${1.6 + ((seed + j) % 4) * 0.45}s`,
+                }}
+                cx={x + f * t.w}
+                cy={t.y + t.h * (0.93 - 0.1 * (1 - (f / 0.44) ** 2))}
+                r={Math.max(2.6, w * 0.036)}
+                fill="currentColor"
+              />
+            )
+          })}
         </g>
       ))}
       <path d={`M${x - 5} ${base - h - 2} l5 -12 l5 12 l-10 0Z`} fill="#ffe29a" opacity="0.9" />
