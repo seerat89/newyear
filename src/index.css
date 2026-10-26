@@ -2215,7 +2215,7 @@ body {
   flex-direction: column;
   align-items: center;
   gap: 2px;
-  min-height: 4.5em;
+  min-height: 5.9em;
   white-space: normal;
   width: 100%;
   text-align: center;
@@ -2292,5 +2292,338 @@ body {
   }
   .wm-search-list {
     max-height: 220px;
+  }
+}
+
+/* Location link (under the search) */
+.wm-link {
+  padding: 4px 8px;
+  border: 0;
+  background: transparent;
+  color: rgb(143 224 255 / 0.85);
+  font: 500 13px/1.3 system-ui, sans-serif;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+.wm-link:hover:not(:disabled) {
+  color: #fff;
+}
+.wm-link:disabled {
+  cursor: default;
+  text-decoration: none;
+  opacity: 0.7;
+}
+.wm-link:focus-visible {
+  outline: 2px solid var(--theme-gold);
+  outline-offset: 2px;
+}
+
+/* About, Privacy and Terms: quiet links in the top corner, and a page over the app. */
+/* A quiet row of small-caps links, with a thin dot between them; each gets a hairline
+   underline on hover or focus. Secondary on purpose: it sits in the corner and does
+   not compete with the scene. */
+.legal {
+  position: fixed;
+  z-index: 30;
+  bottom: max(6px, env(safe-area-inset-bottom));
+  right: max(10px, env(safe-area-inset-right));
+  display: flex;
+  align-items: center;
+}
+.legal a {
+  position: relative;
+  padding: 10px 8px;
+  color: rgb(226 233 255 / 0.55);
+  font: 500 11px/1 system-ui, sans-serif;
+  letter-spacing: 0.14em;
+  text-decoration: none;
+  text-transform: uppercase;
+  transition: color 0.25s ease;
+}
+.legal a + a::before {
+  content: "";
+  position: absolute;
+  left: -1px;
+  top: 50%;
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: rgb(226 233 255 / 0.3);
+  transform: translateY(-50%);
+}
+.legal a::after {
+  content: "";
+  position: absolute;
+  left: 8px;
+  right: 8px;
+  bottom: 6px;
+  height: 1px;
+  background: currentColor;
+  opacity: 0;
+  transition: opacity 0.25s ease;
+}
+.legal a:hover,
+.legal a:focus-visible {
+  color: #fff;
+}
+.legal a:hover::after,
+.legal a:focus-visible::after {
+  opacity: 0.7;
+}
+.legal a:focus-visible {
+  outline: none;
+}
+.info a:focus-visible,
+.info-back:focus-visible {
+  outline: 2px solid var(--theme-gold);
+  outline-offset: 3px;
+}
+.info {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  overflow-y: auto;
+  background:
+    radial-gradient(ellipse 80% 50% at 50% 0%, rgb(52 84 190 / 0.3), transparent 70%),
+    linear-gradient(180deg, #070b26, #040618);
+  color: rgb(226 233 255 / 0.88);
+}
+.info-card {
+  box-sizing: border-box;
+  max-width: 640px;
+  margin: 0 auto;
+  padding: max(28px, env(safe-area-inset-top)) 24px max(40px, env(safe-area-inset-bottom));
+  font: 400 16px/1.65 system-ui, sans-serif;
+}
+.info-card h1 {
+  margin: 28px 0 16px;
+  color: var(--theme-cream);
+  font-family: var(--font-display);
+  font-size: clamp(34px, 6vw, 48px);
+  font-weight: 400;
+}
+.info-card h2 {
+  margin: 28px 0 6px;
+  color: #f6c56e;
+  font: 600 12px/1.2 system-ui, sans-serif;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+.info-card p {
+  margin: 0 0 12px;
+}
+.info-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 4px;
+  min-height: 40px;
+  border: 0;
+  background: transparent;
+  color: rgb(143 224 255 / 0.9);
+  font: 500 14px/1 system-ui, sans-serif;
+  cursor: pointer;
+}
+.info-nav {
+  display: flex;
+  gap: 18px;
+  margin-top: 40px;
+  padding-top: 18px;
+  border-top: 1px solid rgb(255 255 255 / 0.12);
+}
+.info-nav a {
+  color: rgb(214 224 255 / 0.7);
+  font-size: 14px;
+  text-decoration: none;
+}
+.info-nav a[aria-current="page"] {
+  color: #fff;
+}
+@media (min-width: 1600px) {
+  .legal a {
+    padding: 14px 14px;
+    font-size: 15px;
+  }
+  .legal a::after {
+    left: 14px;
+    right: 14px;
+    bottom: 9px;
+  }
+  .legal {
+    bottom: 18px;
+    right: 28px;
+  }
+  .info-card {
+    max-width: 780px;
+    font-size: 20px;
+  }
+}
+.info-card p a {
+  color: #8fe0ff;
+  text-underline-offset: 3px;
+}
+.info-back svg {
+  width: 18px;
+  height: 18px;
+}
+.hero-place {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: max(72px, calc(env(safe-area-inset-bottom) + 64px));
+  margin: 0;
+  color: rgb(236 242 255 / 0.7);
+  font: 500 13px/1.3 system-ui, sans-serif;
+  letter-spacing: 0.04em;
+  text-align: center;
+  text-shadow: 0 1px 8px rgb(0 0 0 / 0.5);
+}
+@media (min-width: 1600px) {
+  .hero-place {
+    bottom: 110px;
+    font-size: 18px;
+  }
+}
+
+/* Phones: the three links become one small button in the top-right that opens a
+   compact menu; the bottom controls are left alone. */
+.legal-menu {
+  display: none;
+}
+@media (max-width: 600px) {
+  .legal {
+    display: none;
+  }
+  .legal-menu {
+    position: fixed;
+    z-index: 30;
+    top: max(calc(env(safe-area-inset-top) + 6px), 8px);
+    right: max(8px, env(safe-area-inset-right));
+    display: block;
+  }
+  .legal-menu-button {
+    display: grid;
+    place-items: center;
+    width: 40px;
+    height: 40px;
+    margin: 2px;
+    padding: 0;
+    border: 1px solid rgb(255 255 255 / 0.14);
+    border-radius: 50%;
+    background: rgb(14 20 58 / 0.5);
+    -webkit-backdrop-filter: blur(8px);
+    backdrop-filter: blur(8px);
+    color: rgb(240 244 255 / 0.92);
+    cursor: pointer;
+  }
+  .legal-menu-button svg {
+    width: 22px;
+    height: 22px;
+    fill: currentColor;
+  }
+  .legal-menu-button[aria-expanded="true"],
+  .legal-menu-button:hover {
+    background: rgb(255 255 255 / 0.1);
+    color: #fff;
+  }
+  .legal-menu-button:focus-visible,
+  .legal-menu-list a:focus-visible {
+    outline: 2px solid var(--theme-gold);
+    outline-offset: 1px;
+  }
+  .legal-menu-list {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    display: flex;
+    flex-direction: column;
+    min-width: 150px;
+    padding: 6px;
+    border: 1px solid rgb(255 255 255 / 0.12);
+    border-radius: 14px;
+    background: rgb(10 15 48 / 0.94);
+    -webkit-backdrop-filter: blur(12px);
+    backdrop-filter: blur(12px);
+  }
+  .legal-menu-list a {
+    padding: 12px 14px;
+    border-radius: 9px;
+    color: rgb(236 242 255 / 0.88);
+    font: 500 15px/1 system-ui, sans-serif;
+    text-decoration: none;
+  }
+  .legal-menu-list a:hover {
+    background: rgb(255 255 255 / 0.08);
+  }
+}
+
+/* The chosen city: on phones just its name and a small triangle; tap to open the rest. */
+.wm-city {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  cursor: default;
+  pointer-events: none;
+}
+.wm-city svg {
+  display: none;
+  width: 10px;
+  height: 10px;
+  transition: transform 0.25s ease;
+}
+.wm-detail {
+  display: contents;
+}
+@media (max-width: 600px) {
+  .wm-result {
+    min-height: 2.6em;
+  }
+  .wm-city {
+    min-height: 32px;
+    padding: 0 6px;
+    cursor: pointer;
+    pointer-events: auto;
+  }
+  .wm-city svg {
+    display: block;
+    width: 16px;
+    height: 16px;
+    color: #8fe0ff;
+  }
+  .wm-city[aria-expanded="true"] svg {
+    transform: rotate(180deg);
+  }
+  .wm-city:focus-visible {
+    outline: 2px solid var(--theme-gold);
+    outline-offset: 2px;
+  }
+  .wm-detail {
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    z-index: 35;
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    margin-top: 2px;
+    padding: 10px 18px;
+    border: 1px solid rgb(255 255 255 / 0.12);
+    border-radius: 14px;
+    background: rgb(10 15 48 / 0.94);
+    white-space: nowrap;
+    transform: translateX(-50%);
+  }
+  .wm-detail[data-open] {
+    display: flex;
+  }
+  .wm-find {
+    position: relative;
   }
 }

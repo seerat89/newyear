@@ -5,6 +5,9 @@ import NewYearMessage from './components/celebration/NewYearMessage'
 import { useOmidCelebration } from './components/celebration/useOmidCelebration'
 import PhaseMessage from './components/PhaseMessage'
 import Scene from './components/scene/Scene'
+import { InfoPage, LegalLinks } from './components/InfoPage'
+import { useCity } from './hooks/useCity'
+import { usePage } from './hooks/usePage'
 import SceneSwitch from './components/SceneSwitch'
 import type { SceneName } from './components/SceneSwitch'
 import WorldMap from './components/worldmap/WorldMap'
@@ -12,10 +15,14 @@ import { useNow } from './hooks/useNow'
 import { getNewYearWindow } from './lib/autoView'
 import { getCelebration } from './lib/celebration'
 import { getCountdownState } from './lib/countdown'
+import { CITIES } from './components/worldmap/places'
 
 function App() {
   const now = useNow()
-  const state = getCountdownState(now)
+  // The countdown follows the viewer's chosen city; with none chosen, the device's time zone.
+  const [city, setCity] = useCity()
+  const tz = city === null ? undefined : CITIES[city].tz
+  const state = getCountdownState(now, tz)
   const celebration = getCelebration(state, now)
   useOmidCelebration(state.phase === 'celebrating' ? state.startedAt : null)
   const glow = state.phase === 'counting' ? glowForDaysLeft(state.remaining.days) : 1
@@ -24,7 +31,8 @@ function App() {
   // with one exception: when the viewer's own midnight is 5 minutes away the screen
   // moves to the countdown for the celebration (lib/autoView.ts). They can switch back.
   const [scene, setScene] = useState<SceneName>('countdown')
-  const midnight = getNewYearWindow(now)
+  const midnight = getNewYearWindow(now, tz)
+  const page = usePage()
   const [seen, setSeen] = useState<number | null>(null)
   if (midnight !== seen) {
     setSeen(midnight)
@@ -32,13 +40,15 @@ function App() {
   }
 
   return (
-    <div className="app" data-scene={scene}>
+    <>
+    <div className="app" data-scene={scene} inert={page !== null}>
       <Scene
         glow={glow}
         celebration={celebration?.stage ?? null}
         celebrationStart={celebration?.startedAt ?? null}
       />
       <SceneSwitch scene={scene} onChange={setScene} />
+      <LegalLinks />
       <main className="hero" inert={scene !== 'countdown'}>
         {state.phase === 'counting' && (
           <>
@@ -53,11 +63,18 @@ function App() {
         )}
         {state.phase === 'celebrating' && <NewYearMessage year={state.year} stage={celebration?.stage ?? null} />}
         {state.phase === 'afterglow' && <PhaseMessage title={`${state.year} has begun`} />}
+        {city !== null && (
+          <p className="hero-place">
+            Midnight in {CITIES[city].name}, {CITIES[city].country}
+          </p>
+        )}
       </main>
       <section className="map-section" aria-label="New Year around the world" inert={scene !== 'map'}>
-        <WorldMap now={now} active={scene === 'map'} />
+        <WorldMap now={now} active={scene === 'map'} city={city} onCity={setCity} />
       </section>
     </div>
+    {page && <InfoPage page={page} />}
+    </>
   )
 }
 

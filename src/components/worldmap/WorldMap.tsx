@@ -6,6 +6,7 @@ import { usePrefersReducedMotion } from '../omid/usePrefersReducedMotion'
 import { getFrontier, getWaves } from './frontier'
 import { DOT_PATHS, GRATICULE, MAP_HEIGHT, MAP_WIDTH, MARKERS, placeAt, project } from './geometry'
 import PlaceSearch from './PlaceSearch'
+import { nearestCity } from './savedCity'
 import { CITIES, PLACES } from './places'
 
 // New Year moving around the world. Every land dot takes the status of the place
@@ -45,7 +46,15 @@ const LEGEND: [Status, string, string, ReactNode][] = [
 const names =(places: number[], count = 3) =>
   places.slice(0, count).map((i) => PLACES[i].name).join(', ') + (places.length > count ? '…' : '')
 
-function WorldMap({ now: liveNow, active }: { now: number; active: boolean }) {
+type WorldMapProps = {
+  now: number
+  active: boolean
+  /** The viewer's chosen city (it also sets the countdown), and how to change it. */
+  city: number | null
+  onCity: (city: number | null) => void
+}
+
+function WorldMap({ now: liveNow, active, city: picked, onCity: choose }: WorldMapProps) {
   const reduced = usePrefersReducedMotion()
   const year = getWorldYear(liveNow)
 
@@ -88,7 +97,22 @@ function WorldMap({ now: liveNow, active }: { now: number; active: boolean }) {
     window.dispatchEvent(new CustomEvent('omid-behave', { detail: 'glide' }))
   }, [lead, reduced, active])
 
-  const [picked, setPicked] = useState<number | null>(null)
+  // The viewer's city is chosen by hand or (optionally) from their location; it is
+  // owned by App, which remembers it and counts down to its midnight.
+  const [detailOpen, setDetailOpen] = useState(false)
+  const [locating, setLocating] = useState<'idle' | 'asking' | 'failed'>('idle')
+  const useMyLocation = () => {
+    if (!('geolocation' in navigator)) return setLocating('failed')
+    setLocating('asking')
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        choose(nearestCity(position.coords.latitude, position.coords.longitude))
+        setLocating('idle')
+      },
+      () => setLocating('failed'),
+      { timeout: 10_000, maximumAge: 600_000 },
+    )
+  }
   // Leaving the map puts it back to live with the picker closed.
   if (!active && lapse !== null) setLapse(null)
   const selected = picked ?? frontier.places[0]
@@ -107,7 +131,7 @@ function WorldMap({ now: liveNow, active }: { now: number; active: boolean }) {
     const y = ((event.clientY - box.top) / box.height) * MAP_HEIGHT
     const hit = placeAt(x, y)
     if (hit !== null) {
-      setPicked(hit)
+      choose(hit)
     }
   }
 
@@ -152,15 +176,32 @@ function WorldMap({ now: liveNow, active }: { now: number; active: boolean }) {
         )}
       </div>
         <div className="wm-find">
-          <PlaceSearch order={sorted} onSelect={setPicked} />
+          <PlaceSearch order={sorted} onSelect={choose} />
           <p className="wm-result" aria-live="polite" data-empty={picked === null ? '' : undefined}>
           {picked === null ? (
-            ' '
+            <button type="button" className="wm-link" onClick={useMyLocation} disabled={locating === 'asking'}>
+              {locating === 'asking'
+                ? 'Finding the nearest city…'
+                : locating === 'failed'
+                  ? 'Location unavailable. Choose a city above, or try again'
+                  : 'Or use my location'}
+            </button>
           ) : (
             <>
-              <strong>
-                {CITIES[picked].name}, {CITIES[picked].country}
-              </strong>
+              <button
+                type="button"
+                className="wm-city"
+                aria-expanded={detailOpen}
+                onClick={() => setDetailOpen(!detailOpen)}
+              >
+                <strong>
+                  {CITIES[picked].name}, {CITIES[picked].country}
+                </strong>
+                <svg viewBox="0 0 10 10" aria-hidden="true">
+                  <path d="M2 3.5 5 6.8 8 3.5Z" fill="currentColor" />
+                </svg>
+              </button>
+              <span className="wm-detail" data-open={detailOpen ? '' : undefined}>
               <span>
                 Local time {formatLocalTime(CITIES[picked].tz, now).time.replace(/:\d\d(?=\s|$)/, '')}
               </span>
@@ -168,6 +209,10 @@ function WorldMap({ now: liveNow, active }: { now: number; active: boolean }) {
                 {statuses[picked] === 'waiting'
                   ? `Welcomes ${year} in ${formatSpan(instants[picked] - now)}`
                   : `Entered ${year} ${formatSpan(now - instants[picked])} ago`}
+              </span>
+              <button type="button" className="wm-link" onClick={() => choose(null)}>
+                Clear
+              </button>
               </span>
             </>
           )}
