@@ -1,5 +1,6 @@
 import { useEffect, useId, useState } from 'react'
 import type { KeyboardEvent } from 'react'
+import { useT } from '../../lib/strings'
 import { CITIES } from './places'
 
 type PlaceSearchProps = {
@@ -14,6 +15,7 @@ const fold = (text: string) => text.normalize('NFD').replace(/\p{M}/gu, '').toLo
 /** A small search box with a filtered list (the ARIA combobox pattern), no library. */
 function PlaceSearch({ order, onSelect }: PlaceSearchProps) {
   const id = useId()
+  const { t } = useT()
   const [query, setQuery] = useState('')
   const [open, setOpen] = useState(false)
   const [active, setActive] = useState(0)
@@ -63,8 +65,8 @@ function PlaceSearch({ order, onSelect }: PlaceSearchProps) {
         type="text"
         role="combobox"
         className="wm-search-input"
-        placeholder="Find a city or country"
-        aria-label="Search places"
+        placeholder={t('findCity')}
+        aria-label={t('findCity')}
         aria-expanded={open}
         aria-controls={`${id}-list`}
         aria-autocomplete="list"
@@ -83,7 +85,7 @@ function PlaceSearch({ order, onSelect }: PlaceSearchProps) {
         onKeyDown={onKeyDown}
       />
       {open && (
-        <ul className="wm-search-list" role="listbox" id={`${id}-list`} aria-label="Places">
+        <ul className="wm-search-list" role="listbox" id={`${id}-list`} aria-label={t('findCity')}>
           {matches.map((place, n) => (
             <li
               key={place}
@@ -97,7 +99,7 @@ function PlaceSearch({ order, onSelect }: PlaceSearchProps) {
               {CITIES[place].name} <span>{CITIES[place].country}</span>
             </li>
           ))}
-          {matches.length === 0 && <li className="wm-search-empty">No matching place</li>}
+          {matches.length === 0 && <li className="wm-search-empty">{t('noMatch')}</li>}
         </ul>
       )}
     </div>

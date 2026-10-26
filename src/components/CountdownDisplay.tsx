@@ -1,4 +1,5 @@
 import { memo } from 'react'
+import { useT } from '../lib/strings'
 
 const pad = (value: number) => String(value).padStart(2, '0')
 
@@ -38,6 +39,7 @@ function CountdownDisplay({
   minutes,
   seconds,
 }: CountdownDisplayProps) {
+  const { t } = useT()
   const units = [
     ['days', days],
     ['hours', hours],
@@ -49,7 +51,7 @@ function CountdownDisplay({
     <dl data-omid-keepout className="countdown">
       {units.map(([label, value]) => (
         <div key={label} className="unit">
-          <dt className="unit-label">{label}</dt>
+          <dt className="unit-label">{t(label)}</dt>
           <dd className="unit-value">
             <Digits value={value} />
           </dd>

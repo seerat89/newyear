@@ -87,20 +87,31 @@ export function formatOffset(offsetMs: number): string {
 }
 
 /** A short span for a countdown or an elapsed time: "3h 12m", "12m 04s", "2d 3h". */
-export function formatSpan(ms: number): string {
+export function formatSpan(ms: number, units: [string, string, string, string] = ['d', 'h', 'm', 's']): string {
   const total = Math.max(0, Math.round(ms / 1000))
   const days = Math.floor(total / 86400)
   const hours = Math.floor((total % 86400) / 3600)
   const minutes = Math.floor((total % 3600) / 60)
   const seconds = total % 60
-  if (days > 0) return `${days}d ${hours}h`
-  if (hours > 0) return `${hours}h ${String(minutes).padStart(2, '0')}m`
-  return `${minutes}m ${String(seconds).padStart(2, '0')}s`
+  const [d, h, m, s] = units
+  if (days > 0) return `${days}${d} ${hours}${h}`
+  if (hours > 0) return `${hours}${h} ${String(minutes).padStart(2, '0')}${m}`
+  return `${minutes}${m} ${String(seconds).padStart(2, '0')}${s}`
 }
 
 /** The local date and time in a zone, in the viewer's own language and style. */
-export function formatLocalTime(tz: string, at: number): { day: string; time: string } {
-  const day = new Intl.DateTimeFormat(undefined, { timeZone: tz, weekday: 'long', month: 'short', day: 'numeric' })
-  const time = new Intl.DateTimeFormat(undefined, { timeZone: tz, hour: 'numeric', minute: '2-digit', second: '2-digit' })
+export function formatLocalTime(
+  tz: string,
+  at: number,
+  locale?: string,
+  seconds = true,
+): { day: string; time: string } {
+  const day = new Intl.DateTimeFormat(locale, { timeZone: tz, weekday: 'long', month: 'short', day: 'numeric' })
+  const time = new Intl.DateTimeFormat(locale, {
+    timeZone: tz,
+    hour: 'numeric',
+    minute: '2-digit',
+    ...(seconds ? { second: '2-digit' as const } : {}),
+  })
   return { day: day.format(at), time: time.format(at) }
 }

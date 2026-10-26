@@ -5,6 +5,8 @@ import type { ZoneStatus } from '../../lib/worldTime'
 import { usePrefersReducedMotion } from '../omid/usePrefersReducedMotion'
 import { getFrontier, getWaves } from './frontier'
 import { DOT_PATHS, GRATICULE, MAP_HEIGHT, MAP_WIDTH, MARKERS, placeAt, project } from './geometry'
+import { spanUnits, useT } from '../../lib/strings'
+import type { StringKey } from '../../lib/strings'
 import PlaceSearch from './PlaceSearch'
 import { nearestCity } from './savedCity'
 import { CITIES, PLACES } from './places'
@@ -31,16 +33,16 @@ const LEAD_MS = 25 * 60_000
 const TAIL_MS = 50 * 60_000
 
 /** The key: a different simple shape for each state, tinted with its map colour. */
-const LEGEND: [Status, string, string, ReactNode][] = [
-  ['arrived', 'arrived', 'In ', <circle key="s" cx="5" cy="5" r="3.6" fill="currentColor" />],
+const LEGEND: [Status, StringKey, StringKey, ReactNode][] = [
+  ['arrived', 'legendArrived', 'shortArrived', <circle key="s" cx="5" cy="5" r="3.6" fill="currentColor" />],
   [
     'celebrating',
-    'Celebrating now',
-    'Now',
+    'legendNow',
+    'shortNow',
     <path key="s" d="M5 .4 6.2 3.8 9.6 5 6.2 6.2 5 9.6 3.8 6.2.4 5 3.8 3.8Z" fill="currentColor" />,
   ],
-  ['next', 'Next to midnight', 'Next', <path key="s" d="M2.4 1 8.4 5 2.4 9Z" fill="currentColor" />],
-  ['waiting', 'Waiting', 'Waiting', <circle key="s" cx="5" cy="5" r="3.1" fill="none" stroke="currentColor" strokeWidth="1.4" />],
+  ['next', 'nextToMidnight', 'shortNext', <path key="s" d="M2.4 1 8.4 5 2.4 9Z" fill="currentColor" />],
+  ['waiting', 'legendWaiting', 'legendWaiting', <circle key="s" cx="5" cy="5" r="3.1" fill="none" stroke="currentColor" strokeWidth="1.4" />],
 ]
 
 const names =(places: number[], count = 3) =>
@@ -56,6 +58,8 @@ type WorldMapProps = {
 
 function WorldMap({ now: liveNow, active, city: picked, onCity: choose }: WorldMapProps) {
   const reduced = usePrefersReducedMotion()
+  const { t, lang } = useT()
+  const span = (ms: number) => formatSpan(ms, spanUnits(lang))
   const year = getWorldYear(liveNow)
 
   // When each place begins the year, and the order midnight reaches them.
@@ -152,25 +156,25 @@ function WorldMap({ now: liveNow, active, city: picked, onCity: choose }: WorldM
             phones), so the dock never changes height and the map never jumps. */}
         {nextAt !== null ? (
           <p className="wm-next">
-            <b>Next to midnight</b>
+            <b>{t('nextToMidnight')}</b>
             <strong>{nextPlaces.length > 1 ? `${PLACES[nextPlaces[0]].name} +${nextPlaces.length - 1}` : names(nextPlaces, 1)}</strong>
-            <span>in {formatSpan(nextAt - now)}</span>
+            <span>{t('inSpan', { span: span(nextAt - now) })}</span>
           </p>
         ) : (
           <p className="wm-next wm-ghost" aria-hidden="true">
-            <b>Next to midnight</b>
+            <b>{t('nextToMidnight')}</b>
             <strong>-</strong>
           </p>
         )}
         {frontier.phase !== 'before' ? (
           <p className="wm-just">
-            <b>{frontier.phase === 'after' ? `${year} has reached everyone` : `Just rang in ${year}`}</b>
+            <b>{frontier.phase === 'after' ? t('reachedEveryone', { year }) : t('justRangIn', { year })}</b>
             <strong>{names(frontier.places, 2)}</strong>
-            <span>{formatSpan(now - latestAt)} ago</span>
+            <span>{t('agoSpan', { span: span(now - latestAt) })}</span>
           </p>
         ) : (
           <p className="wm-just wm-ghost" aria-hidden="true">
-            <b>Just rang in</b>
+            <b>{t('justRangIn', { year })}</b>
             <strong>-</strong>
           </p>
         )}
@@ -181,10 +185,10 @@ function WorldMap({ now: liveNow, active, city: picked, onCity: choose }: WorldM
           {picked === null ? (
             <button type="button" className="wm-link" onClick={useMyLocation} disabled={locating === 'asking'}>
               {locating === 'asking'
-                ? 'Finding the nearest city…'
+                ? t('finding')
                 : locating === 'failed'
-                  ? 'Location unavailable. Choose a city above, or try again'
-                  : 'Or use my location'}
+                  ? t('locFailed')
+                  : t('useLocation')}
             </button>
           ) : (
             <>
@@ -203,15 +207,15 @@ function WorldMap({ now: liveNow, active, city: picked, onCity: choose }: WorldM
               </button>
               <span className="wm-detail" data-open={detailOpen ? '' : undefined}>
               <span>
-                Local time {formatLocalTime(CITIES[picked].tz, now).time.replace(/:\d\d(?=\s|$)/, '')}
+                {t('localTime', { time: formatLocalTime(CITIES[picked].tz, now, lang, false).time })}
               </span>
               <span>
                 {statuses[picked] === 'waiting'
-                  ? `Welcomes ${year} in ${formatSpan(instants[picked] - now)}`
-                  : `Entered ${year} ${formatSpan(now - instants[picked])} ago`}
+                  ? t('welcomes', { year, span: span(instants[picked] - now) })
+                  : t('entered', { year, span: span(now - instants[picked]) })}
               </span>
               <button type="button" className="wm-link" onClick={() => choose(null)}>
-                Clear
+                {t('clear')}
               </button>
               </span>
             </>
@@ -231,7 +235,7 @@ function WorldMap({ now: liveNow, active, city: picked, onCity: choose }: WorldM
           className="wm-map"
           viewBox={`0 0 ${MAP_WIDTH} ${MAP_HEIGHT}`}
           role="img"
-          aria-label={`World map of who is already in ${year}, who is celebrating, and who is still waiting`}
+          aria-label={t('mapLabel', { year })}
           onClick={pick}
         >
           <defs>
@@ -275,15 +279,15 @@ function WorldMap({ now: liveNow, active, city: picked, onCity: choose }: WorldM
 
       <div className="wm-dock">
       <div className="wm-controls">
-        <ul className="wm-legend" aria-label="Map key">
+        <ul className="wm-legend" aria-label={t('mapKey')}>
           {LEGEND.map(([state, label, short, shape]) => (
             <li key={state} data-state={state}>
               <svg viewBox="0 0 10 10" aria-hidden="true">
                 {shape}
               </svg>
-              <span className="lg-long">{label === 'arrived' ? `Already in ${year}` : label}</span>
+              <span className="lg-long">{t(label, { year })}</span>
               <span className="lg-short" aria-hidden="true">
-                {short === 'In ' ? `In ${year}` : short}
+                {t(short, { year })}
               </span>
             </li>
           ))}

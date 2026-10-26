@@ -15,6 +15,8 @@ import { useNow } from './hooks/useNow'
 import { getNewYearWindow } from './lib/autoView'
 import { getCelebration } from './lib/celebration'
 import { getCountdownState } from './lib/countdown'
+import { getGreeting } from './lib/greetings'
+import { useT } from './lib/strings'
 import { getSeason } from './lib/season'
 import { CITIES } from './components/worldmap/places'
 
@@ -25,6 +27,8 @@ function App() {
   const tz = city === null ? undefined : CITIES[city].tz
   const state = getCountdownState(now, tz)
   const season = getSeason(now, tz)
+  const { t, lang } = useT()
+  const xmas = getGreeting('christmas', lang)
   const celebration = getCelebration(state, now)
   useOmidCelebration(state.phase === 'celebrating' ? state.startedAt : null)
   const glow = state.phase === 'counting' ? glowForDaysLeft(state.remaining.days) : 1
@@ -57,11 +61,13 @@ function App() {
           <>
             {season === 'christmas' ? (
               <>
-                <h1 data-omid-keepout className="hero-title xmas-title">Merry Christmas</h1>
-                <p data-omid-keepout className="xmas-sub">New Year in</p>
+                <h1 data-omid-keepout className="hero-title xmas-title" lang={xmas.lang} dir={xmas.dir}>
+                  {xmas.text}
+                </h1>
+                <p data-omid-keepout className="xmas-sub">{t('newYearIn')}</p>
               </>
             ) : (
-              <h1 data-omid-keepout className="hero-title">Until {state.year}</h1>
+              <h1 data-omid-keepout className="hero-title">{t('untilYear', { year: state.year })}</h1>
             )}
             <CountdownDisplay
               days={state.remaining.days}
@@ -72,10 +78,10 @@ function App() {
           </>
         )}
         {state.phase === 'celebrating' && <NewYearMessage year={state.year} stage={celebration?.stage ?? null} />}
-        {state.phase === 'afterglow' && <PhaseMessage title={`${state.year} has begun`} />}
+        {state.phase === 'afterglow' && <PhaseMessage title={t('yearBegun', { year: state.year })} />}
         {city !== null && (
           <p className="hero-place">
-            Midnight in {CITIES[city].name}, {CITIES[city].country}
+            {t('midnightIn', { city: CITIES[city].name, country: CITIES[city].country })}
           </p>
         )}
       </main>

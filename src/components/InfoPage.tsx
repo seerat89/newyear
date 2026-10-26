@@ -1,5 +1,8 @@
 import { useEffect, useRef, useState } from 'react'
 import type { ReactNode } from 'react'
+import { useT } from '../lib/strings'
+import type { StringKey } from '../lib/strings'
+import LanguageSelect from './LanguageSelect'
 
 import { PAGES } from '../hooks/usePage'
 import type { PageName } from '../hooks/usePage'
@@ -9,10 +12,10 @@ const closePage = () => {
   window.dispatchEvent(new HashChangeEvent('hashchange'))
 }
 
-const LINKS: { page: PageName; label: string }[] = [
-  { page: 'about', label: 'About' },
-  { page: 'privacy', label: 'Privacy' },
-  { page: 'terms', label: 'Terms' },
+const LINKS: { page: PageName; label: StringKey }[] = [
+  { page: 'about', label: 'about' },
+  { page: 'privacy', label: 'privacy' },
+  { page: 'terms', label: 'terms' },
 ]
 
 /**
@@ -20,6 +23,7 @@ const LINKS: { page: PageName; label: string }[] = [
  * screens, and on phones one small button (top-right) that opens a compact menu.
  */
 export function LegalLinks() {
+  const { t } = useT()
   const [open, setOpen] = useState(false)
   const button = useRef<HTMLButtonElement>(null)
   const menu = useRef<HTMLDivElement>(null)
@@ -46,19 +50,20 @@ export function LegalLinks() {
 
   return (
     <>
-      <nav className="legal" aria-label="About and legal">
+      <nav className="legal" aria-label={t('aboutLegal')}>
         {LINKS.map(({ page, label }) => (
           <a key={page} href={`#${page}`}>
-            {label}
+            {t(label)}
           </a>
         ))}
+        <LanguageSelect className="legal-lang" />
       </nav>
       <div className="legal-menu">
         <button
           ref={button}
           type="button"
           className="legal-menu-button"
-          aria-label="About and legal"
+          aria-label={t('aboutLegal')}
           aria-expanded={open}
           aria-controls="legal-menu-list"
           onClick={() => setOpen(!open)}
@@ -73,9 +78,10 @@ export function LegalLinks() {
           <div ref={menu} id="legal-menu-list" className="legal-menu-list">
             {LINKS.map(({ page, label }) => (
               <a key={page} href={`#${page}`} onClick={() => setOpen(false)}>
-                {label}
+                {t(label)}
               </a>
             ))}
+            <LanguageSelect className="legal-menu-lang" onPick={() => setOpen(false)} />
           </div>
         )}
       </div>
@@ -109,6 +115,10 @@ const CONTENT: Record<PageName, { title: string; body: ReactNode }> = {
         <p>
           The countdown follows the city you choose, so you can count down to midnight wherever you are, or wherever
           someone you care about is. If you do not choose one, it uses your device's time zone.
+        </p>
+        <h2>Languages</h2>
+        <p className="info-note">
+          Some translations are AI-assisted and may contain mistakes. If you spot one, please let us know.
         </p>
         <h2>About the creator</h2>
         <p>
@@ -175,6 +185,7 @@ const CONTENT: Record<PageName, { title: string; body: ReactNode }> = {
 
 /** A full-screen page over the app, for About, Privacy and Terms. */
 export function InfoPage({ page }: { page: PageName }) {
+  const { t } = useT()
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => e.key === 'Escape' && closePage()
     window.addEventListener('keydown', onKey)
@@ -188,7 +199,7 @@ export function InfoPage({ page }: { page: PageName }) {
           <svg viewBox="0 0 20 20" aria-hidden="true">
             <path d="M3 9.5 10 3.5l7 6M5 8.5V16h3.5v-4h3v4H15V8.5" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
           </svg>
-          Home
+          {t('home')}
         </button>
         <h1>{title}</h1>
         {body}
