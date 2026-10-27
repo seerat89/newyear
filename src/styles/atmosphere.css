@@ -1,0 +1,128 @@
+/*
+ * New Year atmosphere (scene/Atmosphere.tsx; not in Christmas mode). Warm and cool
+ * light layered through the night: a violet-and-gold haze along the horizon, slow
+ * bokeh in gold and blue, soft lights in the foreground, rising gold dust, glints on
+ * the water, a darker lower third, and a gentle glow round Omid.
+ */
+.atmo {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+.atmo-haze {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 70% 7% at 22% calc(var(--horizon-y) - 3%), rgb(150 130 230 / 0.28), transparent 70%),
+    radial-gradient(ellipse 60% 8% at 80% calc(var(--horizon-y) - 5%), rgb(255 190 120 / 0.2), transparent 70%),
+    radial-gradient(ellipse 90% 12% at 50% calc(var(--horizon-y) + 1%), rgb(255 200 130 / 0.2), transparent 72%),
+    radial-gradient(ellipse 60% 26% at 50% 0%, rgb(110 150 255 / 0.16), transparent 70%);
+  transition: opacity 1.2s ease;
+}
+.atmo-glints {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: calc(var(--horizon-y) + 5svh);
+  bottom: 7svh;
+  transition: opacity 1.2s ease;
+}
+.atmo-glints span {
+  position: absolute;
+  left: var(--x);
+  top: var(--y);
+  width: var(--w);
+  height: 1.5px;
+  border-radius: 2px;
+  background: linear-gradient(90deg, transparent, rgb(255 224 170 / 0.9), transparent);
+  opacity: 0;
+  animation: atmo-glint var(--d) ease-in-out var(--dl) infinite;
+}
+@keyframes atmo-glint {
+  45%,
+  55% {
+    opacity: 0.8;
+  }
+  0%,
+  100% {
+    opacity: 0;
+  }
+}
+.atmo-bokeh {
+  position: absolute;
+  left: var(--x);
+  top: var(--y);
+  width: var(--s);
+  height: var(--s);
+  border-radius: 50%;
+  background: radial-gradient(circle, rgb(var(--t) / 0.34), rgb(var(--t) / 0.1) 46%, transparent 70%);
+  animation: snow-glow var(--d) ease-in-out var(--dl) infinite alternate;
+}
+.atmo-bokeh--fore {
+  top: auto;
+  bottom: var(--b);
+  filter: blur(5px);
+  background: radial-gradient(circle, rgb(var(--t) / 0.3), rgb(var(--t) / 0.08) 50%, transparent 72%);
+}
+.atmo-dust {
+  position: absolute;
+  left: var(--x);
+  bottom: -2svh;
+  width: var(--s);
+  height: var(--s);
+  border-radius: 50%;
+  background: rgb(255 226 170);
+  box-shadow: 0 0 6px rgb(255 214 140 / 0.9);
+  opacity: var(--o);
+  animation: atmo-rise var(--d) linear var(--dl) infinite;
+}
+@keyframes atmo-rise {
+  from {
+    transform: translate3d(0, 0, 0);
+    opacity: 0;
+  }
+  15%,
+  85% {
+    opacity: var(--o);
+  }
+  to {
+    transform: translate3d(var(--dx), -70svh, 0);
+    opacity: 0;
+  }
+}
+.atmo-fore {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 26svh;
+  background:
+    linear-gradient(to top, rgb(3 5 24 / 0.6), transparent),
+    repeating-linear-gradient(to bottom, transparent 0 5px, rgb(120 150 255 / 0.05) 5px 6px);
+  -webkit-mask-image: linear-gradient(to top, #000 30%, transparent);
+  mask-image: linear-gradient(to top, #000 30%, transparent);
+  transition: opacity 1.2s ease;
+}
+.app[data-scene="map"] .atmo-haze,
+.app[data-scene="map"] .atmo-glints,
+.app[data-scene="map"] .atmo-fore {
+  opacity: 0;
+}
+/* A soft warm glow around Omid on the countdown page. */
+.app:not([data-season]) .scene:not([data-celebrate]) .scene-omid-body::before {
+  opacity: 0.4;
+}
+@media (max-width: 600px) {
+  .atmo-dust:nth-child(3n),
+  .atmo-glints span:nth-child(2n) {
+    display: none;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .atmo-bokeh,
+  .atmo-dust,
+  .atmo-glints {
+    display: none;
+  }
+}

@@ -71,6 +71,22 @@ function Omid({ glow, className = '' }: OmidProps) {
             <stop offset="0" style={{ stopColor: 'var(--theme-spirit-crest-low)' }} />
             <stop offset="1" style={{ stopColor: 'var(--theme-spirit-crest-high)' }} />
           </linearGradient>
+          <linearGradient id="omid-cap" x1="0" y1="0" x2="0.3" y2="1">
+            <stop offset="0" stopColor="#7a716c" />
+            <stop offset="1" stopColor="#4d4644" />
+          </linearGradient>
+          <linearGradient id="omid-brim" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stopColor="#d8323a" />
+            <stop offset="1" stopColor="#9a1f28" />
+          </linearGradient>
+          <linearGradient id="omid-santa" x1="0.2" y1="0" x2="0.8" y2="1">
+            <stop offset="0" stopColor="#e23a3f" />
+            <stop offset="1" stopColor="#a8212b" />
+          </linearGradient>
+          <radialGradient id="omid-fluff" cx="40%" cy="35%" r="70%">
+            <stop offset="0" stopColor="#ffffff" />
+            <stop offset="1" stopColor="#ece4dc" />
+          </radialGradient>
           <radialGradient id="omid-inner">
             <stop offset="0" stopColor="#fff3c4" stopOpacity="1" />
             <stop offset="1" stopColor="#fff3c4" stopOpacity="0" />
@@ -183,6 +199,32 @@ function Omid({ glow, className = '' }: OmidProps) {
             strokeWidth={3.2}
             strokeLinecap="round"
           />
+        </g>
+
+        {/* Headwear: overlays only (the body is untouched); the curl is hidden by CSS. */}
+        <g className="omid-hat omid-hat--cap" transform="translate(0 -2) rotate(-3 100 100)">
+          <path d="M38 100 C35 66 64 46 100 46 C136 46 165 66 162 100 C138 108 62 108 38 100Z" fill="url(#omid-cap)" />
+          <path d="M100 48 C93 66 93 88 98 105 M100 48 C107 66 107 88 102 105 M66 56 C60 74 60 90 62 104 M134 56 C140 74 140 90 138 104" fill="none" stroke="#3d3736" strokeWidth={1.1} opacity={0.45} />
+          <path d="M62 62 C72 52 88 48 104 49" fill="none" stroke="#fff" strokeWidth={2.6} strokeLinecap="round" opacity={0.16} />
+          <circle cx={100} cy={46} r={5.4} fill="#d8323a" />
+          <circle cx={98.4} cy={44.4} r={1.6} fill="#fff" opacity={0.4} />
+          <path d="M34 100 Q100 128 166 100 Q100 110 34 100Z" fill="url(#omid-brim)" />
+        </g>
+        <g className="omid-hat omid-hat--santa" transform="rotate(-3 100 100)">
+          <path d="M42 96 C37 56 68 24 106 24 C142 24 168 50 176 88 C168 82 162 86 158 96Z" fill="url(#omid-santa)" />
+          <path d="M64 56 C78 38 96 30 116 30" fill="none" stroke="#fff" strokeWidth={2.6} strokeLinecap="round" opacity={0.2} />
+          <g fill="url(#omid-fluff)">
+            <rect x={34} y={89} width={132} height={22} rx={11} />
+            {[42, 58, 76, 96, 116, 136, 156].map((x, i) => (
+              <circle key={x} cx={x} cy={i % 2 ? 111 : 109} r={7.5} />
+            ))}
+            {[46, 70, 94, 118, 142].map((x, i) => (
+              <circle key={x} cx={x} cy={i % 2 ? 89 : 91} r={6.5} />
+            ))}
+            <circle cx={177} cy={92} r={11} />
+            <circle cx={170} cy={87} r={6} />
+            <circle cx={184} cy={97} r={5} />
+          </g>
         </g>
       </svg>
       </div>

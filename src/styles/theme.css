@@ -1,0 +1,47 @@
+/*
+ * Theme tokens: Midnight City. Components use these semantic names only. The sky
+ * runs from deep midnight blue through plum and restrained dark red to a dim gold
+ * glow of distant city light; a dark skyline stands over dark water; cream and
+ * warm gold carry the hope. Only these values exist today and there is no
+ * runtime theme switching.
+ */
+:root,
+:root[data-theme="dusk"] {
+  --theme-sky-top: #060a22;
+  --theme-sky-mid: #0f1a52;
+  --theme-sky-plum: #1b2f7c;
+  --theme-sky-rose: #2d4c9c;
+  --theme-sky-cool: #4d7cc4;
+  --theme-sky-amber: #d9a05c;
+  --theme-sky-low: #0e1546;
+  --theme-city-top: #0c1236;
+  --theme-city-base: #171d4a;
+  --theme-water-top: #1a2b73;
+  --theme-water-mid: #0f1b56;
+  --theme-water-deep: #050823;
+  --theme-cream: #fff0d2;
+  --theme-gold: #f6c96b;
+    --theme-ink: #fff0d2;
+  --theme-ink-muted: #ecd2b0;
+  /* Space-separated RGB so it can take an alpha: rgb(var(--theme-glow) / 0.14) */
+  --theme-glow: 247 184 92;
+  /* Omid: dim (far away) and bright (midnight) fills, stacked by glow level */
+  --theme-spirit-dim-core: #b08a4c;
+  --theme-spirit-dim-mid: #946f3a;
+  --theme-spirit-dim-edge: #6a4a22;
+  --theme-spirit-dim-crest: #c29a58;
+  --theme-spirit-dim-limb: #7a5a2e;
+  --theme-spirit-core: #fff4cc;
+  --theme-spirit-mid: #ffe09a;
+  --theme-spirit-edge: #e59a2e;
+  --theme-spirit-crest-low: #ffd477;
+  --theme-spirit-crest-high: #fff7d8;
+  --theme-spirit-limb: #f3b350;
+  --theme-spirit-face: #3b2210;
+  --theme-blush: #ff8e6e;
+}
+
+@theme {
+  --font-display: "Fraunces", "Iowan Old Style", "Palatino Linotype", Palatino,
+    Georgia, serif;
+}

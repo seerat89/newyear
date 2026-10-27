@@ -1,0 +1,98 @@
+html {
+  background-color: var(--theme-sky-top);
+}
+
+body {
+  margin: 0;
+  color: var(--theme-ink);
+  font-family: system-ui, "Segoe UI", Roboto, sans-serif;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+}
+
+/*
+ * Compositions. The screen is not scaled from one design: phone, tablet,
+ * desktop and TV each have their own art (scene/scenes.ts) and their own
+ * arrangement. These variables are the whole switch:
+ *   --stage-aspect, --stage-hmax   the art's width/height and the most screen height it may take;
+ *                 the stage is as wide as the screen allows without taking more height than
+ *                 that (short screens get a smaller, centred stage and the ridges run on past it)
+ *   --far-crest   where the horizon (the city's glow) sits in the stage (0..1 from its top)
+ *   --horizon-y   distance from the top of the screen to the glowing horizon
+ *   --hero-top, --title-*, --num, --cols, --col-gap, --row-gap   the countdown
+ * Phone is the default; the rules below override it.
+ */
+:root {
+  /* Phone, portrait (390 x 844) */
+  --stage-aspect: 1;
+  --stage-hmax: 46svh;
+  --far-crest: 0.29;
+  --star-scale: 1;
+  --hero-top: max(calc(env(safe-area-inset-top) + 12px), min(56px, 7svh));
+  --title-size: clamp(22px, min(8vw, 4.2svh), 36px);
+  --title-gap: min(22px, 2.6svh);
+  --num: min(18.6vw, 8.8svh);
+  --cols: 2;
+  --col-gap: 12vw;
+  --row-gap: min(20px, 2.4svh);
+  --stage-h: min(calc(100vw / var(--stage-aspect)), var(--stage-hmax));
+  --stage-w: calc(var(--stage-h) * var(--stage-aspect));
+  --horizon-y: calc(100svh - var(--stage-h) * (1 - var(--far-crest)));
+}
+@media (min-width: 480px) and (orientation: portrait) {
+  :root {
+    /* Tablet, portrait (820 x 1180) */
+    --stage-aspect: 1.7447;
+    --stage-hmax: 40svh;
+    --far-crest: 0.328;
+    --star-scale: 1.2;
+    --hero-top: 16svh;
+    --title-size: clamp(40px, 6.4vw, 60px);
+    --title-gap: 34px;
+    --num: 12vw;
+    --cols: 4;
+    --col-gap: 4vw;
+    --row-gap: 0px;
+    }
+}
+@media (orientation: landscape) {
+  :root {
+    /* Desktop, landscape (1280 x 720) */
+    --stage-aspect: 4.4444;
+    --stage-hmax: 40svh;
+    --far-crest: 0.394;
+    --star-scale: 1.2;
+    --hero-top: 7svh;
+    --title-size: clamp(30px, 3.3vw, 52px);
+    --title-gap: 20px;
+    --num: min(8.7vw, 15.5svh);
+    --cols: 4;
+    --col-gap: 3.4vw;
+    --row-gap: 0px;
+    }
+}
+@media (orientation: landscape) and (max-aspect-ratio: 3 / 2) and (min-width: 700px) {
+  :root {
+    /* Near-square windows (tablets, small desktop windows): the sky is tall, so the
+       countdown is larger and sits in the middle of it instead of at the very top. */
+    --hero-top: 19svh;
+    --title-size: clamp(34px, 4.6vw, 64px);
+    --title-gap: 28px;
+    --num: min(11.5vw, 17svh);
+    --col-gap: 3.6vw;
+  }
+}
+@media (orientation: landscape) and (min-width: 1600px) {
+  :root {
+    /* TV, landscape (1920 x 1080) */
+    --stage-aspect: 4.4444;
+    --stage-hmax: 40svh;
+    --far-crest: 0.389;
+    --star-scale: 1.5;
+    --hero-top: 7.5svh;
+    --title-size: clamp(54px, 3.3vw, 72px);
+    --title-gap: 26px;
+    --num: min(8.8vw, 16svh);
+    --col-gap: 3.6vw;
+    }
+}

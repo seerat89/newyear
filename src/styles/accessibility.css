@@ -1,0 +1,12 @@
+/*
+ * Reduced motion: every CSS animation and transition is switched off, leaving a
+ * composed static scene.
+ */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+}

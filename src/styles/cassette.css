@@ -1,0 +1,279 @@
+/*
+ * Omid's cassette player (scene/Cassette.tsx): a small cream-and-red portable player
+ * beside him all year, with a faint warm glow. Christmas decorates it (.cassette-xmas).
+ * The reels turn and notes rise while a routine plays or the viewer's music is on;
+ * everything that moves is transform or opacity and stops under reduced motion.
+ */
+.cassette {
+  position: absolute;
+  left: calc(var(--omid-x) + var(--omid-w) * 0.58);
+  bottom: calc(var(--omid-b) - var(--omid-w) * 0.03);
+  width: calc(var(--omid-w) * 0.5);
+  transform: rotate(-5deg);
+  transform-origin: 50% 100%;
+  cursor: pointer;
+  pointer-events: auto;
+  filter: drop-shadow(0 4px 5px rgb(0 0 0 / 0.5));
+  transition: opacity 1.2s ease;
+}
+.cassette svg {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: auto;
+}
+.cassette-aura {
+  position: absolute;
+  inset: -22% -16% -12%;
+  background: radial-gradient(ellipse 50% 48% at 50% 56%, rgb(255 196 110 / 0.34), transparent 72%);
+  opacity: 0.55;
+  pointer-events: none;
+  transition: opacity 0.8s ease;
+}
+.cassette[data-music="on"] .cassette-aura,
+.cassette[data-play="listen"] .cassette-aura,
+.cassette[data-play="dance"] .cassette-aura {
+  opacity: 0.95;
+}
+.cassette-lamp {
+  opacity: 0.45;
+  transition: opacity 0.6s ease;
+}
+.cassette[data-music="on"] .cassette-lamp,
+.cassette[data-play="listen"] .cassette-lamp,
+.cassette[data-play="dance"] .cassette-lamp,
+.cassette[data-play="magic"] .cassette-lamp {
+  opacity: 1;
+}
+.cassette-key--play {
+  transition: transform 0.25s ease;
+}
+.cassette[data-music="on"] .cassette-key--play,
+.cassette[data-play="listen"] .cassette-key--play,
+.cassette[data-play="dance"] .cassette-key--play {
+  transform: translateY(1.6px);
+}
+.cassette-xmas {
+  display: none;
+}
+.app[data-season="christmas"] .cassette-xmas {
+  display: block;
+}
+.cassette-reel {
+  transform-box: view-box;
+}
+.cassette[data-music="on"] .cassette-reel,
+.cassette[data-play="listen"] .cassette-reel,
+.cassette[data-play="dance"] .cassette-reel {
+  animation: cassette-spin 1.6s linear infinite;
+}
+@keyframes cassette-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+.cassette-note,
+.cassette-spark {
+  position: absolute;
+  bottom: 74%;
+  color: #ffe9c4;
+  font: 600 calc(var(--omid-w) * 0.17) / 1 Georgia, serif;
+  opacity: 0;
+  pointer-events: none;
+  text-shadow: 0 0 8px rgb(255 214 140 / 0.9);
+}
+.cassette[data-music="on"] .cassette-note {
+  animation: cassette-note 5.4s ease-out infinite;
+}
+.cassette[data-music="on"] .cassette-note--b {
+  animation-delay: 1.8s;
+}
+.cassette[data-music="on"] .cassette-note--c {
+  animation-delay: 3.6s;
+}
+.cassette[data-play="listen"] .cassette-note {
+  animation: cassette-note 3.2s ease-out infinite;
+}
+.cassette[data-play="dance"] .cassette-note {
+  animation: cassette-note 2.2s ease-out infinite;
+}
+.cassette[data-play="listen"] .cassette-note--b,
+.cassette[data-play="dance"] .cassette-note--b {
+  animation-delay: 0.8s;
+}
+.cassette[data-play="listen"] .cassette-note--c,
+.cassette[data-play="dance"] .cassette-note--c {
+  animation-delay: 1.5s;
+}
+@keyframes cassette-note {
+  from {
+    opacity: 0;
+    transform: translateY(0) rotate(-8deg);
+  }
+  20% {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+    transform: translateY(-210%) translateX(30%) rotate(10deg);
+  }
+}
+.cassette[data-play="magic"] .cassette-spark {
+  animation: cassette-spark 1.9s ease-out 2;
+}
+.cassette[data-play="magic"] .cassette-spark--b {
+  animation-delay: 0.5s;
+}
+.cassette[data-play="magic"] .cassette-spark--c {
+  animation-delay: 1s;
+}
+.cassette[data-play="magic"] .cassette-aura {
+  animation: cassette-magic 4.2s ease-in-out 1;
+}
+@keyframes cassette-spark {
+  from {
+    opacity: 0;
+    transform: translateY(40%) scale(0.5);
+  }
+  30% {
+    opacity: 1;
+    transform: translateY(-40%) scale(1.1);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(-170%) scale(0.6) rotate(60deg);
+  }
+}
+@keyframes cassette-magic {
+  30%,
+  60% {
+    opacity: 1;
+    transform: scale(1.25);
+  }
+}
+.cassette[data-play="nudge"] {
+  animation: cassette-nudge 2.6s ease-in-out 1;
+}
+@keyframes cassette-nudge {
+  0%,
+  22% {
+    transform: rotate(-5deg);
+  }
+  40% {
+    transform: translateX(22%) rotate(18deg);
+  }
+  65% {
+    transform: translateX(14%) rotate(2deg);
+  }
+  100% {
+    transform: rotate(-5deg);
+  }
+}
+.cassette[data-play="inspect"] {
+  animation: cassette-inspect 3.2s ease-in-out 1;
+}
+@keyframes cassette-inspect {
+  0%,
+  100% {
+    transform: rotate(-5deg);
+  }
+  35%,
+  70% {
+    transform: rotate(-20deg) translateY(-6%);
+  }
+}
+.cassette[data-play="dance"] {
+  animation: cassette-dance 1.7s ease-in-out 3;
+}
+@keyframes cassette-dance {
+  0%,
+  100% {
+    transform: rotate(-5deg);
+  }
+  25% {
+    transform: rotate(-11deg) translateY(-7%);
+  }
+  50% {
+    transform: rotate(-5deg);
+  }
+  75% {
+    transform: rotate(1deg) translateY(-7%);
+  }
+}
+.cassette:active {
+  transform: rotate(-5deg) scale(0.95);
+}
+.scene[data-behaviour="jump"] .cassette {
+  animation: cassette-hop 0.9s ease-in-out 1;
+}
+@keyframes cassette-hop {
+  30% {
+    transform: rotate(-12deg) translateY(-10%);
+  }
+  60% {
+    transform: rotate(3deg) translateY(-3%);
+  }
+}
+.app[data-scene="map"] .cassette {
+  opacity: 0;
+  pointer-events: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  .cassette,
+  .cassette * {
+    animation: none !important;
+    transition: none !important;
+  }
+  .cassette-note,
+  .cassette-spark {
+    display: none;
+  }
+}
+
+/* The music button: a small round control in the top corner (left of the three-dot
+   button on phones), shown with the cassette on the countdown scene. */
+.music-toggle {
+  position: fixed;
+  z-index: 30;
+  top: max(calc(env(safe-area-inset-top) + 8px), 10px);
+  right: max(14px, env(safe-area-inset-right));
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  padding: 0;
+  border: 1px solid rgb(255 255 255 / 0.14);
+  border-radius: 50%;
+  background: rgb(14 20 58 / 0.5);
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+  color: rgb(240 244 255 / 0.78);
+  cursor: pointer;
+  transition:
+    background 0.2s ease,
+    color 0.2s ease,
+    opacity 0.4s ease;
+}
+.music-toggle svg {
+  width: 20px;
+  height: 20px;
+}
+.music-toggle:hover,
+.music-toggle[aria-pressed="true"] {
+  background: rgb(255 214 140 / 0.16);
+  color: var(--theme-gold);
+}
+.music-toggle:focus-visible {
+  outline: 2px solid var(--theme-gold);
+  outline-offset: 2px;
+}
+@media (max-width: 600px) {
+  .music-toggle {
+    top: max(calc(env(safe-area-inset-top) + 8px), 10px);
+    right: calc(max(8px, env(safe-area-inset-right)) + 48px);
+  }
+}
+.app[data-scene="map"] .music-toggle {
+  opacity: 0;
+  visibility: hidden;
+}

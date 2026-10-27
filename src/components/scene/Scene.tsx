@@ -39,7 +39,7 @@ type SceneProps = {
   /** The midnight sequence stage (null outside it), and when midnight was. */
   celebration: CelebrationStage | null
   celebrationStart: number | null
-  /** Christmas mode: snow and a cassette prop. */
+  /** Christmas mode: snow, and the cassette player is decorated (by CSS). */
   christmas?: boolean
 }
 
@@ -80,7 +80,8 @@ function Scene({ glow, celebration, celebrationStart, christmas = false }: Scene
             <span key={i} />
           ))}
         </div>
-        {christmas && <Cassette />}
+        <Cassette />
+
         <div className="scene-omid">
           <div className="scene-omid-body">
             <Omid glow={glow} className="relative w-full" />

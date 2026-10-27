@@ -1,0 +1,551 @@
+/*
+ * The midnight celebration sequence (components/celebration/). For the first
+ * minute of January 1 the scene carries data-celebrate="show" (32 s) and then
+ * "settle" (28 s): a warm flash, a bloom of light on the horizon, a choreographed
+ * show of larger distant fireworks, brighter windows and reflections, and an aura
+ * around Omid, who jumps for joy (see useOmidCelebration). Afterwards everything
+ * eases back to the ordinary January 1 scene. Transform and opacity only.
+ */
+.scene-show {
+  --fw-size: clamp(140px, 20vw, 400px);
+  position: absolute;
+  inset: 0;
+}
+.fw-once .fw-rise,
+.fw-once .fw-flash,
+.fw-once .fw-burst {
+  animation-iteration-count: 1;
+  animation-fill-mode: backwards;
+}
+/* A second, slightly turned copy of each burst doubles the rays; the soft flash
+   behind it is stronger than in the ambient bursts. */
+.fw-burst-b {
+  rotate: 5deg;
+  animation-delay: calc(var(--fw-delay) + 0.07s);
+}
+.scene-show .fw-flash {
+  background: radial-gradient(circle, rgb(var(--fw-rgb) / 0.4), transparent 62%);
+}
+.scene-flash {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  background: radial-gradient(
+    ellipse 80% 60% at 50% var(--horizon-y),
+    rgb(255 226 170 / 0.85),
+    rgb(255 190 110 / 0.35) 40%,
+    transparent 75%
+  );
+  animation: ny-flash 3.2s ease-out var(--show-delay) 1 backwards;
+}
+@keyframes ny-flash {
+  0% {
+    opacity: 0;
+  }
+  6% {
+    opacity: 0.8;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+.scene-bloom {
+  position: absolute;
+  left: -20%;
+  right: -20%;
+  top: calc(var(--horizon-y) - 42svh);
+  height: 56svh;
+  opacity: 0;
+  background: radial-gradient(
+    ellipse at 50% 78%,
+    rgb(255 204 128 / 0.5),
+    rgb(255 170 96 / 0.16) 45%,
+    transparent 70%
+  );
+  animation: ny-bloom 60s ease-in-out var(--show-delay) 1 backwards;
+}
+@keyframes ny-bloom {
+  0% {
+    opacity: 0;
+  }
+  3% {
+    opacity: 1;
+  }
+  18% {
+    opacity: 0.85;
+  }
+  45% {
+    opacity: 0.4;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+/* The city and the bay come alive. */
+.scene[data-celebrate] .scene-sky::before,
+.scene[data-celebrate] .reflect {
+  opacity: 1;
+}
+.scene[data-celebrate="show"] .win-a {
+  animation-duration: 3.4s;
+}
+.scene[data-celebrate="show"] .win-b {
+  animation-duration: 4.6s;
+}
+.scene[data-celebrate="show"] .shimmer {
+  animation-duration: 2.6s;
+}
+.scene[data-celebrate="show"] .glow-breathe {
+  animation-duration: 5s;
+}
+/* A warm aura round Omid (on his body, so it travels and jumps with him). */
+.scene-omid-body::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 48%;
+  width: 240%;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  background: radial-gradient(
+    circle,
+    rgb(255 214 140 / 0.55),
+    rgb(255 190 110 / 0.2) 38%,
+    transparent 66%
+  );
+  opacity: 0;
+  transition: opacity 4s ease;
+  pointer-events: none;
+}
+.scene[data-celebrate="show"] .scene-omid-body::before {
+  opacity: 1;
+  transition-duration: 1.2s;
+  animation: ny-aura 2.6s ease-in-out infinite alternate;
+}
+.scene[data-celebrate="sustain"] .scene-omid-body::before,
+.scene[data-celebrate="settle"] .scene-omid-body::before {
+  opacity: 0.45;
+}
+@keyframes ny-aura {
+  from {
+    scale: 0.92;
+  }
+  to {
+    scale: 1.08;
+  }
+}
+/* The message: "Happy New Year", then the year, revealed softly. */
+.hero-title.ny-message {
+  margin-top: calc(var(--title-size) * 0.5);
+  font-size: var(--title-size);
+  line-height: 1.05;
+}
+.ny-kicker {
+  display: block;
+  font-size: calc(var(--title-size) * 1.15);
+  letter-spacing: 0.05em;
+  color: var(--theme-gold);
+  animation: ny-kicker 2.4s cubic-bezier(0.2, 0.7, 0.2, 1) 0.5s both;
+}
+.ny-year {
+  position: relative;
+  display: block;
+  margin-top: 0.06em;
+  font-size: calc(var(--num) * 1.5);
+  line-height: 1;
+  text-shadow:
+    0 0 0.3em rgb(255 200 120 / 0.16),
+    0 0 0.9em rgb(42 20 60 / 0.6);
+  transition: text-shadow 10s ease;
+  animation: ny-glowpop 2.6s ease-out 1.5s both;
+}
+.ny-digit {
+  display: inline-block;
+  animation: ny-digit 1.1s cubic-bezier(0.16, 0.8, 0.24, 1) calc(0.9s + var(--i) * 0.22s) both;
+}
+/* One soft shine passes over the finished year. */
+.ny-year::after {
+  content: attr(data-year);
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(100deg, transparent 38%, rgb(255 252 235) 50%, transparent 62%) 130% 0 / 260% 100% no-repeat;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  text-shadow: none;
+  animation: ny-shine 2.4s ease-in-out 2.4s 1 both;
+}
+.ny-year[data-stage="show"] {
+  text-shadow:
+    0 0 0.22em rgb(255 214 140 / 0.75),
+    0 0 0.9em rgb(255 170 80 / 0.45);
+  transition-duration: 1.5s;
+}
+.ny-year[data-stage="sustain"],
+.ny-year[data-stage="settle"] {
+  text-shadow:
+    0 0 0.25em rgb(255 210 130 / 0.4),
+    0 0 0.8em rgb(255 170 80 / 0.22);
+}
+@keyframes ny-kicker {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+    letter-spacing: 0.3em;
+    filter: blur(6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+    letter-spacing: 0.05em;
+    filter: blur(0);
+  }
+}
+@keyframes ny-digit {
+  from {
+    opacity: 0;
+    transform: translateY(0.22em) scale(0.9);
+    filter: blur(14px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+    filter: blur(0);
+  }
+}
+@keyframes ny-glowpop {
+  from {
+    text-shadow:
+      0 0 0.1em rgb(255 255 235 / 0.95),
+      0 0 0.5em rgb(255 220 150 / 0.9),
+      0 0 1.4em rgb(255 180 90 / 0.6);
+  }
+}
+@keyframes ny-shine {
+  from {
+    background-position: 130% 0;
+  }
+  to {
+    background-position: -30% 0;
+  }
+}
+/*
+ * What the show does to the city and the bay (MidnightPulse.tsx): a layer above
+ * the art that blends with it. A pulse of warm white runs across the skyline,
+ * each major firework washes the buildings and ripples the water in its own
+ * colour, and a few sparks and light streaks drift in the foreground.
+ */
+.scene-afterglow {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  mix-blend-mode: screen;
+}
+.pulse-wave {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: calc(var(--horizon-y) - 16svh);
+  height: 40svh;
+  opacity: 0;
+  background: radial-gradient(
+    ellipse 58% 46% at 50% 40%,
+    rgb(255 242 214 / 0.8),
+    rgb(255 200 130 / 0.32) 42%,
+    transparent 72%
+  );
+  animation: ny-wave 3.6s ease-out var(--show-delay) 1 backwards;
+}
+@keyframes ny-wave {
+  0% {
+    opacity: 0;
+    transform: scaleX(0.3);
+  }
+  10% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: scaleX(1.3);
+  }
+}
+.pulse-sweep {
+  position: absolute;
+  top: calc(var(--horizon-y) - 12svh);
+  height: 30svh;
+  left: -25vw;
+  width: 25vw;
+  opacity: 0;
+  background: radial-gradient(ellipse 50% 50% at 50% 50%, rgb(255 244 220 / 0.6), transparent 70%);
+  animation: ny-sweep 2.2s cubic-bezier(0.45, 0, 0.3, 1) var(--show-delay) 1 backwards;
+}
+@keyframes ny-sweep {
+  0% {
+    opacity: 0;
+    transform: translateX(0);
+  }
+  15%,
+  80% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translateX(520%);
+  }
+}
+.echo {
+  --fw-rgb: 255 214 140;
+  position: absolute;
+  top: var(--horizon-y);
+  width: 0;
+  height: 0;
+}
+.echo[data-hue="white"] {
+  --fw-rgb: 255 244 222;
+}
+.echo[data-hue="red"] {
+  --fw-rgb: 255 146 136;
+}
+.echo[data-hue="blue"] {
+  --fw-rgb: 170 200 255;
+}
+.echo[data-wide] {
+  display: none;
+}
+@media (min-width: 480px) {
+  .echo[data-wide] {
+    display: block;
+  }
+}
+/* On the buildings... */
+.echo::before {
+  content: "";
+  position: absolute;
+  left: calc(var(--echo-scale) * -14vw);
+  width: calc(var(--echo-scale) * 28vw);
+  bottom: 0;
+  height: calc(10svh + var(--echo-scale) * 6svh);
+  opacity: 0;
+  background: radial-gradient(ellipse at 50% 100%, rgb(var(--fw-rgb) / 0.55), transparent 70%);
+  animation: ny-echo 5s ease-out var(--echo-delay) 1 backwards;
+}
+/* ...and as a rippled column on the water. */
+.echo::after {
+  content: "";
+  position: absolute;
+  left: calc(var(--echo-scale) * -7vw);
+  width: calc(var(--echo-scale) * 14vw);
+  top: 0;
+  height: 30svh;
+  opacity: 0;
+  background: radial-gradient(ellipse 50% 100% at 50% 0%, rgb(var(--fw-rgb) / 0.55), transparent 72%);
+  -webkit-mask-image: repeating-linear-gradient(180deg, #000 0 2px, rgb(0 0 0 / 0.35) 2px 5px);
+  mask-image: repeating-linear-gradient(180deg, #000 0 2px, rgb(0 0 0 / 0.35) 2px 5px);
+  animation: ny-echo 5s ease-out var(--echo-delay) 1 backwards;
+}
+@keyframes ny-echo {
+  0% {
+    opacity: 0;
+  }
+  14% {
+    opacity: var(--echo);
+  }
+  100% {
+    opacity: 0;
+  }
+}
+/* Sparse foreground sparks and light streaks, passing in front of Omid. */
+.embers {
+  position: absolute;
+  inset: 0;
+  animation: ny-embers-life 60s linear var(--show-delay) 1 backwards;
+}
+@keyframes ny-embers-life {
+  0% {
+    opacity: 0;
+  }
+  4%,
+  52% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+.embers span {
+  position: absolute;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgb(255 246 216) 0 30%, rgb(255 200 110 / 0.5) 62%, transparent 74%);
+  animation: ny-ember var(--dur) ease-in-out var(--d) infinite alternate;
+}
+@keyframes ny-ember {
+  from {
+    opacity: 0.15;
+    transform: translate3d(0, 0, 0);
+  }
+  to {
+    opacity: 0.85;
+    transform: translate3d(var(--dx), -14svh, 0);
+  }
+}
+.embers i {
+  position: absolute;
+  left: -20vw;
+  width: 120px;
+  height: 2px;
+  opacity: 0;
+  rotate: -14deg;
+  background: linear-gradient(90deg, transparent, rgb(255 236 190 / 0.9), transparent);
+  animation: ny-streak 1.4s ease-in var(--streak-delay) 1 backwards;
+}
+@keyframes ny-streak {
+  0% {
+    opacity: 0;
+    transform: translateX(0);
+  }
+  20%,
+  70% {
+    opacity: 0.9;
+  }
+  100% {
+    opacity: 0;
+    transform: translateX(150vw);
+  }
+}
+/* Reduced motion: no animation at all, just a calm, warm glow in the sky. */
+@media (prefers-reduced-motion: reduce) {
+  .scene-bloom {
+    opacity: 0.28;
+  }
+  .scene-show .fw-flash {
+    opacity: 0.5;
+    transform: translate(-50%, -50%);
+  }
+  .scene[data-celebrate] .scene-omid-body::before {
+    opacity: 0.5;
+  }
+}
+
+/*
+ * Wide screens (TV, desktop): a bigger celebration. Bursts and sparks marked
+ * data-tv exist only here, the fireworks are larger, the skyline lifts more
+ * clearly, the water answers across a broader area, and the message is bigger.
+ * Phones keep the quieter version above.
+ */
+.fw[data-tv],
+.fw[data-wide][data-tv],
+.echo[data-tv],
+.echo[data-wide][data-tv],
+.embers span[data-tv],
+.embers i[data-tv],
+.pulse-swell,
+.water-glow {
+  display: none;
+}
+.fw[data-far] {
+  opacity: 0.6;
+}
+.water-glow {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: var(--horizon-y);
+  height: 34svh;
+  opacity: 0;
+  background: radial-gradient(
+    ellipse 75% 100% at 50% 0%,
+    rgb(255 218 160 / 0.5),
+    rgb(255 190 120 / 0.2) 45%,
+    transparent 76%
+  );
+  animation: ny-water-glow 16s ease-out var(--show-delay) 1 backwards;
+}
+@keyframes ny-water-glow {
+  0% {
+    opacity: 0;
+  }
+  8% {
+    opacity: 0.9;
+  }
+  18% {
+    opacity: 0.4;
+  }
+  26% {
+    opacity: 0.85;
+  }
+  38% {
+    opacity: 0.4;
+  }
+  52% {
+    opacity: 0.9;
+  }
+  72% {
+    opacity: 0.3;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+.pulse-swell {
+  animation-duration: 3s;
+}
+@media (orientation: landscape) and (min-width: 900px) {
+  .fw[data-tv],
+  .fw[data-wide][data-tv],
+  .echo[data-tv],
+  .echo[data-wide][data-tv],
+  .embers span[data-tv],
+  .embers i[data-tv],
+  .pulse-swell,
+  .water-glow {
+    display: block;
+  }
+  .scene-show {
+    --fw-size: clamp(160px, 23vw, 520px);
+  }
+  /* Broader reflections and a stronger pulse. */
+  .echo::after {
+    left: calc(var(--echo-scale) * -10vw);
+    width: calc(var(--echo-scale) * 20vw);
+    height: 34svh;
+  }
+  .pulse-wave {
+    background: radial-gradient(
+      ellipse 62% 50% at 50% 40%,
+      rgb(255 244 220 / 0.95),
+      rgb(255 205 135 / 0.4) 42%,
+      transparent 74%
+    );
+  }
+  .pulse-sweep {
+    width: 32vw;
+    left: -32vw;
+  }
+  /* The skyline lifts clearly at midnight, then eases back over the settle. */
+  .scene-layer[data-layer="far"],
+  .scene-layer[data-layer="mid"] {
+    transition: filter 8s ease;
+  }
+  .scene[data-celebrate="show"] .scene-layer[data-layer="mid"] {
+    filter: brightness(1.32) saturate(1.1);
+    transition-duration: 0.8s;
+  }
+  .scene[data-celebrate="show"] .scene-layer[data-layer="far"] {
+    filter: brightness(1.22);
+    transition-duration: 0.8s;
+  }
+  .embers span {
+    box-shadow: 0 0 8px rgb(255 214 140 / 0.55);
+  }
+  /* A larger, more confident message. */
+  .hero-title.ny-message {
+    margin-top: calc(var(--title-size) * 0.3);
+  }
+  .ny-kicker {
+    font-size: calc(var(--title-size) * 1.35);
+  }
+  .ny-year {
+    font-size: calc(var(--num) * 1.75);
+  }
+}

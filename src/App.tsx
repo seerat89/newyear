@@ -8,6 +8,7 @@ import Scene from './components/scene/Scene'
 import { InfoPage, LegalLinks } from './components/InfoPage'
 import { useCity } from './hooks/useCity'
 import { usePage } from './hooks/usePage'
+import MusicToggle from './components/MusicToggle'
 import SceneSwitch from './components/SceneSwitch'
 import type { SceneName } from './components/SceneSwitch'
 import WorldMap from './components/worldmap/WorldMap'
@@ -56,6 +57,7 @@ function App() {
       />
       <SceneSwitch scene={scene} onChange={setScene} />
       <LegalLinks />
+      <MusicToggle />
       <main className="hero" inert={scene !== 'countdown'}>
         {state.phase === 'counting' && (
           <>

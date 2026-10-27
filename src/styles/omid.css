@@ -1,0 +1,168 @@
+/*
+ * Omid's micro-idle: breathing, blinking, a slow halo and a faint sway, as CSS
+ * keyframes on transform or opacity. All the major movement (travel, jump, lean,
+ * squash, crest and arm lag, halo lag, gaze) is the motion system's job
+ * (motion/, useOmidMotion.ts), which writes the parts below through inline
+ * styles, so the idle keyframes keep running underneath it. --omid-energy (0.45 calm .. 1 lively) only
+ * stretches the periods and trims the amplitudes. The reduced-motion rule above
+ * removes every animation, leaving a composed resting pose.
+ */
+.omid {
+  --omid-period: calc(4s + (1 - var(--omid-energy)) * 4s);
+}
+.omid-root {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: auto;
+  overflow: visible;
+  transform-origin: 50% 96%;
+  will-change: transform;
+  animation: omid-breathe var(--omid-period) ease-in-out infinite alternate;
+}
+.omid-halo {
+  position: absolute;
+  left: 50%;
+  top: 58%;
+  width: 230%;
+  aspect-ratio: 1;
+  transform: translate(-50%, -50%);
+  background: radial-gradient(
+    circle,
+    rgb(var(--theme-glow) / calc(0.55 * var(--omid-glow))),
+    transparent 62%
+  );
+  will-change: transform, opacity;
+  animation: omid-halo calc(var(--omid-period) * 1.3) ease-in-out infinite alternate;
+}
+.omid-crest {
+  transform-origin: 100px 82px;
+  animation: omid-crest calc(var(--omid-period) * 0.75) ease-in-out infinite alternate;
+}
+.omid-arm-l {
+  transform-origin: 40px 146px;
+  animation: omid-arm calc(var(--omid-period) * 0.95) ease-in-out infinite alternate;
+}
+.omid-arm-r {
+  transform-origin: 160px 146px;
+  animation: omid-arm calc(var(--omid-period) * 1.1) ease-in-out infinite alternate-reverse;
+}
+/* One long cycle with five blinks at uneven moments (2.2 s, 2.6 s, 8.1 s, 11 s, 15.4 s of 17 s). */
+.omid-blink {
+  transform-origin: 100px 140px;
+  animation: omid-blink 17s linear infinite;
+}
+
+@keyframes omid-breathe {
+  from {
+    transform: scale(1, 1) rotate(-0.6deg);
+  }
+  to {
+    transform: scale(calc(1 - 0.02 * var(--omid-energy)), calc(1 + 0.035 * var(--omid-energy)))
+      rotate(0.6deg);
+  }
+}
+@keyframes omid-halo {
+  from {
+    transform: translate(-50%, -50%) scale(0.95);
+    opacity: 0.78;
+  }
+  to {
+    transform: translate(-50%, -50%) scale(1.05);
+    opacity: 1;
+  }
+}
+@keyframes omid-crest {
+  from {
+    transform: rotate(calc(-3deg * var(--omid-energy)));
+  }
+  to {
+    transform: rotate(calc(3.5deg * var(--omid-energy)));
+  }
+}
+@keyframes omid-arm {
+  from {
+    transform: rotate(calc(-4deg * var(--omid-energy)));
+  }
+  to {
+    transform: rotate(calc(4deg * var(--omid-energy)));
+  }
+}
+@keyframes omid-blink {
+  0%,
+  12.4%,
+  13.5%,
+  14.8%,
+  15.9%,
+  47.1%,
+  48.2%,
+  64.2%,
+  65.3%,
+  90.1%,
+  91.2%,
+  100% {
+    transform: scaleY(1);
+  }
+  12.9%,
+  15.3%,
+  47.6%,
+  64.7%,
+  90.6% {
+    transform: scaleY(0.08);
+  }
+}
+
+/* The parts the rig writes each frame (see useOmidMotion.ts). */
+.omid-action {
+  position: relative;
+  transform-origin: 50% 96%;
+}
+.omid-crest-pose {
+  transform-origin: 100px 82px;
+}
+.omid-feet {
+  transform-origin: 100px 216px;
+}
+.omid-arm-pose-l {
+  transform-origin: 40px 146px;
+}
+.omid-arm-pose-r {
+  transform-origin: 160px 146px;
+}
+
+/* The scene answers him: while Omid travels or jumps, the city's glow and its
+   reflections lift a little, and settle again when he rests. (data-behaviour is
+   set by the motion system; this is CSS only.) */
+.scene[data-behaviour="fly"] .scene-sky::before,
+.scene[data-behaviour="glide"] .scene-sky::before,
+.scene[data-behaviour="cross"] .scene-sky::before,
+.scene[data-behaviour="jump"] .scene-sky::before,
+.scene[data-behaviour="lantern"] .scene-sky::before {
+  opacity: 0.85;
+}
+.scene[data-behaviour="fly"] .reflect,
+.scene[data-behaviour="glide"] .reflect,
+.scene[data-behaviour="cross"] .reflect,
+.scene[data-behaviour="jump"] .reflect,
+.scene[data-behaviour="lantern"] .reflect {
+  opacity: 1;
+}
+
+.omid-scarf {
+  display: none;
+}
+.app[data-season="christmas"] .omid-scarf {
+  display: inline;
+}
+/* Omid always wears a hat: a grey cap, or the Santa hat in Christmas (the cap is
+   replaced, not stacked). The hat is an overlay; his curl is only hidden behind it. */
+.omid-crest > path {
+  display: none;
+}
+.omid-hat--santa,
+.app[data-season="christmas"] .omid-hat--cap {
+  display: none;
+}
+.app[data-season="christmas"] .omid-hat--santa {
+  display: inline;
+}

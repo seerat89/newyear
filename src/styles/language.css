@@ -1,0 +1,128 @@
+/* Language selector (beside the corner links on large screens, in the menu on phones),
+   and right-to-left text for Arabic and Persian: the map, countdown and scene keep
+   their left-to-right layout. */
+.lang-pick {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  margin-left: 8px;
+  border: 1px solid rgb(226 233 255 / 0.28);
+  border-radius: 999px;
+  background: rgb(14 20 58 / 0.35);
+  color: rgb(236 242 255 / 0.8);
+  cursor: pointer;
+  transition:
+    border-color 0.25s ease,
+    background 0.25s ease,
+    color 0.25s ease;
+}
+.lang-pick:hover,
+.lang-pick:focus-within {
+  border-color: rgb(255 255 255 / 0.6);
+  background: rgb(255 255 255 / 0.12);
+  color: #fff;
+}
+.lang-globe,
+.lang-chevron {
+  position: absolute;
+  top: 50%;
+  width: 15px;
+  height: 15px;
+  transform: translateY(-50%);
+  pointer-events: none;
+}
+.lang-globe {
+  left: 10px;
+}
+.lang-chevron {
+  right: 9px;
+  width: 11px;
+  height: 11px;
+}
+.lang-select {
+  appearance: none;
+  -webkit-appearance: none;
+  min-height: 30px;
+  padding: 0 26px 0 31px;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: inherit;
+  font: 500 12px/1 system-ui, sans-serif;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+}
+.lang-select:focus-visible {
+  outline: 2px solid var(--theme-gold);
+  outline-offset: 2px;
+}
+.lang-select option {
+  background: #0a0f30;
+  color: #f4f6ff;
+}
+.app[data-season="christmas"] .lang-pick {
+  color: #f4f6ff;
+  background: rgb(14 20 58 / 0.5);
+  text-shadow: 0 1px 6px rgb(10 14 50 / 0.9);
+}
+[dir="rtl"] .lang-globe {
+  left: auto;
+  right: 10px;
+}
+[dir="rtl"] .lang-chevron {
+  right: auto;
+  left: 9px;
+}
+[dir="rtl"] .lang-select {
+  padding: 0 31px 0 26px;
+}
+@media (min-width: 1600px) {
+  .lang-select {
+    min-height: 40px;
+    padding: 0 34px 0 40px;
+    font-size: 16px;
+  }
+  .lang-globe {
+    left: 13px;
+    width: 18px;
+    height: 18px;
+  }
+  .lang-chevron {
+    right: 12px;
+  }
+}
+@media (max-width: 600px) {
+  .legal-menu-list .lang-pick {
+    display: flex;
+    margin: 6px 6px 4px;
+    border-color: rgb(255 255 255 / 0.22);
+  }
+  .legal-menu-list .lang-select {
+    flex: 1;
+    min-height: 44px;
+    font-size: 15px;
+    letter-spacing: 0;
+  }
+  .legal-menu-list .lang-globe {
+    left: 13px;
+  }
+}
+.scene,
+.countdown,
+.wm-view,
+.wm-status,
+.snow,
+.snowscape,
+.atmo {
+  direction: ltr;
+}
+[dir="rtl"] .wm-search-icon {
+  left: auto;
+  right: 14px;
+}
+[dir="rtl"] .wm-search-input {
+  padding: 10px 40px 10px 16px;
+}
+[dir="rtl"] .info-card {
+  text-align: right;
+}
