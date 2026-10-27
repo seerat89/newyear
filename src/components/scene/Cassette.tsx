@@ -127,14 +127,27 @@ function Cassette() {
         <path d="M13 26.5H98" stroke="#fff" strokeWidth={1.4} strokeLinecap="round" opacity={0.5} />
 
         {/* chunky top keys; the red one is play */}
-        {KEYS.map((x, i) => (
-          <g key={x} className={i === 3 ? 'cassette-key cassette-key--play' : 'cassette-key'}>
-            <rect x={x} y={14.5} width={13} height={11} rx={2.6} fill={i === 3 ? '#a8222b' : '#d9b97c'} />
-            <rect x={x} y={13.5} width={13} height={9.6} rx={2.6} fill={i === 3 ? 'url(#cas-red)' : '#fff1d0'} />
-            <rect x={x + 1.6} y={14.6} width={9.8} height={1.6} rx={0.8} fill="#fff" opacity={i === 3 ? 0.3 : 0.7} />
-            {i === 3 && <path d={`M${x + 4.6} 15.6 L${x + 9.2} 18.2 L${x + 4.6} 20.8Z`} fill="#ffe3b8" />}
-          </g>
-        ))}
+        {KEYS.map((x, i) =>
+          i === 3 ? (
+            <g key={x} className="cassette-key cassette-key--play">
+              {/* a narrow, squared hardware key in its slot, with bevelled edges */}
+              <rect x={x + 0.6} y={13} width={11.8} height={12.6} rx={1.2} fill="#3d1013" />
+              <rect x={x + 1.3} y={14.5} width={10.4} height={11} rx={1} fill="#8e1b24" />
+              <rect x={x + 1.3} y={13.5} width={10.4} height={8.8} rx={1} fill="url(#cas-red)" />
+              <rect x={x + 1.3} y={13.7} width={1.1} height={8.4} rx={0.5} fill="#ff8a8c" opacity={0.35} />
+              <rect x={x + 10.6} y={13.7} width={1.1} height={8.4} rx={0.5} fill="#5e0f16" opacity={0.4} />
+              <rect x={x + 2.4} y={13.8} width={8.2} height={1} rx={0.5} fill="#fff" opacity={0.35} />
+              <path d={`M${x + 5.2} 16.3 L${x + 8.7} 18.4 L${x + 5.2} 20.5Z`} fill="#5a0d14" opacity={0.5} />
+              <path d={`M${x + 5.2} 15.8 L${x + 8.7} 17.9 L${x + 5.2} 20Z`} fill="#ffe1a0" />
+            </g>
+          ) : (
+            <g key={x} className="cassette-key">
+              <rect x={x} y={14.5} width={13} height={11} rx={2.6} fill="#d9b97c" />
+              <rect x={x} y={13.5} width={13} height={9.6} rx={2.6} fill="#fff1d0" />
+              <rect x={x + 1.6} y={14.6} width={9.8} height={1.6} rx={0.8} fill="#fff" opacity={0.7} />
+            </g>
+          ),
+        )}
 
         {/* cassette window with the tape and two reels */}
         <rect x={12} y={31} width={58} height={33} rx={6} fill="#4a1519" />

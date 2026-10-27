@@ -144,9 +144,7 @@ Do not choose an SEO implementation yet unless the current task requires it.
 
 ## PWA
 
-The app will eventually be installable and usable offline where practical.
-
-Do not add PWA tooling until that phase is explicitly started.
+The app is installable and launches offline after one online visit. `public/site.webmanifest` (standalone, `start_url` `/`) and the icons in `public/` are the install package; `public/sw.js` is a small hand-written service worker registered by `src/pwa.ts` (production builds only). `vite.config.ts` (the `serviceWorker` plugin, no PWA library) fills in its precache list (every built file) and a build id hashed from the contents, so each deploy has its own cache: pages are network-first (never stale when online, cached copy offline or after 4 s), everything else comes from the cache, and a new build takes over at once and deletes the old cache. Hash pages and the language, city and music preferences are unaffected. No push, no background sync.
 
 The countdown itself should remain functional offline using local time data.
 

@@ -1,6 +1,9 @@
 {
   "name": "New Year Countdown",
   "short_name": "New Year",
+  "id": "/",
+  "start_url": "/",
+  "scope": "/",
   "icons": [
     {
       "src": "/favicon-192x192.png",
