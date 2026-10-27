@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { useMusic } from '../../hooks/useMusic'
+import { omidBehave as behave } from '../omid/behave'
 
 // Omid's cassette player: a small cream-and-red portable player that rests on the
 // shore beside him all year (Christmas only decorates it: snow, holly and a scarf, in
@@ -15,7 +16,6 @@ type Play = 'nudge' | 'listen' | 'inspect' | 'dance' | 'magic'
 const PLAYS: Play[] = ['inspect', 'nudge', 'listen', 'dance', 'magic', 'listen', 'nudge', 'dance']
 const PLAYS_ON: Play[] = ['listen', 'dance', 'magic', 'listen', 'dance']
 const LENGTH: Record<Play, number> = { nudge: 3_200, listen: 7_000, inspect: 3_400, dance: 5_200, magic: 4_200 }
-const behave = (name: string) => window.dispatchEvent(new CustomEvent('omid-behave', { detail: name }))
 
 // Speaker grille: a hex grid of small holes inside a circle.
 const HOLES: [number, number][] = []

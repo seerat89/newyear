@@ -154,15 +154,3 @@
 .app[data-season="christmas"] .omid-scarf {
   display: inline;
 }
-/* Omid always wears a hat: a grey cap, or the Santa hat in Christmas (the cap is
-   replaced, not stacked). The hat is an overlay; his curl is only hidden behind it. */
-.omid-crest > path {
-  display: none;
-}
-.omid-hat--santa,
-.app[data-season="christmas"] .omid-hat--cap {
-  display: none;
-}
-.app[data-season="christmas"] .omid-hat--santa {
-  display: inline;
-}

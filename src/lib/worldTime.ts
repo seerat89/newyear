@@ -77,15 +77,6 @@ export function getZoneStatus(newYearAt: number, now: number): ZoneStatus {
   return now - newYearAt < CELEBRATING_MS ? 'celebrating' : 'arrived'
 }
 
-/** "UTC+5:30" for an offset in ms. */
-export function formatOffset(offsetMs: number): string {
-  const total = Math.round(offsetMs / MINUTE)
-  const sign = total < 0 ? '-' : '+'
-  const hours = Math.floor(Math.abs(total) / 60)
-  const minutes = Math.abs(total) % 60
-  return `UTC${sign}${hours}${minutes ? `:${String(minutes).padStart(2, '0')}` : ''}`
-}
-
 /** A short span for a countdown or an elapsed time: "3h 12m", "12m 04s", "2d 3h". */
 export function formatSpan(ms: number, units: [string, string, string, string] = ['d', 'h', 'm', 's']): string {
   const total = Math.max(0, Math.round(ms / 1000))

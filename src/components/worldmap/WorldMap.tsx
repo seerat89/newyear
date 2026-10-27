@@ -1,15 +1,18 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
-import type { CSSProperties, MouseEvent, ReactNode } from 'react'
+import type { CSSProperties, MouseEvent } from 'react'
 import { formatLocalTime, formatSpan, getWorldYear, getZoneStatus, newYearInstant } from '../../lib/worldTime'
 import type { ZoneStatus } from '../../lib/worldTime'
+import { omidBehave } from '../omid/behave'
 import { usePrefersReducedMotion } from '../omid/usePrefersReducedMotion'
 import { getFrontier, getWaves } from './frontier'
 import { DOT_PATHS, GRATICULE, MAP_HEIGHT, MAP_WIDTH, MARKERS, placeAt, project } from './geometry'
 import { spanUnits, useT } from '../../lib/strings'
-import type { StringKey } from '../../lib/strings'
+import MapLegend from './MapLegend'
+import MapStatus from './MapStatus'
 import PlaceSearch from './PlaceSearch'
-import { nearestCity } from './savedCity'
 import { CITIES, PLACES } from './places'
+import { useLocate } from './useLocate'
+import { useTimeLapse } from './useTimeLapse'
 
 // New Year moving around the world. Every land dot takes the status of the place
 // nearest to it: already in the new year (warm gold, with a soft wake of light
@@ -25,28 +28,9 @@ type Status = ZoneStatus | 'next'
 
 const ORDER: Status[] = ['waiting', 'arrived', 'celebrating', 'next']
 
-/** The time-lapse covers the whole wave in this long, redrawn this often. */
-const LAPSE_MS = 26_000
-const TICK_MS = 80
 /** It starts a little before the first midnight and ends a little after the last. */
 const LEAD_MS = 25 * 60_000
 const TAIL_MS = 50 * 60_000
-
-/** The key: a different simple shape for each state, tinted with its map colour. */
-const LEGEND: [Status, StringKey, StringKey, ReactNode][] = [
-  ['arrived', 'legendArrived', 'shortArrived', <circle key="s" cx="5" cy="5" r="3.6" fill="currentColor" />],
-  [
-    'celebrating',
-    'legendNow',
-    'shortNow',
-    <path key="s" d="M5 .4 6.2 3.8 9.6 5 6.2 6.2 5 9.6 3.8 6.2.4 5 3.8 3.8Z" fill="currentColor" />,
-  ],
-  ['next', 'nextToMidnight', 'shortNext', <path key="s" d="M2.4 1 8.4 5 2.4 9Z" fill="currentColor" />],
-  ['waiting', 'legendWaiting', 'legendWaiting', <circle key="s" cx="5" cy="5" r="3.1" fill="none" stroke="currentColor" strokeWidth="1.4" />],
-]
-
-const names =(places: number[], count = 3) =>
-  places.slice(0, count).map((i) => PLACES[i].name).join(', ') + (places.length > count ? '…' : '')
 
 type WorldMapProps = {
   now: number
@@ -69,17 +53,8 @@ function WorldMap({ now: liveNow, active, city: picked, onCity: choose }: WorldM
     return { instants: at, waves: getWaves(at.slice(0, PLACES.length)), start: Math.min(...at) - LEAD_MS, end: Math.max(...at) + TAIL_MS }
   }, [year])
 
-  // The time-lapse: null while live, otherwise how far through the night it is (0..1).
-  const [lapse, setLapse] = useState<number | null>(null)
-  const playing = lapse !== null
-  useEffect(() => {
-    if (!playing) return
-    const id = window.setInterval(() => {
-      setLapse((p) => (p === null || p + TICK_MS / LAPSE_MS >= 1 ? null : p + TICK_MS / LAPSE_MS))
-    }, TICK_MS)
-    return () => window.clearInterval(id)
-  }, [playing])
-  const now = lapse === null ? liveNow : start + lapse * (end - start)
+  // The time-lapse is a development aid; leaving the map puts the clock back to live.
+  const { now, playing, toggle: toggleLapse } = useTimeLapse(active, liveNow, start, end)
 
   const statuses: ZoneStatus[] = instants.map((at) => getZoneStatus(at, now))
   const frontier = getFrontier(waves, now)
@@ -98,27 +73,13 @@ function WorldMap({ now: liveNow, active, city: picked, onCity: choose }: WorldM
   useEffect(() => {
     if (reduced || !active || Date.now() - reactedAt.current < 6000) return
     reactedAt.current = Date.now()
-    window.dispatchEvent(new CustomEvent('omid-behave', { detail: 'glide' }))
+    omidBehave('glide')
   }, [lead, reduced, active])
 
   // The viewer's city is chosen by hand or (optionally) from their location; it is
   // owned by App, which remembers it and counts down to its midnight.
   const [detailOpen, setDetailOpen] = useState(false)
-  const [locating, setLocating] = useState<'idle' | 'asking' | 'failed'>('idle')
-  const useMyLocation = () => {
-    if (!('geolocation' in navigator)) return setLocating('failed')
-    setLocating('asking')
-    navigator.geolocation.getCurrentPosition(
-      (position) => {
-        choose(nearestCity(position.coords.latitude, position.coords.longitude))
-        setLocating('idle')
-      },
-      () => setLocating('failed'),
-      { timeout: 10_000, maximumAge: 600_000 },
-    )
-  }
-  // Leaving the map puts it back to live with the picker closed.
-  if (!active && lapse !== null) setLapse(null)
+  const { locating, locate } = useLocate(choose)
   const selected = picked ?? frontier.places[0]
 
   const selectedAt = selected < PLACES.length ? MARKERS[selected] : project(CITIES[selected].lon, CITIES[selected].lat)
@@ -147,43 +108,16 @@ function WorldMap({ now: liveNow, active, city: picked, onCity: choose }: WorldM
     <div className="wm">
       {/* The time-lapse is a development aid, parked in a corner and left out of production builds. */}
       {import.meta.env.DEV && !reduced && (
-        <button type="button" className="wm-btn wm-dev" onClick={() => setLapse(playing ? null : 0)}>
+        <button type="button" className="wm-btn wm-dev" onClick={toggleLapse}>
           {playing ? `${utc.time} UTC · Back to live` : 'Time-lapse (dev)'}
         </button>
       )}
-      <div className="wm-status">
-        {/* Both lines are always in the layout (an empty one is a hidden "ghost" on
-            phones), so the dock never changes height and the map never jumps. */}
-        {nextAt !== null ? (
-          <p className="wm-next">
-            <b>{t('nextToMidnight')}</b>
-            <strong>{nextPlaces.length > 1 ? `${PLACES[nextPlaces[0]].name} +${nextPlaces.length - 1}` : names(nextPlaces, 1)}</strong>
-            <span>{t('inSpan', { span: span(nextAt - now) })}</span>
-          </p>
-        ) : (
-          <p className="wm-next wm-ghost" aria-hidden="true">
-            <b>{t('nextToMidnight')}</b>
-            <strong>-</strong>
-          </p>
-        )}
-        {frontier.phase !== 'before' ? (
-          <p className="wm-just">
-            <b>{frontier.phase === 'after' ? t('reachedEveryone', { year }) : t('justRangIn', { year })}</b>
-            <strong>{names(frontier.places, 2)}</strong>
-            <span>{t('agoSpan', { span: span(now - latestAt) })}</span>
-          </p>
-        ) : (
-          <p className="wm-just wm-ghost" aria-hidden="true">
-            <b>{t('justRangIn', { year })}</b>
-            <strong>-</strong>
-          </p>
-        )}
-      </div>
+      <MapStatus now={now} year={year} frontier={frontier} nextAt={nextAt} nextPlaces={nextPlaces} latestAt={latestAt} />
         <div className="wm-find">
           <PlaceSearch order={sorted} onSelect={choose} />
           <p className="wm-result" aria-live="polite" data-empty={picked === null ? '' : undefined}>
           {picked === null ? (
-            <button type="button" className="wm-link" onClick={useMyLocation} disabled={locating === 'asking'}>
+            <button type="button" className="wm-link" onClick={locate} disabled={locating === 'asking'}>
               {locating === 'asking'
                 ? t('finding')
                 : locating === 'failed'
@@ -279,19 +213,7 @@ function WorldMap({ now: liveNow, active, city: picked, onCity: choose }: WorldM
 
       <div className="wm-dock">
       <div className="wm-controls">
-        <ul className="wm-legend" aria-label={t('mapKey')}>
-          {LEGEND.map(([state, label, short, shape]) => (
-            <li key={state} data-state={state}>
-              <svg viewBox="0 0 10 10" aria-hidden="true">
-                {shape}
-              </svg>
-              <span className="lg-long">{t(label, { year })}</span>
-              <span className="lg-short" aria-hidden="true">
-                {t(short, { year })}
-              </span>
-            </li>
-          ))}
-        </ul>
+        <MapLegend year={year} />
       </div>
       </div>
     </div>

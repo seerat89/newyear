@@ -216,11 +216,6 @@ body {
 .wm-dock {
   margin-top: auto;
 }
-.wm-title {
-  margin: 0;
-  text-align: center;
-  font-size: calc(var(--title-size) * 0.85);
-}
 
 /* The map's window. On a wide screen it shows the whole world; on a portrait
    screen the world is wider than the window and slides to keep the frontier (and
@@ -610,16 +605,6 @@ body {
   background: rgb(255 255 255 / 0.1);
   color: #fff;
 }
-.wm-actions {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: center;
-  gap: 8px 12px;
-}
-.wm-actions .wm-btn {
-  white-space: nowrap;
-}
 .wm-dev {
   position: absolute;
   z-index: 30;
@@ -628,16 +613,6 @@ body {
   padding: 5px 10px;
   font-size: 11px;
   opacity: 0.7;
-}
-.wm-btn--primary {
-  border-color: rgb(246 197 110 / 0.5);
-  background: rgb(246 197 110 / 0.16);
-  color: #ffeec8;
-}
-.wm-btn--primary:hover {
-  border-color: rgb(246 197 110 / 0.8);
-  background: rgb(246 197 110 / 0.26);
-  color: #fff6dc;
 }
 .wm-btn:focus-visible {
   outline: 2px solid var(--theme-gold);

@@ -33,15 +33,6 @@ export const mix = (a: Vec, b: Vec, t: number): Vec => ({
   y: lerp(a.y, b.y, t),
 })
 
-export function inflate(rect: Rect, x: number, y: number = x): Rect {
-  return {
-    left: rect.left - x,
-    top: rect.top - y,
-    right: rect.right + x,
-    bottom: rect.bottom + y,
-  }
-}
-
 export const inside = (p: Vec, r: Rect) =>
   p.x > r.left && p.x < r.right && p.y > r.top && p.y < r.bottom
 
@@ -76,6 +67,3 @@ export function stepSpring(
   return a
 }
 
-/** A spring's remaining energy, normalised, to decide when it may sleep. */
-export const springIdle = (s: Spring, target: number, eps = 0.02) =>
-  Math.abs(s.v) < eps && Math.abs(s.x - target) < eps

@@ -1,4 +1,5 @@
 import { useEffect } from 'react'
+import { omidBehave } from '../omid/behave'
 import { usePrefersReducedMotion } from '../omid/usePrefersReducedMotion'
 import { VOLLEYS } from './sustainedScript'
 
@@ -40,9 +41,7 @@ export function useOmidCelebration(startedAt: number | null) {
       const wait = startedAt + t * 1000 - Date.now()
       if (wait <= 0) return []
       return [
-        window.setTimeout(() => {
-          window.dispatchEvent(new CustomEvent('omid-behave', { detail: name }))
-        }, wait),
+        window.setTimeout(() => omidBehave(name), wait),
       ]
     })
     return () => timers.forEach((id) => window.clearTimeout(id))

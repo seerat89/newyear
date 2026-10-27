@@ -5,8 +5,7 @@
  * warm gold carry the hope. Only these values exist today and there is no
  * runtime theme switching.
  */
-:root,
-:root[data-theme="dusk"] {
+:root {
   --theme-sky-top: #060a22;
   --theme-sky-mid: #0f1a52;
   --theme-sky-plum: #1b2f7c;
