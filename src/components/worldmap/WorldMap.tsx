@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { memo, useEffect, useMemo, useRef, useState } from 'react'
 import type { CSSProperties, MouseEvent } from 'react'
 import { formatLocalTime, formatSpan, getWorldYear, getZoneStatus, newYearInstant } from '../../lib/worldTime'
 import type { ZoneStatus } from '../../lib/worldTime'
@@ -88,7 +88,10 @@ function WorldMap({ now: liveNow, active, city: picked, onCity: choose }: WorldM
   const paths: Record<Status, string> = { waiting: '', arrived: '', celebrating: '', next: '' }
   states.forEach((state, i) => (paths[state] += DOT_PATHS[i]))
 
-  const sorted = CITIES.map((_, i) => i).sort((a, b) => instants[a] - instants[b] || CITIES[a].name.localeCompare(CITIES[b].name))
+  const sorted = useMemo(
+    () => CITIES.map((_, i) => i).sort((a, b) => instants[a] - instants[b] || CITIES[a].name.localeCompare(CITIES[b].name)),
+    [instants],
+  )
 
   const pick = (event: MouseEvent<SVGSVGElement>) => {
     const box = event.currentTarget.getBoundingClientRect()
@@ -220,4 +223,4 @@ function WorldMap({ now: liveNow, active, city: picked, onCity: choose }: WorldM
   )
 }
 
-export default WorldMap
+export default memo(WorldMap)

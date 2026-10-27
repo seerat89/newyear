@@ -1,4 +1,5 @@
 import { memo } from 'react'
+import type { CSSProperties } from 'react'
 import { createRandom } from './ridge'
 
 // A static field of stars that thins out towards the horizon: dense and a little
@@ -36,7 +37,8 @@ function Stars() {
             width: `calc(${s.size}px * var(--star-scale))`,
             height: `calc(${s.size}px * var(--star-scale))`,
             opacity: s.alpha,
-          }}
+            '--a': s.alpha,
+          } as CSSProperties}
         />
       ))}
     </div>

@@ -5,7 +5,8 @@ import type { CSSProperties } from 'react'
 // soft out-of-focus flakes up close, six-armed crystals that turn as they fall, and
 // slow golden bokeh lights. Every flake is a CSS loop (transform only); the positions
 // and timings come from a fixed sequence, so every render is the same. The whole
-// thing is hidden under reduced motion (the static snowscape stays).
+// thing is hidden under reduced motion (the static snowscape stays). On phones the
+// .fl-extra flakes are hidden (styles/performance.css).
 
 const rand = (i: number, n: number) => {
   const x = Math.sin((i + 1) * 12.9898 + n * 78.233) * 43758.5453
@@ -47,17 +48,17 @@ function Snow() {
         <span key={`g${i}`} className="snow-glow" style={style} />
       ))}
       {FAR.map((style, i) => (
-        <span key={`f${i}`} className="fl fl-far" style={style}>
+        <span key={`f${i}`} className={i % 5 >= 3 ? 'fl fl-far fl-extra' : 'fl fl-far'} style={style}>
           <i />
         </span>
       ))}
       {MID.map((style, i) => (
-        <span key={`m${i}`} className="fl fl-mid" style={style}>
+        <span key={`m${i}`} className={i % 4 === 3 ? 'fl fl-mid fl-extra' : 'fl fl-mid'} style={style}>
           <i />
         </span>
       ))}
       {CRYSTALS.map((style, i) => (
-        <span key={`c${i}`} className="fl fl-crystal" style={style}>
+        <span key={`c${i}`} className={i % 3 === 2 ? 'fl fl-crystal fl-extra' : 'fl fl-crystal'} style={style}>
           <svg viewBox="-12 -12 24 24">
             <path
               d="M0 -11V11M-9.5 -5.5L9.5 5.5M-9.5 5.5L9.5 -5.5M-2.6 -8.6L0 -6L2.6 -8.6M-2.6 8.6L0 6L2.6 8.6M-8.7 -1.6L-6 -3.2L-6.6 -6.4M8.7 1.6L6 3.2L6.6 6.4M-8.7 1.6L-6 3.2L-6.6 6.4M8.7 -1.6L6 -3.2L6.6 -6.4"

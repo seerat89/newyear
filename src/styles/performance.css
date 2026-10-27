@@ -1,0 +1,118 @@
+/*
+ * Performance (imported last, so it can override the feature files). The scene is mostly
+ * ambient loops; on a phone, and while Omid is being dragged, the ones that cost paint
+ * time are simplified or paused so the drag stays on the compositor. Desktop and TV are
+ * left exactly as designed.
+ *
+ * Found by profiling: animating inside the big SVG layers (windows, reflections, bokeh,
+ * horizon glow) and inside the tree art (twinkling lights and bulbs, each with a glow
+ * filter) repaints the whole SVG every frame; the map (hidden on the countdown page)
+ * kept animating; star twinkles animated a filter; and Christmas snow is ~240 layers.
+ */
+
+/* 1. While Omid is held (data-dragging on .scene, removed on release): only the slow
+   loops inside the big city SVG layers (window lights, reflections, bokeh, horizon glow)
+   hold still, since each repaints a whole layer. They are barely noticeable, and carry on
+   from the same point afterwards. Snow, stars, dust, tree lights and the rest keep moving. */
+.scene[data-dragging] .scene-layer,
+.scene[data-dragging] .scene-layer * {
+  animation-play-state: paused;
+}
+
+/* 2. The world map is kept mounted but hidden on the countdown page: its loops (the
+   frontier, haze and rings inside a big dot-map SVG) would repaint for nothing. */
+.app[data-scene="countdown"] .map-section,
+.app[data-scene="countdown"] .map-section *,
+.app[data-scene="countdown"] .map-section *::before,
+.app[data-scene="countdown"] .map-section *::after {
+  animation-play-state: paused;
+}
+
+/* 3. Phones (portrait, and landscape on a touch device). */
+@media (max-width: 600px), (pointer: coarse) and (max-width: 960px) {
+  /* Star twinkles on opacity (compositor) instead of a brightness filter. --a is the
+     star's own brightness (Stars.tsx), so dim stars stay dim. */
+  @keyframes star-twinkle {
+    from {
+      opacity: calc(var(--a) * 0.75);
+    }
+    to {
+      opacity: var(--a);
+    }
+  }
+  @keyframes star-glint {
+    0%,
+    88%,
+    100% {
+      scale: 1;
+      opacity: var(--a);
+    }
+    93% {
+      scale: 1.9;
+      opacity: calc(var(--a) * 1.7);
+    }
+  }
+  /* The film-grain tile is an feTurbulence SVG, which is slow to paint in Safari and
+     only helps banding on big screens. */
+  .scene-sky::after {
+    display: none;
+  }
+
+  /* Loops inside the big SVG layers hold at their middle brightness. */
+  .win-a {
+    animation: none;
+    opacity: 0.75;
+  }
+  .win-b {
+    animation: none;
+    opacity: 0.72;
+  }
+  .shimmer {
+    animation: none;
+    opacity: 0.85;
+  }
+  .glow-breathe {
+    animation: none;
+    opacity: 0.9;
+  }
+  .bokeh {
+    animation: none;
+    opacity: 0.82;
+  }
+
+  /* Trees: no glow filter on the whole art; the lights hold still and one bulb in
+     four still twinkles (one glow instead of two). */
+  .app .snowscape .snowscape-trees {
+    filter: none;
+  }
+  .snowscape .snowscape-light {
+    animation: none;
+    opacity: 0.85;
+  }
+  .snowscape .snowscape-bulb {
+    filter: drop-shadow(0 0 3px currentColor);
+  }
+  .snowscape .snowscape-bulb:not(:nth-child(4n)) {
+    animation: none;
+    opacity: 0.9;
+  }
+
+  /* Christmas snow: about a third fewer flakes and crystals (still a heavy fall). */
+  .fl-extra {
+    display: none;
+  }
+  /* The soft foreground lights are already soft gradients; skip the blur filter. */
+  .atmo-bokeh--fore {
+    filter: none;
+  }
+
+  /* Small glass controls: a plain, slightly denser tint instead of a live backdrop blur
+     over a moving scene. */
+  .scene-switch,
+  .music-toggle,
+  .legal-menu-button {
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+    background: rgb(14 20 58 / 0.72);
+  }
+}

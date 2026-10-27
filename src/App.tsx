@@ -89,7 +89,7 @@ function App() {
         )}
       </main>
       <section className="map-section" aria-label="New Year around the world" inert={scene !== 'map'}>
-        <WorldMap now={now} active={scene === 'map'} city={city} onCity={setCity} />
+        <WorldMap now={scene === 'map' ? now : Math.floor(now / 60_000) * 60_000} active={scene === 'map'} city={city} onCity={setCity} />
       </section>
     </div>
     {page && <InfoPage page={page} />}

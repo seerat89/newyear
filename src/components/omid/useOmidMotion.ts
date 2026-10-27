@@ -26,12 +26,21 @@ import { usePrefersReducedMotion } from './usePrefersReducedMotion'
 // nothing is moving and stops while the tab is hidden. Under reduced motion it
 // does not run at all: he rests on his lookout.
 //
+// He can also be picked up (Pointer Events, so touch, pen and mouse alike): a tap
+// plays the existing jump, and a drag suspends the director while the carrot follows
+// the pointer (the same spring, so the same lean and stretch). On release he settles
+// where he was dropped and the director resumes after a calm few seconds.
+//
 // Space: pixels, relative to where Omid rests on his lookout (the origin is the
 // centre of his body there).
 
 export const TRAIL_DOTS = 10
 const TRAIL_LIFE = 1.4
 const MAX_FRAME_S = 0.05
+/** How far the pointer may move (px) and still count as a tap. */
+const TAP_SLOP = 6
+/** The calm pause (seconds) after a drop before the director takes over again. */
+const DROP_CALM: [number, number] = [6, 10]
 
 type Layout = {
   art: SceneArt
@@ -240,6 +249,9 @@ export function useOmidMotion(sceneRef: RefObject<HTMLElement | null>) {
     let flareUntil = -1
     let camX = 0
 
+    // While held: the pointer's grab offset on his body and where the carrot is sent.
+    let drag: { id: number; sx: number; sy: number; gx: number; gy: number; moved: boolean; x: number; y: number } | null = null
+
     let raf = 0
     let last = 0
     let sleptAt = 0
@@ -333,6 +345,14 @@ export function useOmidMotion(sceneRef: RefObject<HTMLElement | null>) {
       carrot.x = anchor.x
       carrot.y = anchor.y
       cmd.gaze = idleGaze
+      if (drag?.moved) {
+        // Held: follow the pointer a little softly, so he trails and leans into the move.
+        omega = 10
+        zeta = 0.85
+        carrot.x = drag.x
+        carrot.y = drag.y
+        return cmd
+      }
       if (!step) return cmd
 
       if (step.kind === 'travel') {
@@ -598,6 +618,8 @@ export function useOmidMotion(sceneRef: RefObject<HTMLElement | null>) {
       p.x = p.y = v.x = v.y = 0
       anchor.x = anchor.y = 0
       lift = liftOld = liftV = liftA = 0
+      drag = null
+      scene.removeAttribute('data-dragging')
       plan = null
       delete scene.dataset.behaviour
       step = null
@@ -663,9 +685,8 @@ export function useOmidMotion(sceneRef: RefObject<HTMLElement | null>) {
       }
     }
 
-    // Lets tests (and the console) start a named behaviour right now.
-    const onBehave = (event: Event) => {
-      const name = (event as CustomEvent<Behaviour>).detail
+    // Starts a named behaviour right now (tests, the console, the cassette, a tap).
+    const runBehaviour = (name: Behaviour) => {
       if (!layout) return
       layout.obstacles = measureObstacles(layout)
       const next = planBehaviour(name, context())
@@ -674,6 +695,81 @@ export function useOmidMotion(sceneRef: RefObject<HTMLElement | null>) {
         startPlan(next)
       }
     }
+    // Nothing else moves him while he is held.
+    const onBehave = (event: Event) => {
+      if (!drag?.moved) runBehaviour((event as CustomEvent<Behaviour>).detail)
+    }
+
+    // ---- touch, pointer and mouse ---------------------------------------
+    // Only the pointer's position is stored per move; the frame loop does the rest.
+    const grabbed = (event: PointerEvent) => {
+      const b = layout!.bounds
+      return {
+        x: clamp(event.clientX - layout!.c0.x - drag!.gx, b.left, b.right),
+        y: clamp(event.clientY - layout!.c0.y - drag!.gy, b.top, b.bottom),
+      }
+    }
+    const onDown = (event: PointerEvent) => {
+      if (!layout || drag || (event.pointerType === 'mouse' && event.button !== 0)) return
+      event.preventDefault()
+      parts?.body.setPointerCapture(event.pointerId)
+      drag = {
+        id: event.pointerId,
+        sx: event.clientX,
+        sy: event.clientY,
+        gx: event.clientX - layout.c0.x - p.x,
+        gy: event.clientY - layout.c0.y - (p.y - lift),
+        moved: false,
+        x: p.x,
+        y: p.y,
+      }
+    }
+    const onMove = (event: PointerEvent) => {
+      if (!layout || !drag || event.pointerId !== drag.id) return
+      if (!drag.moved) {
+        if (Math.hypot(event.clientX - drag.sx, event.clientY - drag.sy) < TAP_SLOP) return
+        // Picked up: the director steps aside, keeping him where he is (a jump's lift
+        // becomes his position, so nothing pops).
+        drag.moved = true
+        window.clearTimeout(nextTimer)
+        window.clearTimeout(holdTimer)
+        plan = null
+        step = null
+        p.y -= lift
+        lift = liftOld = liftV = liftA = 0
+        gatherActive = false
+        delete scene.dataset.behaviour
+        scene.setAttribute('data-dragging', '')
+      }
+      const to = grabbed(event)
+      drag.x = to.x
+      drag.y = to.y
+      wake()
+    }
+    const onUp = (event: PointerEvent) => {
+      if (!drag || event.pointerId !== drag.id) return
+      const held = drag
+      if (held.moved) {
+        // Dropped: he settles here, and the director resumes after a calm pause.
+        anchor.x = held.x
+        anchor.y = held.y
+        scene.removeAttribute('data-dragging')
+        drag = null
+        scheduleNext(DROP_CALM[0], DROP_CALM[1])
+        wake()
+      } else {
+        drag = null
+        if (event.type === 'pointerup') runBehaviour('jump')
+      }
+    }
+    const swallow = (event: Event) => event.stopPropagation()
+    const grip = parts.body
+    scene.setAttribute('data-omid-touch', '')
+    grip.addEventListener('pointerdown', onDown)
+    grip.addEventListener('pointermove', onMove)
+    grip.addEventListener('pointerup', onUp)
+    grip.addEventListener('pointercancel', onUp)
+    grip.addEventListener('click', swallow)
 
     ;(window as unknown as Record<string, unknown>).__omidLayout = () => ({ layout, p })
     const observer = new ResizeObserver(onResize)
@@ -693,6 +789,13 @@ export function useOmidMotion(sceneRef: RefObject<HTMLElement | null>) {
       observer.disconnect()
       document.removeEventListener('visibilitychange', onVisibility)
       window.removeEventListener('omid-behave', onBehave)
+      grip.removeEventListener('pointerdown', onDown)
+      grip.removeEventListener('pointermove', onMove)
+      grip.removeEventListener('pointerup', onUp)
+      grip.removeEventListener('pointercancel', onUp)
+      grip.removeEventListener('click', swallow)
+      scene.removeAttribute('data-omid-touch')
+      scene.removeAttribute('data-dragging')
       // Back to the resting composition.
       if (parts) {
         const clear = (el: Element, ...props: string[]) =>

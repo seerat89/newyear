@@ -154,3 +154,25 @@
 .app[data-season="christmas"] .omid-scarf {
   display: inline;
 }
+
+/* Touch, pointer and mouse (useOmidMotion.ts sets data-omid-touch while the motion
+   system runs, so not under reduced motion). Only Omid's painted shapes take the
+   pointer, so the map and everything else around him keep working; touch-action is
+   off for those shapes only, not for the page. */
+.scene[data-omid-touch] .omid-root {
+  pointer-events: none;
+}
+.scene[data-omid-touch] .omid-root * {
+  pointer-events: visiblePainted;
+  touch-action: none;
+  cursor: grab;
+}
+.scene[data-omid-touch] .scene-omid-body {
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+  -webkit-tap-highlight-color: transparent;
+}
+.scene[data-dragging] .omid-root * {
+  cursor: grabbing;
+}
