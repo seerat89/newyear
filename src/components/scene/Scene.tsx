@@ -39,7 +39,7 @@ type SceneProps = {
   /** The midnight sequence stage (null outside it), and when midnight was. */
   celebration: CelebrationStage | null
   celebrationStart: number | null
-  /** Christmas mode: snow, and the cassette player is decorated (by CSS). */
+  /** Christmas mode: snow, and the cassette player and the foreground trees are decorated (by CSS). */
   christmas?: boolean
 }
 
@@ -94,12 +94,8 @@ function Scene({ glow, celebration, celebrationStart, christmas = false }: Scene
         </div>
       </div>
       {!christmas && <Atmosphere />}
-      {christmas && (
-        <>
-          <Snow />
-          <SnowScape />
-        </>
-      )}
+      <SnowScape />
+      {christmas && <Snow />}
       {celebrationStart !== null && <MidnightPulse startedAt={celebrationStart} />}
       <SustainedGlow live={live} />
       <div className="scene-vignette" />

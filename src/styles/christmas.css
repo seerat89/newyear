@@ -180,6 +180,31 @@
     opacity: 1;
   }
 }
+/* Normal mode: the same trees as dark midnight evergreens, quieter than Christmas, with
+   no snow, drifts, star or coloured bulbs, and only a few soft gold lights. Christmas
+   (data-season) leaves them exactly as drawn. */
+.app:not([data-season="christmas"]) .snowscape-trees {
+  opacity: 0.88;
+  filter: drop-shadow(0 0 12px rgb(255 190 110 / 0.06));
+}
+.app:not([data-season="christmas"]) .pine-tier {
+  fill: #08142c;
+}
+.app:not([data-season="christmas"]) .pine-tier-lit {
+  fill: #11294a;
+  opacity: 0.55;
+}
+.app:not([data-season="christmas"]) .pine-snow,
+.app:not([data-season="christmas"]) .pine-star,
+.app:not([data-season="christmas"]) .pine-light-extra,
+.app:not([data-season="christmas"]) .snowscape-bulb,
+.app:not([data-season="christmas"]) .snowscape-drift {
+  display: none;
+}
+.app:not([data-season="christmas"]) .snowscape-light {
+  fill: #f2c978;
+  filter: drop-shadow(0 0 2px rgb(255 204 120 / 0.55));
+}
 /* Coloured bulbs: each glows in its own colour and twinkles at its own pace. */
 .snowscape-bulb {
   filter: drop-shadow(0 0 3px currentColor) drop-shadow(0 0 6px currentColor);

@@ -1,8 +1,10 @@
 import { memo } from 'react'
 
-// The Christmas foreground: snow-laden pines with warm lights at either side, and
-// soft drifts of snow along the bottom. Static art (no animation, so it also serves
-// reduced motion); only the lights twinkle, in CSS.
+// The foreground trees: pines at either side, all year. In normal mode they are dark
+// midnight evergreens with a few quiet gold lights; Christmas decorates the same
+// trees (snow on the tiers, coloured bulbs, a star) and adds soft drifts of snow
+// along the bottom, all switched by CSS (.pine-*, .snowscape-drift). Static art (no
+// animation, so it also serves reduced motion); only the lights twinkle, in CSS.
 
 // Small coloured bulbs strung along each tier, like a string of Christmas lights.
 const BULBS = ['#ff5a5f', '#ffd166', '#5be08a', '#5ab4ff', '#ff8fd0', '#b48cff']
@@ -20,20 +22,22 @@ function Pine({ x, base, w, h, seed }: { x: number; base: number; w: number; h: 
       <rect x={x - w * 0.05} y={base - h * 0.1} width={w * 0.1} height={h * 0.12} fill="#0b1230" />
       {tiers.map((t, i) => (
         <g key={i}>
-          <path d={`M${x} ${t.y} L${x + t.w / 2} ${t.y + t.h} L${x - t.w / 2} ${t.y + t.h}Z`} fill="#0f1a45" />
+          <path className="pine-tier" d={`M${x} ${t.y} L${x + t.w / 2} ${t.y + t.h} L${x - t.w / 2} ${t.y + t.h}Z`} fill="#0f1a45" />
           <path
+            className="pine-tier-lit"
             d={`M${x} ${t.y} L${x + t.w / 2} ${t.y + t.h} L${x + t.w * 0.18} ${t.y + t.h * 0.82} Z`}
             fill="#1a2a63"
             opacity="0.7"
           />
           <path
+            className="pine-snow"
             d={`M${x} ${t.y} L${x + t.w * 0.27} ${t.y + t.h * 0.5} Q${x + t.w * 0.1} ${t.y + t.h * 0.62} ${x} ${t.y + t.h * 0.5} Q${x - t.w * 0.12} ${t.y + t.h * 0.66} ${x - t.w * 0.27} ${t.y + t.h * 0.5}Z`}
             fill="#e8ebff"
           />
           {[0.25, 0.62, 0.9].map((k, j) => (
             <circle
               key={j}
-              className="snowscape-light"
+              className={j === 1 ? 'snowscape-light' : 'snowscape-light pine-light-extra'}
               style={{ animationDelay: `${-((seed + i * 3 + j) % 7) * 0.6}s` }}
               cx={x + (j === 1 ? 0.12 : j === 0 ? -0.22 : 0.2) * t.w * (0.5 + k * 0.4)}
               cy={t.y + t.h * (0.35 + k * 0.5)}
@@ -61,7 +65,7 @@ function Pine({ x, base, w, h, seed }: { x: number; base: number; w: number; h: 
           })}
         </g>
       ))}
-      <path d={`M${x - 5} ${base - h - 2} l5 -12 l5 12 l-10 0Z`} fill="#ffe29a" opacity="0.9" />
+      <path className="pine-star" d={`M${x - 5} ${base - h - 2} l5 -12 l5 12 l-10 0Z`} fill="#ffe29a" opacity="0.9" />
     </g>
   )
 }
