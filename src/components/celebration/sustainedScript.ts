@@ -13,10 +13,16 @@ const START = 34
 /** Seconds after midnight at which a volley begins. */
 export const VOLLEYS = [150, 330, 600, 900]
 
-/** Seconds between bursts: lively at first, then slower and slower. */
+/** The midnight recording (lib/midnightAudio.ts) ends about this long after midnight. */
+const AUDIO_END = 204
+
+/**
+ * Seconds between bursts: liveliest early, clearly calmer by the time the recording
+ * ends, then slower and slower as the night goes on.
+ */
 function gapAt(t: number): number {
-  if (t < 180) return 2.4 + (1.2 * (t - START)) / (180 - START)
-  if (t < 600) return 3.6 + (4.4 * (t - 180)) / 420
+  if (t < AUDIO_END) return 2.4 + (2.4 * (t - START)) / (AUDIO_END - START)
+  if (t < 600) return 4.8 + (3.2 * (t - AUDIO_END)) / (600 - AUDIO_END)
   return 8 + (7 * Math.min(t - 600, 420)) / 420
 }
 
@@ -65,7 +71,7 @@ export function createSustainedScore(seed: number): () => Burst {
     }
 
     t += gapAt(t) * (0.65 + 0.7 * random())
-    const decay = 1 - 0.3 * Math.min(1, (t - START) / 900)
+    const decay = 1 - 0.2 * Math.min(1, (t - START) / (AUDIO_END - START)) - 0.15 * Math.min(1, Math.max(0, t - AUDIO_END) / 700)
     const y = 0.38 + 0.42 * random()
     let x = 6 + 88 * random()
     // Keep the middle of the upper sky, where the message is, mostly clear.

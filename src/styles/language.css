@@ -1,4 +1,4 @@
-/* Language selector (beside the corner links on large screens, in the menu on phones),
+/* Language selector (the first row of the corner menu),
    and right-to-left text for Arabic and Persian: the map, countdown and scene keep
    their left-to-right layout. */
 .lang-pick {
@@ -89,22 +89,6 @@
   }
   .lang-chevron {
     right: 12px;
-  }
-}
-@media (max-width: 600px) {
-  .legal-menu-list .lang-pick {
-    display: flex;
-    margin: 6px 6px 4px;
-    border-color: rgb(255 255 255 / 0.22);
-  }
-  .legal-menu-list .lang-select {
-    flex: 1;
-    min-height: 44px;
-    font-size: 15px;
-    letter-spacing: 0;
-  }
-  .legal-menu-list .lang-globe {
-    left: 13px;
   }
 }
 .scene,

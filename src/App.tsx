@@ -6,21 +6,29 @@ import { useOmidCelebration } from './components/celebration/useOmidCelebration'
 import PhaseMessage from './components/PhaseMessage'
 import Scene from './components/scene/Scene'
 import { InfoPage } from './components/InfoPage'
-import LegalLinks from './components/LegalLinks'
+import CornerMenu from './components/CornerMenu'
 import { useCity } from './hooks/useCity'
 import { usePage } from './hooks/usePage'
 import MusicToggle from './components/MusicToggle'
 import SceneSwitch from './components/SceneSwitch'
 import type { SceneName } from './components/SceneSwitch'
 import WorldMap from './components/worldmap/WorldMap'
+import { useMidnightAudio } from './hooks/useMidnightAudio'
+import { useChristmasMusic } from './hooks/useChristmasMusic'
+import { useMusic } from './hooks/useMusic'
+import { useSoundNudge } from './hooks/useSoundNudge'
 import { useNow } from './hooks/useNow'
 import { getNewYearWindow } from './lib/autoView'
 import { getCelebration } from './lib/celebration'
+import { audioOffset } from './lib/midnightAudio'
 import { getCountdownState } from './lib/countdown'
 import { getGreeting } from './lib/greetings'
 import { useT } from './lib/strings'
 import { getSeason } from './lib/season'
 import { CITIES } from './components/worldmap/places'
+
+/** How long before midnight the show is put in the page (hidden, delayed to the dot). */
+const SHOW_PREROLL_MS = 4000
 
 function App() {
   const now = useNow()
@@ -32,7 +40,9 @@ function App() {
   const { t, lang } = useT()
   const xmas = getGreeting('christmas', lang)
   const celebration = getCelebration(state, now)
-  useOmidCelebration(state.phase === 'celebrating' ? state.startedAt : null)
+  // The show is mounted a few seconds early so it starts from CSS on the dot of midnight.
+  const upcoming = state.phase === 'counting' && state.target - now <= SHOW_PREROLL_MS ? state.target : null
+  useOmidCelebration(state.phase === 'celebrating' ? state.startedAt : upcoming)
   const glow = state.phase === 'counting' ? glowForDaysLeft(state.remaining.days) : 1
 
   // Two fullscreen scenes, no scrolling, and the viewer's choice is never overridden,
@@ -47,18 +57,39 @@ function App() {
     if (midnight !== null) setScene('countdown')
   }
 
+  // The midnight recording (on unless the viewer switched music off) starts 36 s
+  // before their midnight (the spoken 10 at T-10) so "Happy New Year" lands on the celebration; when it
+  // starts the screen goes to the countdown, even if they had gone back to the map.
+  const music = useMusic()
+  const audioMidnight = state.phase === 'counting' ? state.target : state.phase === 'celebrating' ? state.startedAt : null
+  const soundBlocked = useMidnightAudio(audioMidnight, music)
+  const sequence = music && audioMidnight !== null && audioOffset(now, audioMidnight) !== null
+  // Omid asks for a tap if the browser has not allowed sound yet (hooks/useSoundNudge.ts).
+  const nearMidnight = state.phase === 'counting' && state.target - now <= 5 * 60_000
+  const carolsBlocked = useChristmasMusic(season === 'christmas', music)
+  const speech = useSoundNudge(music, nearMidnight, (soundBlocked && sequence) || carolsBlocked) && scene === 'countdown'
+  const [wasSequence, setWasSequence] = useState(false)
+  if (sequence !== wasSequence) {
+    setWasSequence(sequence)
+    if (sequence) setScene('countdown')
+  }
+
   return (
     <>
     <div className="app" data-scene={scene} data-season={season ?? undefined} inert={page !== null}>
       <Scene
         glow={glow}
         celebration={celebration?.stage ?? null}
-        celebrationStart={celebration?.startedAt ?? null}
+        celebrationStart={celebration?.startedAt ?? upcoming}
         christmas={season === 'christmas'}
+        speech={speech ? t('soundNudge') : null}
       />
-      <SceneSwitch scene={scene} onChange={setScene} />
-      <LegalLinks />
-      <MusicToggle />
+      <div className="bottom-bar">
+        <MusicToggle />
+        <SceneSwitch scene={scene} onChange={setScene} />
+      </div>
+      <CornerMenu />
+      <p className="sr-only" role="status">{speech ? t('soundNudge') : ''}</p>
       <main className="hero" inert={scene !== 'countdown'}>
         {state.phase === 'counting' && (
           <>

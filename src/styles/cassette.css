@@ -230,13 +230,14 @@
   }
 }
 
-/* The music button: a small round control in the top corner (left of the three-dot
-   button on phones), shown with the cassette on the countdown scene. */
+/* The music button: a small round control just left of the Countdown / World Map switch
+   (inside .bottom-bar, so the switch stays centred), on both scenes. */
 .music-toggle {
-  position: fixed;
-  z-index: 30;
-  top: max(calc(env(safe-area-inset-top) + 8px), 10px);
-  right: max(14px, env(safe-area-inset-right));
+  position: absolute;
+  top: 50%;
+  right: 100%;
+  margin-right: 8px;
+  translate: 0 -50%;
   display: grid;
   place-items: center;
   width: 38px;
@@ -267,13 +268,95 @@
   outline: 2px solid var(--theme-gold);
   outline-offset: 2px;
 }
-@media (max-width: 600px) {
+@media (min-width: 1600px) {
   .music-toggle {
-    top: max(calc(env(safe-area-inset-top) + 8px), 10px);
-    right: calc(max(8px, env(safe-area-inset-right)) + 48px);
+    width: 52px;
+    height: 52px;
+    margin-right: 12px;
   }
 }
-.app[data-scene="map"] .music-toggle {
-  opacity: 0;
-  visibility: hidden;
+
+/* Omid's speech bubble (sound reminder, hooks/useSoundNudge.ts, placed by
+   scene/SpeechBubble.tsx): a soft cream-and-gold cloud beside his face at mouth level, a
+   small rounded tail pointing at his mouth, glowing like he does. On his left by default,
+   on his right when there is no room (data-side). It sits inside his moving body, so it
+   travels with him, and bobs gently. The text direction follows the words (dir="auto"). */
+.omid-speech {
+  position: absolute;
+  z-index: 3;
+  top: 68%;
+  right: calc(100% - 4px);
+  translate: 0 -50%;
+  width: max-content;
+  max-width: min(150px, 44vw);
+  margin: 0;
+  padding: 5px 12px;
+  border-radius: 999px;
+  background: linear-gradient(180deg, rgb(255 246 222 / 0.95), rgb(255 226 160 / 0.95));
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.55),
+    0 0 14px rgb(255 214 140 / 0.45),
+    0 2px 8px rgb(20 20 60 / 0.25);
+  color: #5a3b0c;
+  font-size: 11px;
+  font-weight: 500;
+  line-height: 1.3;
+  text-align: center;
+  text-wrap: balance;
+  pointer-events: none;
+  animation:
+    omid-speech-in 0.35s ease-out both,
+    omid-speech-bob 3.6s ease-in-out 0.35s infinite,
+    omid-speech-out 0.6s ease-in 7.4s forwards;
+}
+.omid-speech[data-side="right"] {
+  right: auto;
+  left: calc(100% - 4px);
+}
+/* A small rounded tail on the side facing him, pointing at his mouth. */
+.omid-speech::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  right: -4px;
+  width: 11px;
+  height: 11px;
+  margin-top: -6px;
+  border-radius: 3px 6px 3px 3px;
+  background: rgb(255 228 165 / 0.95);
+  transform: rotate(45deg);
+}
+.omid-speech[data-side="right"]::after {
+  right: auto;
+  left: -4px;
+  border-radius: 3px 3px 3px 6px;
+}
+@media (min-width: 900px) {
+  .omid-speech {
+    font-size: 13px;
+    padding: 6px 14px;
+    max-width: min(240px, 40vw);
+  }
+}
+@keyframes omid-speech-bob {
+  50% {
+    transform: translateY(-3px);
+  }
+}
+/* A gentle fade just before the reminder is removed (hooks/useSoundNudge.ts SHOW_MS, 8 s). */
+@keyframes omid-speech-out {
+  to {
+    opacity: 0;
+  }
+}
+@keyframes omid-speech-in {
+  from {
+    opacity: 0;
+    translate: 0 calc(-50% + 6px);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .omid-speech {
+    animation: none;
+  }
 }

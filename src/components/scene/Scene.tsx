@@ -14,6 +14,7 @@ import SceneArt from './SceneArt'
 import SceneSet from './SceneSet'
 import Snow from './Snow'
 import SnowScape from './SnowScape'
+import SpeechBubble from './SpeechBubble'
 import Stars from './Stars'
 import { SCENES } from './scenes'
 
@@ -41,9 +42,11 @@ type SceneProps = {
   celebrationStart: number | null
   /** Christmas mode: snow, and the cassette player and the foreground trees are decorated (by CSS). */
   christmas?: boolean
+  /** A short line Omid says in a speech bubble (null: nothing). */
+  speech?: string | null
 }
 
-function Scene({ glow, celebration, celebrationStart, christmas = false }: SceneProps) {
+function Scene({ glow, celebration, celebrationStart, christmas = false, speech = null }: SceneProps) {
   const sceneRef = useRef<HTMLDivElement>(null)
   useOmidMotion(sceneRef)
   const live = useSustainedBursts(celebrationStart)
@@ -85,6 +88,7 @@ function Scene({ glow, celebration, celebrationStart, christmas = false }: Scene
         <div className="scene-omid">
           <div className="scene-omid-body">
             <Omid glow={glow} className="relative w-full" />
+            {speech && <SpeechBubble text={speech} />}
           </div>
         </div>
         <div className="scene-layer" data-layer="near">

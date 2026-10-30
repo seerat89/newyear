@@ -127,13 +127,16 @@ body {
 .app[data-scene="countdown"] .map-section {
   transform: translateY(2%);
 }
-.scene-switch {
+/* The bottom control area: the Countdown / World Map switch at the bottom centre, within
+   easy reach of a thumb, with the music button beside it (cassette.css). */
+.bottom-bar {
   position: fixed;
   z-index: 30;
-  /* At the bottom centre, within easy reach of a thumb. */
   bottom: max(16px, calc(env(safe-area-inset-bottom) + 8px));
   left: 50%;
   transform: translateX(-50%);
+}
+.scene-switch {
   display: flex;
   gap: 2px;
   padding: 3px;
@@ -167,7 +170,7 @@ body {
   outline-offset: 1px;
 }
 @media (min-width: 1600px) {
-  .scene-switch {
+  .bottom-bar {
     bottom: 30px;
   }
   .app .map-section {

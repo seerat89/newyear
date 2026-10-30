@@ -1,7 +1,8 @@
-import { memo, useState } from 'react'
+import { memo } from 'react'
 import type { CSSProperties } from 'react'
 import { EchoLight } from './Burst'
 import { isMajor, SHOW } from './showScript'
+import { useOnTheDot } from './useOnTheDot'
 import { useWithin } from './useWithin'
 
 // What the opening show does to the world in front of the sky: it sits above the
@@ -40,12 +41,12 @@ const STREAKS = [
 const SWELLS = [3.6, 6.6, 10.2]
 
 function MidnightPulse({ startedAt }: { startedAt: number }) {
-  const [sinceMidnight] = useState(() => Math.max(0, (Date.now() - startedAt) / 1000))
-  const offset = (t: number) => `${(t - sinceMidnight).toFixed(2)}s`
+  const { since, root } = useOnTheDot(startedAt)
+  const offset = (t: number) => `${(t - since).toFixed(2)}s`
   if (!useWithin(startedAt, 62_000)) return null
 
   return (
-    <div className="scene-afterglow">
+    <div className="scene-afterglow" ref={root}>
       <div className="pulse-wave" style={{ '--show-delay': offset(0.1) } as CSSProperties} />
       {SWELLS.map((t) => (
         <div key={t} className="pulse-wave pulse-swell" data-tv="" style={{ '--show-delay': offset(t) } as CSSProperties} />

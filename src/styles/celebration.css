@@ -151,6 +151,9 @@
 .ny-year {
   position: relative;
   display: block;
+  /* The year is a number, read left to right even in right-to-left languages. */
+  direction: ltr;
+  unicode-bidi: isolate;
   margin-top: 0.06em;
   font-size: calc(var(--num) * 1.5);
   line-height: 1;

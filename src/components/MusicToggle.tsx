@@ -1,7 +1,8 @@
+import { unlockMidnightAudio } from '../hooks/useMidnightAudio'
 import { setMusic, useMusic } from '../hooks/useMusic'
 import { useT } from '../lib/strings'
 
-/** A small round play/pause control for the cassette player's music (no audio yet). */
+/** A small round play/pause control for the music (the midnight recording, hooks/useMidnightAudio.ts). */
 function MusicToggle() {
   const { t } = useT()
   const on = useMusic()
@@ -12,7 +13,10 @@ function MusicToggle() {
       aria-label={t('music')}
       aria-pressed={on}
       title={t('music')}
-      onClick={() => setMusic(!on)}
+      onClick={() => {
+        if (!on) unlockMidnightAudio()
+        setMusic(!on)
+      }}
     >
       <svg viewBox="0 0 20 20" aria-hidden="true">
         <path d="M8 14.5V5.2l7-1.7v9" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />

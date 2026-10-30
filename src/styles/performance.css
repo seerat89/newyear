@@ -110,7 +110,8 @@
      over a moving scene. */
   .scene-switch,
   .music-toggle,
-  .legal-menu-button {
+  .dial-button,
+  .dial-item {
     -webkit-backdrop-filter: none;
     backdrop-filter: none;
     background: rgb(14 20 58 / 0.72);

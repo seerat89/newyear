@@ -245,11 +245,6 @@
     display: none;
   }
 }
-.app[data-season="christmas"] .legal a,
-.app[data-season="christmas"] .legal-menu-button {
-  color: #f4f6ff;
-  text-shadow: 0 1px 6px rgb(10 14 50 / 0.9);
-}
 /* A hazy bank of cloud along the horizon and a cold bloom up high. */
 .app[data-season="christmas"] .scene-sky::after {
   content: "";

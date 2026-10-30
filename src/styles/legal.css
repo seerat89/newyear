@@ -1,57 +1,157 @@
-/* About, Privacy and Terms: quiet links in the top corner, and a page over the app. */
-/* A quiet row of small-caps links, with a thin dot between them; each gets a hairline
-   underline on hover or focus. Secondary on purpose: it sits in the corner and does
-   not compete with the scene. */
-.legal {
+/* The corner menu (components/CornerMenu.tsx): a small floating button at the bottom right
+   that opens Language, About, Privacy and Terms upward, and the full-screen pages those
+   links open. */
+.dial {
   position: fixed;
   z-index: 30;
-  bottom: max(6px, env(safe-area-inset-bottom));
-  right: max(10px, env(safe-area-inset-right));
+  /* On the same baseline as the Countdown / World Map switch. */
+  bottom: max(16px, calc(env(safe-area-inset-bottom) + 8px));
+  right: max(14px, env(safe-area-inset-right));
   display: flex;
-  align-items: center;
+  flex-direction: column;
+  align-items: flex-end;
 }
-.legal a {
-  position: relative;
-  padding: 10px 8px;
-  color: rgb(226 233 255 / 0.55);
-  font: 500 11px/1 system-ui, sans-serif;
-  letter-spacing: 0.14em;
-  text-decoration: none;
-  text-transform: uppercase;
-  transition: color 0.25s ease;
-}
-.legal a + a::before {
-  content: "";
-  position: absolute;
-  left: -1px;
-  top: 50%;
-  width: 3px;
-  height: 3px;
+.dial-button {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  margin: 3px;
+  padding: 0;
+  border: 1px solid rgb(255 255 255 / 0.14);
   border-radius: 50%;
-  background: rgb(226 233 255 / 0.3);
-  transform: translateY(-50%);
+  background: rgb(14 20 58 / 0.5);
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+  color: rgb(240 244 255 / 0.78);
+  cursor: pointer;
+  transition:
+    background 0.2s ease,
+    color 0.2s ease;
 }
-.legal a::after {
-  content: "";
-  position: absolute;
-  left: 8px;
-  right: 8px;
-  bottom: 6px;
-  height: 1px;
-  background: currentColor;
-  opacity: 0;
-  transition: opacity 0.25s ease;
+.dial-button svg {
+  width: 22px;
+  height: 22px;
+  fill: currentColor;
 }
-.legal a:hover,
-.legal a:focus-visible {
+.dial-cross,
+.dial[data-open] .dial-dots {
+  display: none;
+}
+.dial[data-open] .dial-cross {
+  display: block;
+}
+.dial-button:hover,
+.dial[data-open] .dial-button {
+  background: rgb(255 255 255 / 0.12);
   color: #fff;
 }
-.legal a:hover::after,
-.legal a:focus-visible::after {
-  opacity: 0.7;
+.dial-button:focus-visible,
+.dial-item:focus-visible {
+  outline: 2px solid var(--theme-gold);
+  outline-offset: 2px;
 }
-.legal a:focus-visible {
-  outline: none;
+/* The actions grow upward from the button; Language is the nearest. */
+.dial-list {
+  order: -1;
+  display: flex;
+  flex-direction: column-reverse;
+  align-items: flex-end;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+.dial-list[hidden] {
+  display: none;
+}
+.dial-item,
+.dial-list .lang-pick {
+  animation: dial-in 0.22s ease-out both;
+}
+.dial-list > :nth-child(2) {
+  animation-delay: 0.03s;
+}
+.dial-list > :nth-child(3) {
+  animation-delay: 0.06s;
+}
+.dial-list > :nth-child(4) {
+  animation-delay: 0.09s;
+}
+@keyframes dial-in {
+  from {
+    opacity: 0;
+    translate: 0 10px;
+  }
+}
+.dial-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 40px;
+  padding: 0 12px 0 16px;
+  border: 1px solid rgb(255 255 255 / 0.14);
+  border-radius: 999px;
+  background: rgb(10 15 48 / 0.82);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  color: rgb(236 242 255 / 0.92);
+  font: 500 14px/1 system-ui, sans-serif;
+  text-decoration: none;
+  transition: background 0.2s ease;
+}
+.dial-item:hover {
+  background: rgb(40 54 120 / 0.9);
+}
+.dial-item svg {
+  width: 18px;
+  height: 18px;
+}
+.dial-list .lang-pick {
+  margin: 0;
+  background: rgb(10 15 48 / 0.82);
+  border-color: rgb(255 255 255 / 0.14);
+}
+.dial-list .lang-select {
+  min-height: 40px;
+  padding-left: 34px;
+  font-size: 14px;
+  letter-spacing: 0;
+}
+.dial-list .lang-globe {
+  left: 12px;
+}
+.app[data-season="christmas"] .dial-button {
+  color: #f4f6ff;
+}
+@media (min-width: 1600px) {
+  .dial {
+    bottom: 30px;
+    right: 28px;
+  }
+  .dial-button {
+    width: 52px;
+    height: 52px;
+  }
+  .dial-item {
+    min-height: 52px;
+    padding: 0 16px 0 22px;
+    font-size: 18px;
+  }
+  .dial-list .lang-select {
+    min-height: 52px;
+    font-size: 18px;
+    padding-left: 42px;
+  }
+  .dial-list .lang-globe {
+    left: 16px;
+    width: 20px;
+    height: 20px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .dial-item,
+  .dial-list .lang-pick {
+    animation: none;
+  }
 }
 .info a:focus-visible,
 .info-back:focus-visible {
@@ -120,19 +220,6 @@
   color: #fff;
 }
 @media (min-width: 1600px) {
-  .legal a {
-    padding: 14px 14px;
-    font-size: 15px;
-  }
-  .legal a::after {
-    left: 14px;
-    right: 14px;
-    bottom: 9px;
-  }
-  .legal {
-    bottom: 18px;
-    right: 28px;
-  }
   .info-card {
     max-width: 780px;
     font-size: 20px;
@@ -145,78 +232,6 @@
 .info-back svg {
   width: 18px;
   height: 18px;
-}
-
-/* Phones: the three links become one small button in the top-right that opens a
-   compact menu; the bottom controls are left alone. */
-.legal-menu {
-  display: none;
-}
-@media (max-width: 600px) {
-  .legal {
-    display: none;
-  }
-  .legal-menu {
-    position: fixed;
-    z-index: 30;
-    top: max(calc(env(safe-area-inset-top) + 6px), 8px);
-    right: max(8px, env(safe-area-inset-right));
-    display: block;
-  }
-  .legal-menu-button {
-    display: grid;
-    place-items: center;
-    width: 40px;
-    height: 40px;
-    margin: 2px;
-    padding: 0;
-    border: 1px solid rgb(255 255 255 / 0.14);
-    border-radius: 50%;
-    background: rgb(14 20 58 / 0.5);
-    -webkit-backdrop-filter: blur(8px);
-    backdrop-filter: blur(8px);
-    color: rgb(240 244 255 / 0.92);
-    cursor: pointer;
-  }
-  .legal-menu-button svg {
-    width: 22px;
-    height: 22px;
-    fill: currentColor;
-  }
-  .legal-menu-button[aria-expanded="true"],
-  .legal-menu-button:hover {
-    background: rgb(255 255 255 / 0.1);
-    color: #fff;
-  }
-  .legal-menu-button:focus-visible,
-  .legal-menu-list a:focus-visible {
-    outline: 2px solid var(--theme-gold);
-    outline-offset: 1px;
-  }
-  .legal-menu-list {
-    position: absolute;
-    top: 100%;
-    right: 0;
-    display: flex;
-    flex-direction: column;
-    min-width: 150px;
-    padding: 6px;
-    border: 1px solid rgb(255 255 255 / 0.12);
-    border-radius: 14px;
-    background: rgb(10 15 48 / 0.94);
-    -webkit-backdrop-filter: blur(12px);
-    backdrop-filter: blur(12px);
-  }
-  .legal-menu-list a {
-    padding: 12px 14px;
-    border-radius: 9px;
-    color: rgb(236 242 255 / 0.88);
-    font: 500 15px/1 system-ui, sans-serif;
-    text-decoration: none;
-  }
-  .legal-menu-list a:hover {
-    background: rgb(255 255 255 / 0.08);
-  }
 }
 
 .info-card .info-note {

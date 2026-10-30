@@ -10,6 +10,9 @@
 const BUILD = '__BUILD__'
 const PRECACHE = '__PRECACHE__'
 const CACHE = `newyear-${BUILD}`
+// Media (the midnight recording) is big and does not change with the app, so it has its own
+// cache that survives deploys. Rename it (media-2 ...) if the recording is ever replaced.
+const MEDIA = 'media-1'
 /** How long a page may wait for the network before the cached copy is used. */
 const NETWORK_WAIT_MS = 4000
 
@@ -50,9 +53,44 @@ function page(request) {
   })
 }
 
+/** A cached file answered as audio elements ask for it: whole, or the byte range they want. */
+function ranged(request, hit) {
+  const range = /bytes=(\d*)-(\d*)/.exec(request.headers.get('range') || '')
+  if (!range) return hit
+  return hit.arrayBuffer().then((buffer) => {
+    const size = buffer.byteLength
+    const start = range[1] === '' ? Math.max(0, size - Number(range[2])) : Number(range[1])
+    const end = range[1] !== '' && range[2] !== '' ? Math.min(Number(range[2]), size - 1) : size - 1
+    return new Response(buffer.slice(start, end + 1), {
+      status: 206,
+      headers: {
+        'Content-Type': hit.headers.get('Content-Type') || 'audio/mpeg',
+        'Content-Range': `bytes ${start}-${end}/${size}`,
+        'Content-Length': String(end - start + 1),
+      },
+    })
+  })
+}
+
+/** Media: from its cache when there; a plain (whole-file) fetch is stored, ranged ones pass through. */
+async function media(request) {
+  const cache = await caches.open(MEDIA)
+  const key = new URL(request.url).pathname
+  const hit = await cache.match(key, { ignoreVary: true })
+  if (hit) return ranged(request, hit)
+  const response = await fetch(request)
+  if (response.status === 200 && !request.headers.has('range')) cache.put(key, response.clone())
+  return response
+}
+
 self.addEventListener('fetch', (event) => {
   const { request } = event
-  if (request.method !== 'GET' || new URL(request.url).origin !== self.location.origin) return
+  const url = new URL(request.url)
+  if (request.method !== 'GET' || url.origin !== self.location.origin) return
+  if (url.pathname.startsWith('/audio/')) {
+    event.respondWith(media(request))
+    return
+  }
   if (request.mode === 'navigate') {
     event.respondWith(page(request))
     return

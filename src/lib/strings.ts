@@ -47,6 +47,7 @@ const en: Table = {
   home: 'Home',
   aboutLegal: 'About and legal',
   language: 'Language', music: 'Music',
+  soundNudge: 'Tap once for sound',
 }
 
 const TABLES: Record<string, Table> = {
@@ -63,7 +64,7 @@ const TABLES: Record<string, Table> = {
     legendArrived: 'Jo vuodessa {year}', legendNow: 'Juhlii nyt', legendWaiting: 'Odottaa', shortArrived: 'Vuosi {year}',
     shortNow: 'Nyt', shortNext: 'Seuraava', mapKey: 'Kartan selite',
     mapLabel: 'Maailmankartta: kuka on jo vuodessa {year}, kuka juhlii ja kuka odottaa',
-    about: 'Tietoja', privacy: 'Tietosuoja', terms: 'Ehdot', home: 'Etusivu', aboutLegal: 'Tietoja ja ehdot', language: 'Kieli', music: 'Musiikki',
+    about: 'Tietoja', privacy: 'Tietosuoja', terms: 'Ehdot', home: 'Etusivu', aboutLegal: 'Tietoja ja ehdot', language: 'Kieli', music: 'Musiikki', soundNudge: 'Napauta kerran äänen takia',
   },
   sv: {
     days: 'dagar', hours: 'timmar', minutes: 'minuter', seconds: 'sekunder', abbr: 'd|t|min|s',
@@ -77,7 +78,7 @@ const TABLES: Record<string, Table> = {
     legendArrived: 'Redan i {year}', legendNow: 'Firar nu', legendWaiting: 'Väntar', shortArrived: 'I {year}',
     shortNow: 'Nu', shortNext: 'Nästa', mapKey: 'Teckenförklaring',
     mapLabel: 'Världskarta över vem som redan är i {year}, vem som firar och vem som väntar',
-    about: 'Om', privacy: 'Integritet', terms: 'Villkor', home: 'Hem', aboutLegal: 'Om och villkor', language: 'Språk', music: 'Musik',
+    about: 'Om', privacy: 'Integritet', terms: 'Villkor', home: 'Hem', aboutLegal: 'Om och villkor', language: 'Språk', music: 'Musik', soundNudge: 'Tryck en gång för ljud',
   },
   de: {
     days: 'Tage', hours: 'Stunden', minutes: 'Minuten', seconds: 'Sekunden', abbr: 'T|Std|Min|Sek',
@@ -91,7 +92,7 @@ const TABLES: Record<string, Table> = {
     legendArrived: 'Schon in {year}', legendNow: 'Feiert jetzt', legendWaiting: 'Wartet', shortArrived: 'In {year}',
     shortNow: 'Jetzt', shortNext: 'Als Nächstes', mapKey: 'Kartenlegende',
     mapLabel: 'Weltkarte: wer schon in {year} ist, wer gerade feiert und wer noch wartet',
-    about: 'Über uns', privacy: 'Datenschutz', terms: 'Bedingungen', home: 'Start', aboutLegal: 'Info und Rechtliches', language: 'Sprache', music: 'Musik',
+    about: 'Über uns', privacy: 'Datenschutz', terms: 'Bedingungen', home: 'Start', aboutLegal: 'Info und Rechtliches', language: 'Sprache', music: 'Musik', soundNudge: 'Einmal tippen für Ton',
   },
   fr: {
     days: 'jours', hours: 'heures', minutes: 'minutes', seconds: 'secondes', abbr: 'j|h|min|s',
@@ -105,7 +106,7 @@ const TABLES: Record<string, Table> = {
     legendArrived: 'Déjà en {year}', legendNow: 'Fête maintenant', legendWaiting: 'En attente', shortArrived: 'En {year}',
     shortNow: 'Maintenant', shortNext: 'Prochain', mapKey: 'Légende',
     mapLabel: 'Carte du monde : qui est déjà en {year}, qui fête et qui attend encore',
-    about: 'À propos', privacy: 'Confidentialité', terms: 'Conditions', home: 'Accueil', aboutLegal: 'À propos et mentions légales', language: 'Langue', music: 'Musique',
+    about: 'À propos', privacy: 'Confidentialité', terms: 'Conditions', home: 'Accueil', aboutLegal: 'À propos et mentions légales', language: 'Langue', music: 'Musique', soundNudge: 'Touchez pour le son',
   },
   es: {
     days: 'días', hours: 'horas', minutes: 'minutos', seconds: 'segundos', abbr: 'd|h|min|s',
@@ -119,7 +120,7 @@ const TABLES: Record<string, Table> = {
     legendArrived: 'Ya en {year}', legendNow: 'Celebrando ahora', legendWaiting: 'Esperando', shortArrived: 'En {year}',
     shortNow: 'Ahora', shortNext: 'Siguiente', mapKey: 'Leyenda del mapa',
     mapLabel: 'Mapa mundial: quién ya está en {year}, quién celebra y quién espera',
-    about: 'Acerca de', privacy: 'Privacidad', terms: 'Términos', home: 'Inicio', aboutLegal: 'Acerca de y legal', language: 'Idioma', music: 'Música',
+    about: 'Acerca de', privacy: 'Privacidad', terms: 'Términos', home: 'Inicio', aboutLegal: 'Acerca de y legal', language: 'Idioma', music: 'Música', soundNudge: "Toca una vez para activar el sonido",
   },
   it: {
     days: 'giorni', hours: 'ore', minutes: 'minuti', seconds: 'secondi', abbr: 'g|h|min|s',
@@ -133,7 +134,7 @@ const TABLES: Record<string, Table> = {
     legendArrived: 'Già nel {year}', legendNow: 'Festeggia ora', legendWaiting: 'In attesa', shortArrived: 'Nel {year}',
     shortNow: 'Ora', shortNext: 'Prossima', mapKey: 'Legenda della mappa',
     mapLabel: 'Mappa del mondo: chi è già nel {year}, chi festeggia e chi aspetta',
-    about: 'Info', privacy: 'Privacy', terms: 'Termini', home: 'Home', aboutLegal: 'Info e note legali', language: 'Lingua', music: 'Musica',
+    about: 'Info', privacy: 'Privacy', terms: 'Termini', home: 'Home', aboutLegal: 'Info e note legali', language: 'Lingua', music: 'Musica', soundNudge: "Tocca una volta per l'audio",
   },
   pt: {
     days: 'dias', hours: 'horas', minutes: 'minutos', seconds: 'segundos', abbr: 'd|h|min|s',
@@ -147,7 +148,7 @@ const TABLES: Record<string, Table> = {
     legendArrived: 'Já em {year}', legendNow: 'Celebrando agora', legendWaiting: 'À espera', shortArrived: 'Em {year}',
     shortNow: 'Agora', shortNext: 'Próxima', mapKey: 'Legenda do mapa',
     mapLabel: 'Mapa-múndi: quem já está em {year}, quem celebra e quem ainda espera',
-    about: 'Sobre', privacy: 'Privacidade', terms: 'Termos', home: 'Início', aboutLegal: 'Sobre e legal', language: 'Idioma', music: 'Música',
+    about: 'Sobre', privacy: 'Privacidade', terms: 'Termos', home: 'Início', aboutLegal: 'Sobre e legal', language: 'Idioma', music: 'Música', soundNudge: "Toque uma vez para o som",
   },
   fa: {
     days: 'روز', hours: 'ساعت', minutes: 'دقیقه', seconds: 'ثانیه', abbr: 'روز|س|د|ث',
@@ -161,7 +162,7 @@ const TABLES: Record<string, Table> = {
     legendArrived: 'از قبل در {year}', legendNow: 'اکنون جشن می‌گیرد', legendWaiting: 'در انتظار', shortArrived: 'در {year}',
     shortNow: 'اکنون', shortNext: 'بعدی', mapKey: 'راهنمای نقشه',
     mapLabel: 'نقشه جهان: چه کسی در {year} است، چه کسی جشن می‌گیرد و چه کسی منتظر است',
-    about: 'درباره', privacy: 'حریم خصوصی', terms: 'شرایط', home: 'خانه', aboutLegal: 'درباره و قوانین', language: 'زبان', music: 'موسیقی',
+    about: 'درباره', privacy: 'حریم خصوصی', terms: 'شرایط', home: 'خانه', aboutLegal: 'درباره و قوانین', language: 'زبان', music: 'موسیقی', soundNudge: "برای صدا یک بار بزنید",
   },
   ar: {
     days: 'أيام', hours: 'ساعات', minutes: 'دقائق', seconds: 'ثوانٍ', abbr: 'ي|س|د|ث',
@@ -175,7 +176,7 @@ const TABLES: Record<string, Table> = {
     legendArrived: 'في {year} بالفعل', legendNow: 'تحتفل الآن', legendWaiting: 'في الانتظار', shortArrived: 'في {year}',
     shortNow: 'الآن', shortNext: 'التالي', mapKey: 'دليل الخريطة',
     mapLabel: 'خريطة العالم: من دخل {year} ومن يحتفل الآن ومن ما زال ينتظر',
-    about: 'حول', privacy: 'الخصوصية', terms: 'الشروط', home: 'الرئيسية', aboutLegal: 'حول والقانونية', language: 'اللغة', music: 'الموسيقى',
+    about: 'حول', privacy: 'الخصوصية', terms: 'الشروط', home: 'الرئيسية', aboutLegal: 'حول والقانونية', language: 'اللغة', music: 'الموسيقى', soundNudge: "اضغط مرة واحدة للصوت",
   },
   tr: {
     days: 'gün', hours: 'saat', minutes: 'dakika', seconds: 'saniye', abbr: 'g|sa|dk|sn',
@@ -189,7 +190,7 @@ const TABLES: Record<string, Table> = {
     legendArrived: 'Şimdiden {year} yılında', legendNow: 'Şimdi kutluyor', legendWaiting: 'Bekliyor', shortArrived: '{year} yılında',
     shortNow: 'Şimdi', shortNext: 'Sıradaki', mapKey: 'Harita açıklaması',
     mapLabel: 'Dünya haritası: kim {year} yılında, kim kutluyor, kim hâlâ bekliyor',
-    about: 'Hakkında', privacy: 'Gizlilik', terms: 'Koşullar', home: 'Ana sayfa', aboutLegal: 'Hakkında ve yasal', language: 'Dil', music: 'Müzik',
+    about: 'Hakkında', privacy: 'Gizlilik', terms: 'Koşullar', home: 'Ana sayfa', aboutLegal: 'Hakkında ve yasal', language: 'Dil', music: 'Müzik', soundNudge: 'Ses için bir kez dokun',
   },
   ru: {
     days: 'дней', hours: 'часов', minutes: 'минут', seconds: 'секунд', abbr: 'д|ч|м|с',
@@ -203,7 +204,7 @@ const TABLES: Record<string, Table> = {
     legendArrived: 'Уже в {year}', legendNow: 'Празднует сейчас', legendWaiting: 'Ждёт', shortArrived: 'В {year}',
     shortNow: 'Сейчас', shortNext: 'Далее', mapKey: 'Условные обозначения',
     mapLabel: 'Карта мира: кто уже в {year}, кто празднует и кто ещё ждёт',
-    about: 'О проекте', privacy: 'Конфиденциальность', terms: 'Условия', home: 'Главная', aboutLegal: 'О проекте и право', language: 'Язык', music: 'Музыка',
+    about: 'О проекте', privacy: 'Конфиденциальность', terms: 'Условия', home: 'Главная', aboutLegal: 'О проекте и право', language: 'Язык', music: 'Музыка', soundNudge: "Нажмите для звука",
   },
   uk: {
     days: 'днів', hours: 'годин', minutes: 'хвилин', seconds: 'секунд', abbr: 'д|г|хв|с',
@@ -217,7 +218,7 @@ const TABLES: Record<string, Table> = {
     legendArrived: 'Уже в {year}', legendNow: 'Святкує зараз', legendWaiting: 'Чекає', shortArrived: 'У {year}',
     shortNow: 'Зараз', shortNext: 'Далі', mapKey: 'Умовні позначення',
     mapLabel: 'Карта світу: хто вже в {year}, хто святкує і хто ще чекає',
-    about: 'Про проєкт', privacy: 'Конфіденційність', terms: 'Умови', home: 'Головна', aboutLegal: 'Про проєкт і право', language: 'Мова', music: 'Музика',
+    about: 'Про проєкт', privacy: 'Конфіденційність', terms: 'Умови', home: 'Головна', aboutLegal: 'Про проєкт і право', language: 'Мова', music: 'Музика', soundNudge: "Торкніться для звуку",
   },
   zh: {
     days: '天', hours: '小时', minutes: '分钟', seconds: '秒', abbr: '天|时|分|秒',
@@ -231,7 +232,7 @@ const TABLES: Record<string, Table> = {
     legendArrived: '已进入 {year}', legendNow: '正在庆祝', legendWaiting: '等待中', shortArrived: '{year}',
     shortNow: '现在', shortNext: '下一个', mapKey: '地图图例',
     mapLabel: '世界地图：谁已进入 {year}，谁正在庆祝，谁还在等待',
-    about: '关于', privacy: '隐私', terms: '条款', home: '首页', aboutLegal: '关于与法律', language: '语言', music: '音乐',
+    about: '关于', privacy: '隐私', terms: '条款', home: '首页', aboutLegal: '关于与法律', language: '语言', music: '音乐', soundNudge: "点一下开启声音",
   },
   ja: {
     days: '日', hours: '時間', minutes: '分', seconds: '秒', abbr: '日|時間|分|秒',
@@ -245,7 +246,7 @@ const TABLES: Record<string, Table> = {
     legendArrived: 'すでに{year}年', legendNow: 'お祝い中', legendWaiting: '待機中', shortArrived: '{year}年',
     shortNow: '今', shortNext: '次', mapKey: '地図の凡例',
     mapLabel: '世界地図：すでに{year}年の人、お祝い中の人、まだ待っている人',
-    about: '概要', privacy: 'プライバシー', terms: '利用規約', home: 'ホーム', aboutLegal: '概要と法的情報', language: '言語', music: '音楽',
+    about: '概要', privacy: 'プライバシー', terms: '利用規約', home: 'ホーム', aboutLegal: '概要と法的情報', language: '言語', music: '音楽', soundNudge: "タップで音を出す",
   },
   ko: {
     days: '일', hours: '시간', minutes: '분', seconds: '초', abbr: '일|시간|분|초',
@@ -259,7 +260,7 @@ const TABLES: Record<string, Table> = {
     legendArrived: '이미 {year}년', legendNow: '지금 축하 중', legendWaiting: '대기 중', shortArrived: '{year}년',
     shortNow: '지금', shortNext: '다음', mapKey: '지도 범례',
     mapLabel: '세계 지도: 이미 {year}년인 곳, 축하 중인 곳, 아직 기다리는 곳',
-    about: '소개', privacy: '개인정보', terms: '약관', home: '홈', aboutLegal: '소개 및 법적 고지', language: '언어', music: '음악',
+    about: '소개', privacy: '개인정보', terms: '약관', home: '홈', aboutLegal: '소개 및 법적 고지', language: '언어', music: '음악', soundNudge: "한 번 탭하면 소리가 나요",
   },
   hi: {
     days: 'दिन', hours: 'घंटे', minutes: 'मिनट', seconds: 'सेकंड', abbr: 'दि|घं|मि|से',
@@ -273,7 +274,7 @@ const TABLES: Record<string, Table> = {
     legendArrived: 'पहले से {year} में', legendNow: 'अभी जश्न मना रहे हैं', legendWaiting: 'प्रतीक्षा में', shortArrived: '{year} में',
     shortNow: 'अभी', shortNext: 'अगला', mapKey: 'मानचित्र संकेत',
     mapLabel: 'विश्व मानचित्र: कौन {year} में है, कौन जश्न मना रहा है और कौन प्रतीक्षा में है',
-    about: 'परिचय', privacy: 'गोपनीयता', terms: 'शर्तें', home: 'होम', aboutLegal: 'परिचय और कानूनी', language: 'भाषा', music: 'संगीत',
+    about: 'परिचय', privacy: 'गोपनीयता', terms: 'शर्तें', home: 'होम', aboutLegal: 'परिचय और कानूनी', language: 'भाषा', music: 'संगीत', soundNudge: "आवाज़ के लिए एक बार टैप करें",
   },
   pl: {
     days: 'dni',
@@ -314,7 +315,7 @@ const TABLES: Record<string, Table> = {
     terms: 'Warunki',
     home: 'Strona główna',
     aboutLegal: 'O projekcie i prawo',
-    language: 'Język', music: 'Muzyka',
+    language: 'Język', music: 'Muzyka', soundNudge: "Dotknij raz, by włączyć dźwięk",
   },
   nl: {
     days: 'dagen',
@@ -355,7 +356,7 @@ const TABLES: Record<string, Table> = {
     terms: 'Voorwaarden',
     home: 'Home',
     aboutLegal: 'Over en juridisch',
-    language: 'Taal', music: 'Muziek',
+    language: 'Taal', music: 'Muziek', soundNudge: "Tik één keer voor geluid",
   },
   el: {
     days: 'ημέρες',
@@ -396,7 +397,7 @@ const TABLES: Record<string, Table> = {
     terms: 'Όροι',
     home: 'Αρχική',
     aboutLegal: 'Σχετικά και νομικά',
-    language: 'Γλώσσα', music: 'Μουσική',
+    language: 'Γλώσσα', music: 'Μουσική', soundNudge: "Πατήστε μία φορά για ήχο",
   },
   ro: {
     days: 'zile',
@@ -437,7 +438,7 @@ const TABLES: Record<string, Table> = {
     terms: 'Termeni',
     home: 'Acasă',
     aboutLegal: 'Despre și juridic',
-    language: 'Limba', music: 'Muzică',
+    language: 'Limba', music: 'Muzică', soundNudge: "Atinge o dată pentru sunet",
   },
   cs: {
     days: 'dní',
@@ -478,7 +479,7 @@ const TABLES: Record<string, Table> = {
     terms: 'Podmínky',
     home: 'Domů',
     aboutLegal: 'O projektu a právní',
-    language: 'Jazyk', music: 'Hudba',
+    language: 'Jazyk', music: 'Hudba', soundNudge: "Klepni jednou pro zvuk",
   },
   hu: {
     days: 'nap',
@@ -519,7 +520,7 @@ const TABLES: Record<string, Table> = {
     terms: 'Feltételek',
     home: 'Kezdőlap',
     aboutLegal: 'Névjegy és jogi',
-    language: 'Nyelv', music: 'Zene',
+    language: 'Nyelv', music: 'Zene', soundNudge: "Koppints egyszer a hanghoz",
   },
   da: {
     days: 'dage',
@@ -560,7 +561,7 @@ const TABLES: Record<string, Table> = {
     terms: 'Vilkår',
     home: 'Hjem',
     aboutLegal: 'Om og juridisk',
-    language: 'Sprog', music: 'Musik',
+    language: 'Sprog', music: 'Musik', soundNudge: "Tryk én gang for lyd",
   },
   no: {
     days: 'dager',
@@ -601,7 +602,7 @@ const TABLES: Record<string, Table> = {
     terms: 'Vilkår',
     home: 'Hjem',
     aboutLegal: 'Om og juridisk',
-    language: 'Språk', music: 'Musikk',
+    language: 'Språk', music: 'Musikk', soundNudge: "Trykk én gang for lyd",
   },
 }
 

@@ -1,15 +1,15 @@
 import { useSyncExternalStore } from 'react'
 
-// The viewer's music preference, remembered in this browser. There is no audio yet:
-// it only decides whether the cassette player looks like it is playing (reels turn,
-// notes drift). Off by default. A real player can read the same setting later.
+// The viewer's music preference, remembered in this browser. On unless they switched it
+// off: it keeps the cassette player's reels turning and lets the midnight recording
+// play by itself (hooks/useMidnightAudio.ts), so a screen left running just works.
 const KEY = 'newyear.music'
 
 function read(): boolean {
   try {
-    return window.localStorage.getItem(KEY) === 'on'
+    return window.localStorage.getItem(KEY) !== 'off'
   } catch {
-    return false
+    return true
   }
 }
 

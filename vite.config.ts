@@ -28,7 +28,8 @@ function serviceWorker(): Plugin {
     closeBundle() {
       const all = files(outDir)
         .map((path) => ({ path, url: '/' + relative(outDir, path).split('\\').join('/') }))
-        .filter(({ url }) => url !== '/sw.js' && !/\.(md|txt)$/.test(url))
+        // The audio is large; the worker keeps it in its own cache on first use instead.
+        .filter(({ url }) => url !== '/sw.js' && !url.startsWith('/audio/') && !/\.(md|txt)$/.test(url))
         .sort((a, b) => a.url.localeCompare(b.url))
       const urls = ['/', ...all.map(({ url }) => url).filter((url) => url !== '/index.html')]
       const hash = createHash('sha1')
