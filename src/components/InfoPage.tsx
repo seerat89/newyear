@@ -36,6 +36,16 @@ const CONTENT: Record<PageName, { title: string; body: ReactNode }> = {
           The countdown follows the city you choose, so you can count down to midnight wherever you are, or wherever
           someone you care about is. If you do not choose one, it uses your device's time zone.
         </p>
+        <h2>Music</h2>
+        <p>
+          Music includes tracks by Andrew Ev, Alejandro Magaña (A. M.), Eugenio Mininni, JuliusH, Michael Ramir C.,
+          Diego Nava, and DJMYRIDA, sourced from Mixkit and Pixabay.
+        </p>
+        <p>
+          Music plays by default, with a Christmas selection on 24 to 26 December and a special recording around
+          midnight, and you can switch it off with the music button. Some browsers only start sound after a tap or key
+          press, so Omid may ask for one.
+        </p>
         <h2>Languages</h2>
         <p className="info-note">
           Some translations are AI-assisted and may contain mistakes. If you spot one, please let us know.
@@ -72,8 +82,14 @@ const CONTENT: Record<PageName, { title: string; body: ReactNode }> = {
         <h2>What is remembered</h2>
         <p>
           The city you choose, by search, by tapping the map or by location, is remembered in your browser's local
-          storage so you do not have to choose it again. It stays on your device. You can clear it with the “Clear”
-          button next to the city, or by clearing your site data.
+          storage so you do not have to choose it again. Your language and music on or off choices are remembered the
+          same way. They stay on your device. You can clear the city with the “Clear” button next to it, or everything
+          by clearing your site data.
+        </p>
+        <h2>Offline use</h2>
+        <p>
+          The app can be installed and opened offline after one visit. To do that, your browser keeps a copy of the
+          app's own files on your device, and the midnight recording once it has played.
         </p>
       </>
     ),
@@ -86,7 +102,7 @@ const CONTENT: Record<PageName, { title: string; body: ReactNode }> = {
           This is a free personal project, provided for information and entertainment. By using it you agree to these
           short terms.
         </p>
-        <h2>As is</h2>
+        <h2>Disclaimer and accuracy</h2>
         <p>
           The app is provided “as is”, without warranties. There is no guarantee that it will always be available or free
           of errors. Countdowns depend on your device's clock and on the time zone data in your browser, and the city you choose
@@ -95,8 +111,9 @@ const CONTENT: Record<PageName, { title: string; body: ReactNode }> = {
         <h2>Ownership</h2>
         <p>
           The design, artwork, text and the character Omid belong to the project and may not be copied or sold without
-          permission. The map's land shapes come from Natural Earth (public domain), and the Fraunces typeface is used
-          under the SIL Open Font License.
+          permission. The music is not part of that: the tracks credited on the About page belong to their creators and
+          are used under the Mixkit and Pixabay licences. The map's land shapes come from Natural Earth (public domain),
+          and the Fraunces typeface is used under the SIL Open Font License.
         </p>
       </>
     ),

@@ -1,41 +1,32 @@
 import { useEffect, useState } from 'react'
-import { CHRISTMAS_TRACKS, shuffledTracks } from '../lib/christmasMusic'
+import { audioOf, nextTrack, resetPlaylist } from '../lib/playlists'
+import type { Playlist } from '../lib/playlists'
 
-// While Christmas mode is on and music is enabled, plays the Christmas tracks as a small
-// shuffled playlist: the next one starts when a track ends and the same track is never
-// repeated straight away. Nothing is requested until then (the element has no source before
-// its first play). Leaving Christmas mode drops the element's source; switching music off
-// only pauses, so switching it on again carries on. Browsers may hold sound back until a
-// tap or key press: `blocked` is true meanwhile, and the first gesture starts it.
+// Plays a small shuffled playlist (lib/playlists.ts): the next track starts when one ends and
+// the same track is never repeated straight away. Nothing is requested until the first play
+// (the element has no source before then).
+//
+// `loaded` says the playlist is wanted at all (Christmas mode for the Christmas tracks, outside
+// it for the normal ones); when it turns false the element's source is dropped. `playing` says
+// it should be heard right now (music switched on, and not during the special midnight
+// recording); when it turns false the track is only paused, so it carries on from the same
+// place afterwards. Browsers may hold sound back until a tap or key press: the return value
+// is true meanwhile, and the first gesture starts it.
 
 const GESTURES = ['pointerup', 'mousedown', 'touchend', 'keydown'] as const
 
-let element: HTMLAudioElement | null = null
-let queue: string[] = []
-let last: string | null = null
-
-const audio = () => (element ??= Object.assign(new Audio(), { preload: 'none' }))
-
-/** Whether the Christmas music is being held back until a tap or key press. */
-export function useChristmasMusic(christmas: boolean, enabled: boolean): boolean {
+/** Whether the music is being held back until a tap or key press. */
+export function usePlaylist(list: Playlist, loaded: boolean, playing: boolean): boolean {
   const [blocked, setBlocked] = useState(false)
 
-  // Leaving Christmas mode: forget the playlist and release the file.
   useEffect(() => {
-    if (!christmas) return
-    return () => {
-      const a = audio()
-      a.pause()
-      a.removeAttribute('src')
-      a.load()
-      queue = []
-      last = null
-    }
-  }, [christmas])
+    if (!loaded) return
+    return () => resetPlaylist(list)
+  }, [list, loaded])
 
   useEffect(() => {
-    if (!christmas || !enabled) return
-    const a = audio()
+    if (!loaded || !playing) return
+    const a = audioOf(list)
     let alive = true
     let failures = 0
     let waiting = false
@@ -49,9 +40,7 @@ export function useChristmasMusic(christmas: boolean, enabled: boolean): boolean
       play()
     }
     const next = () => {
-      if (queue.length === 0) queue = shuffledTracks(last)
-      last = queue.shift() as string
-      a.src = last
+      a.src = nextTrack(list)
       play()
     }
     const play = () => {
@@ -72,7 +61,7 @@ export function useChristmasMusic(christmas: boolean, enabled: boolean): boolean
     }
     const onError = () => {
       // A missing or unreadable file: try another, but give up after one full round.
-      if (++failures < CHRISTMAS_TRACKS.length) next()
+      if (++failures < list.tracks.length) next()
     }
 
     a.addEventListener('ended', onEnded)
@@ -88,7 +77,7 @@ export function useChristmasMusic(christmas: boolean, enabled: boolean): boolean
       a.pause()
       setBlocked(false)
     }
-  }, [christmas, enabled])
+  }, [list, loaded, playing])
 
   return blocked
 }

@@ -14,13 +14,14 @@ import SceneSwitch from './components/SceneSwitch'
 import type { SceneName } from './components/SceneSwitch'
 import WorldMap from './components/worldmap/WorldMap'
 import { useMidnightAudio } from './hooks/useMidnightAudio'
-import { useChristmasMusic } from './hooks/useChristmasMusic'
+import { usePlaylist } from './hooks/usePlaylist'
 import { useMusic } from './hooks/useMusic'
 import { useSoundNudge } from './hooks/useSoundNudge'
 import { useNow } from './hooks/useNow'
 import { getNewYearWindow } from './lib/autoView'
 import { getCelebration } from './lib/celebration'
 import { audioOffset } from './lib/midnightAudio'
+import { CHRISTMAS, NORMAL } from './lib/playlists'
 import { getCountdownState } from './lib/countdown'
 import { getGreeting } from './lib/greetings'
 import { useT } from './lib/strings'
@@ -66,8 +67,12 @@ function App() {
   const sequence = music && audioMidnight !== null && audioOffset(now, audioMidnight) !== null
   // Omid asks for a tap if the browser has not allowed sound yet (hooks/useSoundNudge.ts).
   const nearMidnight = state.phase === 'counting' && state.target - now <= 5 * 60_000
-  const carolsBlocked = useChristmasMusic(season === 'christmas', music)
-  const speech = useSoundNudge(music, nearMidnight, (soundBlocked && sequence) || carolsBlocked) && scene === 'countdown'
+  const speech = useSoundNudge(music, nearMidnight, soundBlocked && sequence) && scene === 'countdown'
+  // Background music (hooks/usePlaylist.ts): the Christmas tracks in Christmas mode, the
+  // normal tracks otherwise, paused during the midnight recording and resumed after it.
+  const christmasMode = season === 'christmas'
+  usePlaylist(CHRISTMAS, christmasMode, music)
+  usePlaylist(NORMAL, !christmasMode, music && !sequence)
   const [wasSequence, setWasSequence] = useState(false)
   if (sequence !== wasSequence) {
     setWasSequence(sequence)
