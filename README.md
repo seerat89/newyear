@@ -2,6 +2,8 @@
 
 A live countdown to New Year for phones, desktops and large fullscreen displays, set in a cinematic midnight city and guided by Omid, a small glowing spirit whose name means "hope" in Persian. It follows the time zone of the city you choose, shows New Year arriving around the world on a map, and ends in a fireworks celebration at midnight.
 
+[View the live site](https://newyear.seerat.me)
+
 ## Preview
 
 ![The countdown view, set for Helsinki](docs/screenshots/countdown.png)

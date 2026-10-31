@@ -22,7 +22,8 @@ import { getNewYearWindow } from './lib/autoView'
 import { getCelebration } from './lib/celebration'
 import { audioOffset } from './lib/midnightAudio'
 import { CHRISTMAS, NORMAL } from './lib/playlists'
-import { getCountdownState } from './lib/countdown'
+import { getCountdownState, getTimeRemaining } from './lib/countdown'
+import type { CountdownState } from './lib/countdown'
 import { getGreeting } from './lib/greetings'
 import { spanUnits, useT } from './lib/strings'
 import { formatSpan } from './lib/worldTime'
@@ -31,6 +32,17 @@ import { CITIES } from './components/worldmap/places'
 
 /** How long before midnight the show is put in the page (hidden, delayed to the dot). */
 const SHOW_PREROLL_MS = 4000
+
+/**
+ * Omid's brightness: full on January 1, easing through the afterglow down to what the ordinary
+ * countdown gives on its first day (the same day count it will show, so there is no step).
+ */
+function glowFor(state: CountdownState, now: number): number {
+  if (state.phase === 'counting') return glowForDaysLeft(state.remaining.days)
+  if (state.phase === 'celebrating') return 1
+  const progress = (now - state.startedAt) / (state.endsAt - state.startedAt)
+  return glowForAfterglow(progress, getTimeRemaining(state.nextTarget, state.endsAt).days)
+}
 
 function App() {
   const now = useNow()
@@ -47,12 +59,7 @@ function App() {
   useOmidCelebration(state.phase === 'celebrating' ? state.startedAt : upcoming)
   // Omid is at full brightness through January 1, fades through the afterglow, and reaches the
   // ordinary brightness for the days left just as the normal countdown resumes.
-  const glow =
-    state.phase === 'counting'
-      ? glowForDaysLeft(state.remaining.days)
-      : state.phase === 'afterglow'
-        ? glowForAfterglow((now - state.startedAt) / (state.endsAt - state.startedAt), Math.floor((state.nextTarget - state.endsAt) / 86_400_000))
-        : 1
+  const glow = glowFor(state, now)
 
   // Two fullscreen scenes, no scrolling, and the viewer's choice is never overridden,
   // with one exception: when the viewer's own midnight is 5 minutes away the screen

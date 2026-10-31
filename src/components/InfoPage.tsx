@@ -93,6 +93,11 @@ const CONTENT: Record<PageName, { title: string; body: ReactNode }> = {
           same way. They stay on your device. You can clear the city with the “Clear” button next to it, or everything
           by clearing your site data.
         </p>
+        <h2>Analytics</h2>
+        <p>
+          The site uses Vercel Web Analytics to understand basic traffic, such as page views, approximate country,
+          device and browser, and where visitors came from. It is not used for advertising or cross-site tracking.
+        </p>
         <h2>Offline use</h2>
         <p>
           The app can be installed and opened offline after one visit. To do that, your browser keeps a copy of the
