@@ -36,15 +36,22 @@ const CONTENT: Record<PageName, { title: string; body: ReactNode }> = {
           The countdown follows the city you choose, so you can count down to midnight wherever you are, or wherever
           someone you care about is. If you do not choose one, it uses your device's time zone.
         </p>
+        <h2>Using it</h2>
+        <p>
+          The countdown runs to midnight at the start of the next 1 January, using your device's clock and the time zone of
+          the city you choose, so it is only as accurate as that clock. It works full screen on phones, tablets and TVs,
+          and can be installed as an app that opens offline after one visit. From 24 to 26 December it dresses for
+          Christmas.
+        </p>
         <h2>Music</h2>
         <p>
           Music includes tracks by Andrew Ev, Alejandro Magaña (A. M.), Eugenio Mininni, JuliusH, Michael Ramir C.,
           Diego Nava, and DJMYRIDA, sourced from Mixkit and Pixabay.
         </p>
         <p>
-          Music plays by default, with a Christmas selection on 24 to 26 December and a special recording around
-          midnight, and you can switch it off with the music button. Some browsers only start sound after a tap or key
-          press, so Omid may ask for one.
+          Music is switched on by default, with a Christmas selection on 24 to 26 December and a special recording around
+          midnight, but browsers only allow sound after you tap or press a key, so nothing plays until then and Omid
+          may ask for one. You can switch music off at any time with the music button.
         </p>
         <h2>Languages</h2>
         <p className="info-note">

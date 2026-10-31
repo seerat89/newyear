@@ -1,63 +1,39 @@
 # New Year Countdown
 
-A public New Year countdown for phones, desktops, and large TV/fullscreen displays, featuring Omid, a small glowing spirit who represents hope for the year ahead.
+A live countdown to New Year for phones, desktops and large fullscreen displays, set in a cinematic midnight city and guided by Omid, a small glowing spirit whose name means "hope" in Persian. It follows the time zone of the city you choose, shows New Year arriving around the world on a map, and ends in a fireworks celebration at midnight.
 
-## Purpose
+## Preview
 
-A local-time countdown to the next Gregorian New Year, presented as a calm, lively experience rather than a plain timer.
+![New Year Countdown](docs/screenshots/countdown.png)
+
+Christmas mode, shown from 24 to 26 December:
+
+<img src="docs/screenshots/christmas.png" alt="Christmas mode" width="360">
 
 ## Features
 
-- Countdown to the next January 1 using absolute timestamps.
-- Three phases:
-  - countdown
-  - celebration on January 1
-  - afterglow from January 2–7
-- World Map view: New Year moving around the world by time zone, with each place's local time and status.
-- Responsive compositions for phone, tablet, desktop, and TV.
-- Reduced-motion support.
-- Animated Omid mascot with character-driven movement and scene interaction.
+- Live countdown to the next 1 January, for your device's time zone or any listed city
+- World map showing where New Year has arrived, is being celebrated now, and is coming next
+- Midnight fireworks and celebration sequence, with a recorded countdown and greeting
+- Omid, an animated mascot you can tap and drag, and his cassette player
+- Background music with a mute control, and a Christmas playlist in Christmas mode
+- Christmas mode with snow, decorated trees and a scarf for Omid
+- Interface in 25 languages, including right-to-left layouts
+- Installable, works offline after the first visit, and respects reduced-motion settings
 
-## Visual direction
+## Tech
 
-A cinematic New Year's Eve night with deep midnight blue and plum tones, restrained warm gold celebration light, distant city lights, reflections, stars, atmospheric glow, and subtle fireworks.
+React, TypeScript, Vite, Tailwind CSS, Oxlint. Animation is CSS and SVG, the world map is drawn without a map library, and the offline service worker is hand-written (no PWA plugin). The Fraunces font is self-hosted.
 
-## Omid
+## Running locally
 
-Omid (امید) means “hope” in Persian.
-
-He is a small glowing spirit who carries warmth through the night and represents the sense of hope people bring into a new year.
-
-Omid can travel, float, glide, fly, and jump through the scene using a spring-based motion system with squash and stretch, secondary motion, and environmental reactions.
-
-## Tech stack
-
-- React
-- TypeScript
-- Vite
-- Tailwind CSS
-- Motion
-- Oxlint
-
-## Development
-
-```sh
+```
 npm install
 npm run dev
 ```
 
-## Build and lint
+Other scripts: `npm run build` (type-check and production build), `npm run preview` (serve the build) and `npm run lint`.
 
-```sh
-npm run lint
-npm run build
-npm run preview
-```
+## Audio credits
 
-## Planned
-
-- Midnight celebration sequence
-- Christmas and other seasonal modes
-- Curated messages and resolutions
-- Shareable images
-- PWA support
+Music and sound effects come from Mixkit and Pixabay. Tracks, creators and sources are listed in [docs/audio-sources.md](docs/audio-sources.md).
