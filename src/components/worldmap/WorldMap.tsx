@@ -38,13 +38,15 @@ type WorldMapProps = {
   /** The viewer's chosen city (it also sets the countdown), and how to change it. */
   city: number | null
   onCity: (city: number | null) => void
+  /** Keeps the map on this year (during the afterglow); otherwise it follows the world's year. */
+  year?: number
 }
 
-function WorldMap({ now: liveNow, active, city: picked, onCity: choose }: WorldMapProps) {
+function WorldMap({ now: liveNow, active, city: picked, onCity: choose, year: keepYear }: WorldMapProps) {
   const reduced = usePrefersReducedMotion()
   const { t, lang } = useT()
   const span = (ms: number) => formatSpan(ms, spanUnits(lang))
-  const year = getWorldYear(liveNow)
+  const year = keepYear ?? getWorldYear(liveNow)
 
   // When each place begins the year, and the order midnight reaches them.
   const { instants, waves, start, end } = useMemo(() => {

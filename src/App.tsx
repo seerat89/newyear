@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import CountdownDisplay from './components/CountdownDisplay'
-import { glowForDaysLeft } from './components/omid/omidState'
+import { glowForAfterglow, glowForDaysLeft } from './components/omid/omidState'
 import NewYearMessage from './components/celebration/NewYearMessage'
 import { useOmidCelebration } from './components/celebration/useOmidCelebration'
 import PhaseMessage from './components/PhaseMessage'
@@ -24,7 +24,8 @@ import { audioOffset } from './lib/midnightAudio'
 import { CHRISTMAS, NORMAL } from './lib/playlists'
 import { getCountdownState } from './lib/countdown'
 import { getGreeting } from './lib/greetings'
-import { useT } from './lib/strings'
+import { spanUnits, useT } from './lib/strings'
+import { formatSpan } from './lib/worldTime'
 import { getSeason } from './lib/season'
 import { CITIES } from './components/worldmap/places'
 
@@ -44,7 +45,14 @@ function App() {
   // The show is mounted a few seconds early so it starts from CSS on the dot of midnight.
   const upcoming = state.phase === 'counting' && state.target - now <= SHOW_PREROLL_MS ? state.target : null
   useOmidCelebration(state.phase === 'celebrating' ? state.startedAt : upcoming)
-  const glow = state.phase === 'counting' ? glowForDaysLeft(state.remaining.days) : 1
+  // Omid is at full brightness through January 1, fades through the afterglow, and reaches the
+  // ordinary brightness for the days left just as the normal countdown resumes.
+  const glow =
+    state.phase === 'counting'
+      ? glowForDaysLeft(state.remaining.days)
+      : state.phase === 'afterglow'
+        ? glowForAfterglow((now - state.startedAt) / (state.endsAt - state.startedAt), Math.floor((state.nextTarget - state.endsAt) / 86_400_000))
+        : 1
 
   // Two fullscreen scenes, no scrolling, and the viewer's choice is never overridden,
   // with one exception: when the viewer's own midnight is 5 minutes away the screen
@@ -117,7 +125,14 @@ function App() {
           </>
         )}
         {state.phase === 'celebrating' && <NewYearMessage year={state.year} stage={celebration?.stage ?? null} />}
-        {state.phase === 'afterglow' && <PhaseMessage title={t('yearBegun', { year: state.year })} />}
+        {state.phase === 'afterglow' && (
+          <>
+            <PhaseMessage title={t('yearBegun', { year: state.year })} />
+            <p data-omid-keepout className="hero-next">
+              {t('newYearIn')} {formatSpan(state.nextRemaining.totalMs, spanUnits(lang))}
+            </p>
+          </>
+        )}
         {city !== null && (
           <p className="hero-place">
             {t('midnightIn', { city: CITIES[city].name, country: CITIES[city].country })}
@@ -125,7 +140,13 @@ function App() {
         )}
       </main>
       <section className="map-section" aria-label="New Year around the world" inert={scene !== 'map'}>
-        <WorldMap now={scene === 'map' ? now : Math.floor(now / 60_000) * 60_000} active={scene === 'map'} city={city} onCity={setCity} />
+        <WorldMap
+          now={scene === 'map' ? now : Math.floor(now / 60_000) * 60_000}
+          active={scene === 'map'}
+          city={city}
+          onCity={setCity}
+          year={state.phase === 'afterglow' ? state.year : undefined}
+        />
       </section>
     </div>
     {page && <InfoPage page={page} />}

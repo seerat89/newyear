@@ -73,6 +73,15 @@
   text-align: center;
   text-shadow: 0 1px 8px rgb(0 0 0 / 0.5);
 }
+.hero-next {
+  margin: 0.9em 0 0;
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: calc(var(--title-size) * 0.6);
+  letter-spacing: 0.04em;
+  color: rgb(240 226 200 / 0.72);
+  text-shadow: 0 0 0.9em rgb(42 20 60 / 0.6);
+}
 @media (min-width: 1600px) {
   .hero-place {
     bottom: 110px;

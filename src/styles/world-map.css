@@ -468,7 +468,11 @@ body {
 }
 .wm-status p {
   max-width: 100%;
-  margin: 0;
+  /* The ellipsis clip would cut the big place name's descenders (the g in "Pago Pago"), so
+     the clip box is made taller, and the same amount taken back from the margin so the
+     layout does not change. */
+  margin: 0 0 -12px;
+  padding-bottom: 12px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
