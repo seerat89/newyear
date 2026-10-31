@@ -4,11 +4,13 @@ A live countdown to New Year for phones, desktops and large fullscreen displays,
 
 ## Preview
 
-![New Year Countdown](docs/screenshots/countdown.png)
+![The countdown view, set for Helsinki](docs/screenshots/countdown.png)
 
-Christmas mode, shown from 24 to 26 December:
+*The countdown, set for Helsinki.*
 
-<img src="docs/screenshots/christmas.png" alt="Christmas mode" width="360">
+![Christmas mode](docs/screenshots/christmas.png)
+
+*Christmas mode, shown from 24 to 26 December.*
 
 ## Features
 
