@@ -35,6 +35,7 @@ nohup.out
 *.tmp.*
 shot*.png
 screenshots/
+!docs/screenshots/
 
 # Environment files (keep secrets out of git; the example is committed)
 .env
