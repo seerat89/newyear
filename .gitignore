@@ -44,3 +44,7 @@ screenshots/
 
 # Local-only dev helpers (e.g. the fake clock); never committed or built
 src/dev/
+
+# Python caches
+__pycache__/
+*.pyc

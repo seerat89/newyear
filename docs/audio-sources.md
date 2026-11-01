@@ -2,11 +2,11 @@
 
 This file records the sources of audio used by the New Year Countdown project.
 
-Audio files are stored under `public/audio/`. Source information is kept here so the original track, creator, and license source can be identified later.
+Only the midnight recording is stored in the repository (`public/audio/`); the playlist tracks are hosted in a Vercel Blob store. Source information is kept here so the original track, creator, and license source can be identified later.
 
 ## Christmas mode playlist
 
-Files are stored in `public/audio/christmas/` and are played only while Christmas mode is active and music is enabled.
+Files are hosted in a Vercel Blob store (`christmas/` folder, base address in `VITE_AUDIO_BASE_URL`; not in the repository) and are played only while Christmas mode is active and music is enabled.
 
 | File | Track | Source | Creator | Source URL |
 | --- | --- | --- | --- | --- |
@@ -17,7 +17,7 @@ Files are stored in `public/audio/christmas/` and are played only while Christma
 
 ## Normal-day playlist
 
-Files are stored in `public/audio/normal/` and are played outside Christmas mode while music is enabled. They pause during the midnight sequence and resume after it.
+Files are hosted in a Vercel Blob store (`normal/` folder, base address in `VITE_AUDIO_BASE_URL`; not in the repository) and are played outside Christmas mode while music is enabled. They pause during the midnight sequence and resume after it.
 
 | File | Track | Source | Creator | Source URL |
 | --- | --- | --- | --- | --- |

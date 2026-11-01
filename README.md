@@ -36,6 +36,8 @@ npm install
 npm run dev
 ```
 
+The background music is not in the repository. Copy `.env.example` to `.env.local` and set `VITE_AUDIO_BASE_URL` to the public base URL of the audio storage; without it the music will not load.
+
 Other scripts: `npm run build` (type-check and production build), `npm run preview` (serve the build) and `npm run lint`.
 
 ## Audio credits

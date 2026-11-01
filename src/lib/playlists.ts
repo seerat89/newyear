@@ -1,17 +1,21 @@
-// The music playlists. The files are large and are not part of the PWA precache: a playlist
-// is only requested while it is wanted (hooks/usePlaylist.ts), Christmas tracks in Christmas
-// mode and the normal-day tracks otherwise, both only while music is enabled.
+// The music playlists. The files are large, so they are not in the repository or the PWA
+// precache: they are served from a Vercel Blob store (a public address, VITE_AUDIO_BASE_URL in
+// .env.local, see .env.example) and a playlist is only requested while it is wanted
+// (hooks/usePlaylist.ts), Christmas tracks in Christmas mode and the normal-day tracks otherwise,
+// both only while music is enabled. The service worker does not touch these cross-origin requests.
+const AUDIO_BASE = String(import.meta.env.VITE_AUDIO_BASE_URL ?? '').replace(/\/+$/, '')
+
 export const CHRISTMAS_TRACKS = [
-  '/audio/christmas/carol-of-the-bells.mp3',
-  '/audio/christmas/christmas-prayer.mp3',
-  '/audio/christmas/quiet-eve.mp3',
-  '/audio/christmas/holiday-seasonal-3-510.mp3',
+  `${AUDIO_BASE}/christmas/carol-of-the-bells.mp3`,
+  `${AUDIO_BASE}/christmas/christmas-prayer.mp3`,
+  `${AUDIO_BASE}/christmas/quiet-eve.mp3`,
+  `${AUDIO_BASE}/christmas/holiday-seasonal-3-510.mp3`,
 ]
 
 export const NORMAL_TRACKS = [
-  '/audio/normal/vastness.mp3',
-  '/audio/normal/forest-mist-whispers.mp3',
-  '/audio/normal/voxscape.mp3',
+  `${AUDIO_BASE}/normal/vastness.mp3`,
+  `${AUDIO_BASE}/normal/forest-mist-whispers.mp3`,
+  `${AUDIO_BASE}/normal/voxscape.mp3`,
 ]
 
 /** One playlist's state: its audio element (made on first play) and its shuffle. */
