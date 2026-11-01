@@ -8,14 +8,15 @@ import { AUDIO_MIDNIGHT_S, AUDIO_SRC, audioOffset } from '../lib/midnightAudio'
 // times a second and nudged back if it has drifted (slow start-up, a stall, a seek that
 // landed short), so it cannot slide away from the fireworks.
 //
-// Browsers only let audio start by itself on pages they trust (a recent tap or key press,
-// an installed app, a site allowed to play sound, or a kiosk flag). Where that is not so
-// yet, the first tap, click or key press (a remote's button counts) starts it at the
-// right place, and `blocked` is true meanwhile so the page can say so.
+// The recording is only ever started inside its own window (`audioOffset` is not null);
+// it is never "warmed up" or tested at any other time, so opening the page, tapping around or
+// switching music on can not make it play. Browsers only let audio start by itself on pages
+// they trust (a recent tap or key press, an installed app, a site allowed to play sound, or a
+// kiosk flag). Where that is not so when the window opens, the first tap, click or key press
+// (a remote's button counts) starts it at the right place, and `blocked` is true meanwhile so
+// the page can say so.
 
 let element: HTMLAudioElement | null = null
-/** The midnight the hook currently follows (null when music is off). */
-let following: number | null = null
 
 const audio = () => {
   if (!element) {
@@ -26,40 +27,33 @@ const audio = () => {
   }
   return element
 }
-const inSequence = () => following !== null && audioOffset(Date.now(), following) !== null
 
 /** Any of these counts as the "user gesture" browsers want before they let sound start. */
 const GESTURES = ['pointerup', 'mousedown', 'touchend', 'keydown'] as const
 
-/** Quietly starts and stops the element during a gesture, so it may start by itself later. */
-function unlock() {
-  const a = audio()
-  if (!a.paused || inSequence()) return
-  a.muted = true
-  a.play()
-    .then(() => {
-      if (inSequence()) return
-      a.pause()
-      a.currentTime = 0
-    })
-    .catch(() => {})
-    .finally(() => {
-      a.muted = false
-    })
-}
-
-/** Call from the music button's tap (a gesture), e.g. when switching on. */
-export const unlockMidnightAudio = unlock
-
 /** How far (s) the recording may stray from the clock before it is put back. */
 const DRIFT_S = 0.12
+
+/**
+ * The only place the recording is started. It does so only inside the recording's window for
+ * this midnight, at the second the clock says; otherwise it stays paused and returns null.
+ */
+function startInWindow(a: HTMLAudioElement, midnight: number): Promise<void> | null {
+  const at = audioOffset(Date.now(), midnight)
+  if (at === null) {
+    a.pause()
+    return null
+  }
+  a.currentTime = at
+  a.muted = false
+  return a.play()
+}
 
 /** Returns whether the browser is holding the recording back until a tap or key press. */
 export function useMidnightAudio(midnight: number | null, enabled: boolean): boolean {
   const [blocked, setBlocked] = useState(false)
 
   useEffect(() => {
-    following = enabled ? midnight : null
     if (!enabled || midnight === null) return
     const a = audio()
     // Keep the recording in the offline cache (the service worker stores a plain fetch).
@@ -89,38 +83,34 @@ export function useMidnightAudio(midnight: number | null, enabled: boolean): boo
         if (!a.paused && Math.abs(a.currentTime - want) > DRIFT_S) a.currentTime = want
       }, 200)
     }
+    const play = () => {
+      if (!alive) return
+      const started = startInWindow(a, midnight)
+      if (!started) return
+      started.then(
+        () => {
+          // Cleaned up (its cleanup already paused it) or the window closed meanwhile: nothing to do.
+          if (!alive || audioOffset(Date.now(), midnight) === null) return
+          setBlocked(false)
+          holdSync()
+        },
+        () => {
+          // Not allowed yet: wait for the first tap or key press, then join at the right second.
+          if (!alive || waiting || audioOffset(Date.now(), midnight) === null) return
+          setBlocked(true)
+          waiting = true
+          GESTURES.forEach((g) => window.addEventListener(g, retry))
+        },
+      )
+    }
     const begin = () => {
-      const offset = audioOffset(Date.now(), midnight)
-      if (offset === null) return
-      const play = () => {
-        // Where the clock says it should be right now (loading may have taken a moment).
-        a.currentTime = audioOffset(Date.now(), midnight) ?? offset
-        a.muted = false
-        a.play().then(
-          () => {
-            if (!alive) return
-            setBlocked(false)
-            holdSync()
-          },
-          () => {
-            // Not allowed yet: wait for the first tap or key press, then join at the right second.
-            if (!alive || waiting) return
-            setBlocked(true)
-            waiting = true
-            GESTURES.forEach((g) => window.addEventListener(g, retry))
-          },
-        )
-      }
+      if (!alive || audioOffset(Date.now(), midnight) === null) return
       if (a.readyState >= 1) play()
       else {
         a.addEventListener('loadedmetadata', play, { once: true })
         a.load()
       }
     }
-
-    // Any early tap or key press on the page also unlocks the element for later.
-    const early = () => unlock()
-    GESTURES.forEach((g) => window.addEventListener(g, early, { once: true }))
 
     const wait = midnight - AUDIO_MIDNIGHT_S * 1000 - Date.now()
     if (wait > 0) timer = window.setTimeout(begin, wait)
@@ -131,7 +121,7 @@ export function useMidnightAudio(midnight: number | null, enabled: boolean): boo
       window.clearTimeout(timer)
       window.clearInterval(watch)
       stopWaiting()
-      GESTURES.forEach((g) => window.removeEventListener(g, early))
+      a.removeEventListener('loadedmetadata', play)
       a.pause()
       setBlocked(false)
     }

@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
 import { setMusic } from './useMusic'
-import { unlockMidnightAudio } from './useMidnightAudio'
 
 // Omid's reminder that sound needs a tap. Browsers only let audio start by itself after a tap
 // or key press, and a saved "music off" means no sound either, so "sound is on" here means
@@ -61,7 +60,6 @@ export function useSoundNudge(music: boolean, nearMidnight: boolean, held: boole
     const onGesture = (e: Event) => {
       if (!heard) {
         heard = true
-        unlockMidnightAudio()
         setUnlocked(true)
       }
       if (!visible.current) return

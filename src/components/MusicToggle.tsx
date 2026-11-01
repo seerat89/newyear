@@ -1,4 +1,3 @@
-import { unlockMidnightAudio } from '../hooks/useMidnightAudio'
 import { setMusic, useMusic } from '../hooks/useMusic'
 import { useT } from '../lib/strings'
 
@@ -14,7 +13,6 @@ function MusicToggle() {
       aria-pressed={on}
       title={t('music')}
       onClick={() => {
-        if (!on) unlockMidnightAudio()
         setMusic(!on)
       }}
     >
