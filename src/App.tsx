@@ -18,6 +18,7 @@ import { usePlaylist } from './hooks/usePlaylist'
 import { useMusic } from './hooks/useMusic'
 import { useSoundNudge } from './hooks/useSoundNudge'
 import { useNow } from './hooks/useNow'
+import { usePageVisible } from './hooks/usePageVisible'
 import { getNewYearWindow } from './lib/autoView'
 import { getCelebration } from './lib/celebration'
 import { audioOffset } from './lib/midnightAudio'
@@ -78,7 +79,11 @@ function App() {
   // starts the screen goes to the countdown, even if they had gone back to the map.
   const music = useMusic()
   const audioMidnight = state.phase === 'counting' ? state.target : state.phase === 'celebrating' ? state.startedAt : null
-  const soundBlocked = useMidnightAudio(audioMidnight, music)
+  // Nothing is heard while the page is hidden or the app is in the background: the playlists only
+  // pause (and carry on afterwards), and the recording stops and, on return, joins at the second
+  // the clock says (or stays off if its window has passed).
+  const visible = usePageVisible()
+  const soundBlocked = useMidnightAudio(audioMidnight, music && visible)
   const sequence = music && audioMidnight !== null && audioOffset(now, audioMidnight) !== null
   // Omid asks for a tap if the browser has not allowed sound yet (hooks/useSoundNudge.ts).
   const nearMidnight = state.phase === 'counting' && state.target - now <= 5 * 60_000
@@ -86,8 +91,8 @@ function App() {
   // Background music (hooks/usePlaylist.ts): the Christmas tracks in Christmas mode, the
   // normal tracks otherwise, paused during the midnight recording and resumed after it.
   const christmasMode = season === 'christmas'
-  usePlaylist(CHRISTMAS, christmasMode, music)
-  usePlaylist(NORMAL, !christmasMode, music && !sequence)
+  usePlaylist(CHRISTMAS, christmasMode, music && visible)
+  usePlaylist(NORMAL, !christmasMode, music && visible && !sequence)
   const [wasSequence, setWasSequence] = useState(false)
   if (sequence !== wasSequence) {
     setWasSequence(sequence)
