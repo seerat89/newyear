@@ -25,7 +25,7 @@ export function usePlaylist(list: Playlist, loaded: boolean, playing: boolean): 
   }, [list, loaded])
 
   useEffect(() => {
-    if (!loaded || !playing) return
+    if (!loaded || !playing || list.tracks.length === 0) return
     const a = audioOf(list)
     let alive = true
     let failures = 0
@@ -59,6 +59,9 @@ export function usePlaylist(list: Playlist, loaded: boolean, playing: boolean): 
       failures = 0
       next()
     }
+    const onPlaying = () => {
+      failures = 0
+    }
     const onError = () => {
       // A missing or unreadable file: try another, but give up after one full round.
       if (++failures < list.tracks.length) next()
@@ -66,6 +69,7 @@ export function usePlaylist(list: Playlist, loaded: boolean, playing: boolean): 
 
     a.addEventListener('ended', onEnded)
     a.addEventListener('error', onError)
+    a.addEventListener('playing', onPlaying)
     if (a.getAttribute('src') && !a.ended) play()
     else next()
 
@@ -73,6 +77,7 @@ export function usePlaylist(list: Playlist, loaded: boolean, playing: boolean): 
       alive = false
       a.removeEventListener('ended', onEnded)
       a.removeEventListener('error', onError)
+      a.removeEventListener('playing', onPlaying)
       stopWaiting()
       a.pause()
       setBlocked(false)

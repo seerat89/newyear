@@ -3,20 +3,20 @@
 // .env.local, see .env.example) and a playlist is only requested while it is wanted
 // (hooks/usePlaylist.ts), Christmas tracks in Christmas mode and the normal-day tracks otherwise,
 // both only while music is enabled. The service worker does not touch these cross-origin requests.
-const AUDIO_BASE = String(import.meta.env.VITE_AUDIO_BASE_URL ?? '').replace(/\/+$/, '')
+const AUDIO_BASE = (import.meta.env.VITE_AUDIO_BASE_URL ?? '').replace(/\/+$/, '')
+// Without the base address there is nothing to request: the playlists stay empty (and silent)
+// instead of asking this site for files that do not exist.
+if (!AUDIO_BASE) console.warn('VITE_AUDIO_BASE_URL is not set: background music is disabled.')
+const urls = (folder: string, files: string[]) => (AUDIO_BASE ? files.map((f) => `${AUDIO_BASE}/${folder}/${f}.mp3`) : [])
 
-export const CHRISTMAS_TRACKS = [
-  `${AUDIO_BASE}/christmas/carol-of-the-bells.mp3`,
-  `${AUDIO_BASE}/christmas/christmas-prayer.mp3`,
-  `${AUDIO_BASE}/christmas/quiet-eve.mp3`,
-  `${AUDIO_BASE}/christmas/holiday-seasonal-3-510.mp3`,
-]
+export const CHRISTMAS_TRACKS = urls('christmas', [
+  'carol-of-the-bells',
+  'christmas-prayer',
+  'quiet-eve',
+  'holiday-seasonal-3-510',
+])
 
-export const NORMAL_TRACKS = [
-  `${AUDIO_BASE}/normal/vastness.mp3`,
-  `${AUDIO_BASE}/normal/forest-mist-whispers.mp3`,
-  `${AUDIO_BASE}/normal/voxscape.mp3`,
-]
+export const NORMAL_TRACKS = urls('normal', ['vastness', 'forest-mist-whispers', 'voxscape'])
 
 /** One playlist's state: its audio element (made on first play) and its shuffle. */
 export type Playlist = {

@@ -98,6 +98,11 @@ const CONTENT: Record<PageName, { title: string; body: ReactNode }> = {
           The site uses Vercel Web Analytics to understand basic traffic, such as page views, approximate country,
           device and browser, and where visitors came from. It is not used for advertising or cross-site tracking.
         </p>
+        <h2>Music hosting</h2>
+        <p>
+          The background music is streamed from Vercel Blob storage, so your browser contacts that host when music plays.
+          Nothing about you is sent to it beyond what any file request includes, such as your IP address.
+        </p>
         <h2>Offline use</h2>
         <p>
           The app can be installed and opened offline after one visit. To do that, your browser keeps a copy of the
