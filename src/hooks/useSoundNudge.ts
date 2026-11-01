@@ -5,7 +5,7 @@ import { unlockMidnightAudio } from './useMidnightAudio'
 // Omid's reminder that sound needs a tap. Browsers only let audio start by itself after a tap
 // or key press, and a saved "music off" means no sound either, so "sound is on" here means
 // music is switched on AND a tap or key press has happened this visit. Until then Omid asks,
-// briefly: once about 10 s after the page opens and once more when midnight is under 5 minutes
+// briefly: once about 3 s after the page opens and once more when midnight is under 5 minutes
 // away (and once if the browser holds the recording back when it starts). Each appearance
 // lasts SHOW_MS and then goes away by itself (it fades, see cassette.css).
 //
@@ -15,7 +15,7 @@ import { unlockMidnightAudio } from './useMidnightAudio'
 // is deliberate and there are no more reminders this visit.
 
 const GESTURES = ['pointerup', 'mousedown', 'touchend', 'keydown'] as const
-const FIRST_MS = 10_000
+const FIRST_MS = 3_000
 /** How long one appearance stays before it goes away. */
 const SHOW_MS = 8_000
 
