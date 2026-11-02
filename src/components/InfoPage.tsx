@@ -45,7 +45,7 @@ const CONTENT: Record<PageName, { title: string; body: ReactNode }> = {
         </p>
         <h2>Music</h2>
         <p>
-          Music includes tracks by Andrew Ev, Alejandro Magaña (A. M.), Eugenio Mininni, JuliusH, Michael Ramir C.,
+          Music includes tracks by DARIOCOIRO, LiteSaturation, Eugenio Mininni, JuliusH, Michael Ramir C.,
           Diego Nava, and DJMYRIDA, sourced from Mixkit and Pixabay.
         </p>
         <p>

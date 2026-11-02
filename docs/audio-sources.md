@@ -21,11 +21,11 @@ Files are hosted in a Vercel Blob store (`normal/` folder, base address in `VITE
 
 | File | Track | Source | Creator | Source URL |
 | --- | --- | --- | --- | --- |
-| `vastness.mp3` | Vastness | Mixkit | Andrew Ev | not recorded |
-| `forest-mist-whispers.mp3` | Forest Mist Whispers | Mixkit | Alejandro Magaña (A. M.) | not recorded |
+| `cozy-evening-chill.mp3` | Cozy Evening Chill | Pixabay | DARIOCOIRO | https://pixabay.com/music/beats-cozy-evening-chill-489365/ |
+| `cafe-jazz.mp3` | Free Music Cafe Jazz | Pixabay | LiteSaturation | https://pixabay.com/music/traditional-jazz-free-music-cafe-jazz-473759/ |
 | `voxscape.mp3` | Voxscape | Mixkit | Eugenio Mininni | not recorded |
 
-The files carry no embedded title or artist tags. Direct track URLs are not recorded yet and are to be added here once confirmed.
+The files carry no embedded title or artist tags. The direct track URL for Voxscape is not recorded yet and is to be added here once confirmed.
 
 ## Midnight sequence
 

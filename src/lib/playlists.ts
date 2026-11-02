@@ -16,7 +16,7 @@ export const CHRISTMAS_TRACKS = urls('christmas', [
   'holiday-seasonal-3-510',
 ])
 
-export const NORMAL_TRACKS = urls('normal', ['vastness', 'forest-mist-whispers', 'voxscape'])
+export const NORMAL_TRACKS = urls('normal', ['cozy-evening-chill', 'cafe-jazz', 'voxscape'])
 
 /** One playlist's state: its audio element (made on first play) and its shuffle. */
 export type Playlist = {
