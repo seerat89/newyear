@@ -1,7 +1,7 @@
 {
   "name": "New Year Countdown",
   "short_name": "New Year",
-  "description": "Live New Year countdown to 2027. Choose your city or time zone, watch midnight travel around the world on the map, and celebrate with fireworks at midnight.",
+  "description": "Live New Year countdown. Choose your city or time zone, watch midnight travel around the world on the map, and celebrate with fireworks at midnight.",
   "lang": "en",
   "id": "/",
   "start_url": "/",
